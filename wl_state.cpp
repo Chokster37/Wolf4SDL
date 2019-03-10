@@ -165,6 +165,7 @@ void NewState (objtype *ob, statetype *state)
     }                                               \
 }
 
+
 #ifdef PLAYDEMOLIKEORIGINAL
     #define DOORCHECK                                   \
             if(DEMOCOND_ORIG)                           \
@@ -172,16 +173,24 @@ void NewState (objtype *ob, statetype *state)
             else                                        \
             {                                           \
                 doornum = (int) temp & 127;             \
-                OpenDoor(doornum);                      \
-                ob->distance = -doornum - 1;            \
-                return true;                            \
+                if (ob->obclass != ghostobj             \
+                    && ob->obclass != spectreobj)       \
+                {                                       \
+                    OpenDoor(doornum);                  \
+                    ob->distance = -doornum - 1;        \
+                    return true;                        \
+                }                                       \
             }
 #else
     #define DOORCHECK                                   \
             doornum = (int) temp & 127;                 \
-            OpenDoor(doornum);                          \
-            ob->distance = -doornum - 1;                \
-            return true;
+            if (ob->obclass != ghostobj                 \
+                && ob->obclass != spectreobj)           \
+            {                                           \
+                OpenDoor(doornum);                      \
+                ob->distance = -doornum - 1;            \
+                return true;                            \
+            }
 #endif
 
 #define CHECKSIDE(x,y)                                  \
@@ -252,8 +261,7 @@ boolean TryWalk (objtype *ob)
         switch (ob->dir)
         {
             case north:
-                if (ob->obclass == dogobj || ob->obclass == fakeobj
-                    || ob->obclass == ghostobj || ob->obclass == spectreobj)
+                if (ob->obclass == dogobj || ob->obclass == fakeobj)
                 {
                     CHECKDIAG(ob->tilex,ob->tiley-1);
                 }
@@ -273,8 +281,7 @@ boolean TryWalk (objtype *ob)
                 break;
 
             case east:
-                if (ob->obclass == dogobj || ob->obclass == fakeobj
-                    || ob->obclass == ghostobj || ob->obclass == spectreobj)
+                if (ob->obclass == dogobj || ob->obclass == fakeobj)
                 {
                     CHECKDIAG(ob->tilex+1,ob->tiley);
                 }
@@ -294,8 +301,7 @@ boolean TryWalk (objtype *ob)
                 break;
 
             case south:
-                if (ob->obclass == dogobj || ob->obclass == fakeobj
-                    || ob->obclass == ghostobj || ob->obclass == spectreobj)
+                if (ob->obclass == dogobj || ob->obclass == fakeobj)
                 {
                     CHECKDIAG(ob->tilex,ob->tiley+1);
                 }
@@ -315,8 +321,7 @@ boolean TryWalk (objtype *ob)
                 break;
 
             case west:
-                if (ob->obclass == dogobj || ob->obclass == fakeobj
-                    || ob->obclass == ghostobj || ob->obclass == spectreobj)
+                if (ob->obclass == dogobj || ob->obclass == fakeobj)
                 {
                     CHECKDIAG(ob->tilex-1,ob->tiley);
                 }
@@ -343,14 +348,12 @@ boolean TryWalk (objtype *ob)
         }
     }
 
-#ifdef PLAYDEMOLIKEORIGINAL
-    if (DEMOCOND_ORIG && doornum != -1)
+    if (doornum != -1)
     {
         OpenDoor(doornum);
         ob->distance = -doornum-1;
         return true;
     }
-#endif
 
     ob->areanumber =
         *(mapsegs[0] + (ob->tiley<<mapshift)+ob->tilex) - AREATILE;
