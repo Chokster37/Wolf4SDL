@@ -1273,6 +1273,8 @@ SD_PlaySound(soundnames sound)
 //            SDL_PCPlaySound((PCSound *)s);
             break;
         case sdm_AdLib:
+            curAlSound = alSound = 0;
+            alOut(alFreqH, 0);
             SDL_ALPlaySound((AdLibSound *)s);
             break;
     }

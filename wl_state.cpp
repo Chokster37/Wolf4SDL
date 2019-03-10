@@ -850,8 +850,11 @@ void KillActor (objtype *ob)
 {
     int     tilex,tiley;
 
-    tilex = ob->tilex = (word)(ob->x >> TILESHIFT);         // drop item on center
-    tiley = ob->tiley = (word)(ob->y >> TILESHIFT);
+    if (ob->obclass != mechahitlerobj)
+    {
+        tilex = ob->tilex = (word)(ob->x >> TILESHIFT);    // drop item on center
+        tiley = ob->tiley = (word)(ob->y >> TILESHIFT);
+    }
 
     switch (ob->obclass)
     {

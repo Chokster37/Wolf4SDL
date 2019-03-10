@@ -332,7 +332,7 @@ void DiskFlopAnim(int x,int y)
     if (!x && !y)
         return;
     VWB_DrawPic(x,y,C_DISKLOADING1PIC+which);
-    VW_UpdateScreen();
+//  VW_UpdateScreen();
     which^=1;
 }
 

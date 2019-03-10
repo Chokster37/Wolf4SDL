@@ -1180,8 +1180,8 @@ void PlayDemo (int demonumber)
 
 #ifdef DEMOSEXTERN
     UNCACHEGRCHUNK(dems[demonumber]);
-#else
-    MM_FreePtr (&demobuffer);
+//#else
+//  MM_FreePtr (&demobuffer);
 #endif
 
     demoplayback = false;
@@ -1377,6 +1377,7 @@ restartgame:
             DrawKeys ();
         }
 #endif
+        DrawLevel ();
 
         ingame = true;
         if(loadedgame)
@@ -1393,8 +1394,6 @@ restartgame:
             died = false;
             fizzlein = true;
         }
-
-        DrawLevel ();
 
 #ifdef SPEAR
 startplayloop:

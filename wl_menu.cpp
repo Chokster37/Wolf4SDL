@@ -794,6 +794,7 @@ CP_CheckQuick (ScanCode scancode)
                 CA_CacheGrChunk (C_MOUSELBACKPIC);
 #else
                 CacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
+                CA_CacheGrChunk (STARTFONT + 1);
                 CA_CacheGrChunk (C_CURSOR1PIC);
 #endif
 
@@ -865,6 +866,7 @@ CP_CheckQuick (ScanCode scancode)
                 CA_CacheGrChunk (C_MOUSELBACKPIC);
 #else
                 CA_CacheGrChunk (C_CURSOR1PIC);
+                CA_CacheGrChunk (STARTFONT + 1);
                 CacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
 #endif
 

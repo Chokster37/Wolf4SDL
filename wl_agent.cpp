@@ -702,6 +702,9 @@ void GiveKey (int key)
 */
 void GetBonus (statobj_t *check)
 {
+    if (playstate == ex_died)
+        return;
+
     switch (check->itemnumber)
     {
         case    bo_firstaid:
