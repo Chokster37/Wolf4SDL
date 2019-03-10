@@ -105,7 +105,7 @@ CP_itemtype SndMenu[] = {
     {1, "", 0},
 #else
     {1, STR_NONE, 0},
-    {0, STR_PC, 0},
+    {1, STR_PC, 0},
     {1, STR_ALSB, 0},
     {0, "", 0},
     {0, "", 0},
@@ -1280,6 +1280,7 @@ CP_Sound (int)
                     SD_WaitSoundDone ();
                     SD_SetSoundMode (sdm_AdLib);
                     CA_LoadAllSounds ();
+                    SD_SetDigiDevice (sds_Off);
                     DrawSoundMenu ();
                     ShootSnd ();
                 }
@@ -1378,8 +1379,10 @@ DrawSoundMenu (void)
         SndMenu[2].active = SndMenu[10].active = SndMenu[11].active = 0;
     }
 
-    if (!SoundBlasterPresent)
-        SndMenu[7].active = 0;
+    if (!SoundBlasterPresent || SoundMode == sdm_PC)
+	        SndMenu[7].active = 0;
+	    else
+	    	SndMenu[7].active = 1;
 
     if (!SoundBlasterPresent)
         SndMenu[5].active = 0;
