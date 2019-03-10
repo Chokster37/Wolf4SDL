@@ -646,7 +646,11 @@ int CalcRotate (objtype *ob)
     // this isn't exactly correct, as it should vary by a trig value,
     // but it is close enough with only eight rotations
 
+#ifdef FIXCALCROTATE
+    viewangle = (int)( player->angle + (centerx - ob->viewx) / (8 * viewwidth / 320.0) );
+#else
     viewangle = player->angle + (centerx - ob->viewx)/8;
+#endif
 
     if (ob->obclass == rocketobj || ob->obclass == hrocketobj)
         angle = (viewangle-180) - ob->angle;
@@ -1038,6 +1042,19 @@ void CalcTics (void)
 
 //==========================================================================
 
+#ifdef REFRESHCORNER
+bool RefreshCorner (bool flip)
+{
+    if (tilemap[xtile][ytile] && (xtile-xtilestep) == (xintercept>>TILESHIFT) && (ytile-ytilestep) == (yintercept>>TILESHIFT))
+    {
+        if (lastside == flip) return true;
+        if (lasttilehit&(MAXWALLTILES<<1)) lastside=3;
+        tilehit = lasttilehit;
+    }
+    return false;
+}
+#endif
+	
 void AsmRefresh()
 {
     int32_t xstep,ystep;
@@ -1151,12 +1168,15 @@ vertentry:
             }
             if(xspot>=maparea) break;
             tilehit=((byte *)tilemap)[xspot];
+#ifdef REFRESHCORNER
+            if (RefreshCorner(false)) goto horizentry;
+#endif
             if(tilehit)
             {
                 if(tilehit&0x80)
                 {
                     int32_t yintbuf=yintercept+(ystep>>1);
-                    if((yintbuf>>16)!=(yintercept>>16))
+                    if((yintbuf>>16)!=(yintercept>>16) && lastside!=3)
                         goto passvert;
                     if((word)yintbuf<doorposition[tilehit&0x7f])
                         goto passvert;
@@ -1306,12 +1326,15 @@ horizentry:
             }
             if(yspot>=maparea) break;
             tilehit=((byte *)tilemap)[yspot];
+#ifdef REFRESHCORNER
+            if (RefreshCorner(true)) goto vertentry;
+#endif
             if(tilehit)
             {
                 if(tilehit&0x80)
                 {
                     int32_t xintbuf=xintercept+(xstep>>1);
-                    if((xintbuf>>16)!=(xintercept>>16))
+                    if((xintbuf>>16)!=(xintercept>>16) && lastside!=3)
                         goto passhoriz;
                     if((word)xintbuf<doorposition[tilehit&0x7f])
                         goto passhoriz;

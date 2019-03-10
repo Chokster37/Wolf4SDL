@@ -1280,7 +1280,6 @@ CP_Sound (int)
                     SD_WaitSoundDone ();
                     SD_SetSoundMode (sdm_AdLib);
                     CA_LoadAllSounds ();
-                    SD_SetDigiDevice (sds_Off);
                     DrawSoundMenu ();
                     ShootSnd ();
                 }
