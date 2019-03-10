@@ -16,12 +16,14 @@ statobj_t       statobjlist[MAXSTATS];
 statobj_t       *laststatobj;
 
 
-struct
+typedef struct
 {
     short      picnum;
     wl_stat_t  type;
     uint32_t   specialFlags;    // they are ORed to the statobj_t flags
-} statinfo[] =
+} statinfo_t;
+
+statinfo_t statinfo[] =
 {
     {SPR_STAT_0},                           // puddle          spr1v
     {SPR_STAT_1,block},                     // Green Barrel    "
@@ -763,7 +765,7 @@ void PushWall (int checkx, int checky, int dir)
         SD_PlaySound (NOWAYSND);
         return;
     }
-    actorat[checkx+dx][checky+dy] = (objtype *)(uintptr_t) (tilemap[checkx+dx][checky+dy] = oldtile);
+    actorat[checkx+dx][checky+dy] = (objtype *)(uintptr_t) oldtile;
 
     gamestate.secretcount++;
     pwallx = checkx;
@@ -844,7 +846,7 @@ void MovePWalls (void)
                 tilemap[pwallx][pwally] = oldtile;
                 return;
             }
-            actorat[pwallx+dx][pwally+dy] = (objtype *)(uintptr_t) (tilemap[pwallx+dx][pwally+dy] = oldtile);
+            actorat[pwallx+dx][pwally+dy] = (objtype *)(uintptr_t) oldtile;
             tilemap[pwallx+dx][pwally+dy] = 64;
         }
     }
