@@ -2905,7 +2905,7 @@ void A_HitlerMorph (objtype *ob)
 ////////////////////////////////////////////////////////
 void A_MechaSound (objtype *ob)
 {
-    if (areabyplayer[ob->areanumber])
+    if (ob->areanumber >= NUMAREAS || areabyplayer[ob->areanumber])
         PlaySoundLocActor (MECHSTEPSND,ob);
 }
 
@@ -3473,7 +3473,7 @@ void T_Shoot (objtype *ob)
 
     hitchance = 128;
 
-    if (!areabyplayer[ob->areanumber])
+    if (ob->areanumber < NUMAREAS && !areabyplayer[ob->areanumber])
         return;
 
     if (CheckLine (ob))                    // player is not behind a wall

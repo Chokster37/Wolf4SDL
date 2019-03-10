@@ -728,7 +728,7 @@ void MoveObj (objtype *ob, int32_t move)
     //
     // check to make sure it's not on top of player
     //
-    if (areabyplayer[ob->areanumber])
+    if (ob->areanumber >= NUMAREAS || areabyplayer[ob->areanumber])
     {
         deltax = ob->x - player->x;
         if (deltax < -MINACTORDIST || deltax > MINACTORDIST)
@@ -737,8 +737,8 @@ void MoveObj (objtype *ob, int32_t move)
         if (deltay < -MINACTORDIST || deltay > MINACTORDIST)
             goto moveok;
 
-        if (ob->hidden)          // move closer until he meets CheckLine
-            goto moveok;
+        if (ob->hidden && spotvis[player->tilex][player->tiley])
+            goto moveok;         // move closer until he meets CheckLine
 
         if (ob->obclass == ghostobj || ob->obclass == spectreobj)
             TakeDamage (tics*2,ob);
@@ -1226,7 +1226,7 @@ boolean CheckSight (objtype *ob)
     //
     // don't bother tracing a line if the area isn't connected to the player's
     //
-    if (!areabyplayer[ob->areanumber])
+    if (ob->areanumber < NUMAREAS && !areabyplayer[ob->areanumber])
         return false;
 
     //
@@ -1473,7 +1473,7 @@ boolean SightPlayer (objtype *ob)
     }
     else
     {
-        if (!areabyplayer[ob->areanumber])
+        if (ob->areanumber < NUMAREAS && !areabyplayer[ob->areanumber])
             return false;
 
         if (ob->flags & FL_AMBUSH)

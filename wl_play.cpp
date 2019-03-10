@@ -1152,7 +1152,7 @@ void DoActor (objtype * ob)
 {
     void (*think) (objtype *);
 
-    if (!ob->active && !areabyplayer[ob->areanumber])
+    if (!ob->active && ob->areanumber < NUMAREAS && !areabyplayer[ob->areanumber])
         return;
 
     if (!(ob->flags & (FL_NONMARK | FL_NEVERMARK)))
