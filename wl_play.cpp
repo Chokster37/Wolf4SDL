@@ -709,8 +709,7 @@ void CheckKeys (void)
         SETFONTCOLOR (0, 15);
         IN_ClearKeysDown ();
         VW_FadeOut();
-        if(viewsize != 21)
-            DrawPlayScreen ();
+        DrawPlayScreen ();
         if (!startgame && !loadedgame)
             ContinueMusic (lastoffs);
         if (loadedgame)
@@ -730,7 +729,7 @@ void CheckKeys (void)
         CA_CacheGrChunk (STARTFONT);
         fontnumber = 0;
         SETFONTCOLOR (0, 15);
-        if (DebugKeys () && viewsize < 20)
+        if (DebugKeys ())
             DrawPlayBorder ();       // dont let the blue borders flash
 
         if (MousePresent && IN_IsInputGrabbed())
@@ -1300,8 +1299,7 @@ void PlayLoop (void)
         if (funnyticount > 30l * 70)
         {
             funnyticount = 0;
-            if(viewsize != 21)
-                StatusDrawFace(BJWAITING1PIC + (US_RndT () & 1));
+            StatusDrawFace(BJWAITING1PIC + (US_RndT () & 1));
             facecount = 0;
         }
 #endif

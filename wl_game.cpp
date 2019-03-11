@@ -773,8 +773,6 @@ void SetupGameLevel (void)
 */
 void DrawPlayBorderSides(void)
 {
-    if(viewsize == 21) return;
-
 	const int sw = screenWidth;
 	const int sh = screenHeight;
 	const int vw = viewwidth;
@@ -942,29 +940,6 @@ void LatchNumberHERE (int x, int y, unsigned width, int32_t number)
         x++;
         c++;
     }
-}
-
-void ShowActStatus()
-{
-    // Draw status bar without borders
-    byte *source = grsegs[STATUSBARPIC];
-    int	picnum = STATUSBARPIC - STARTPICS;
-    int width = pictable[picnum].width;
-    int height = pictable[picnum].height;
-    int destx = (screenWidth-scaleFactor*320)/2 + 9 * scaleFactor;
-    int desty = screenHeight - (height - 4) * scaleFactor;
-    VL_MemToScreenScaledCoord(source, width, height, 9, 4, destx, desty, width - 18, height - 7);
-
-    ingame = false;
-    DrawFace ();
-    DrawHealth ();
-    DrawLives ();
-    DrawLevel ();
-    DrawAmmo ();
-    DrawKeys ();
-    DrawWeapon ();
-    DrawScore ();
-    ingame = true;
 }
 
 
@@ -1321,15 +1296,12 @@ void Died (void)
         gamestate.attackframe = gamestate.attackcount =
             gamestate.weaponframe = 0;
 
-        if(viewsize != 21)
-        {
-            DrawKeys ();
-            DrawWeapon ();
-            DrawAmmo ();
-            DrawHealth ();
-            DrawFace ();
-            DrawLives ();
-        }
+        DrawKeys ();
+        DrawWeapon ();
+        DrawAmmo ();
+        DrawHealth ();
+        DrawFace ();
+        DrawLives ();
     }
 }
 
@@ -1360,7 +1332,9 @@ restartgame:
     {
         if (!loadedgame)
             gamestate.score = gamestate.oldscore;
-        if(!died || viewsize != 21) DrawScore();
+
+        if(!died)
+            DrawScore();
 
         startgame = false;
         if (!loadedgame)
@@ -1435,7 +1409,6 @@ startplayloop:
         {
             case ex_completed:
             case ex_secretlevel:
-                if(viewsize == 21) DrawPlayScreen();
                 gamestate.keys = 0;
                 DrawKeys ();
                 VW_FadeOut ();
@@ -1443,7 +1416,6 @@ startplayloop:
                 ClearMemory ();
 
                 LevelCompleted ();              // do the intermission
-                if(viewsize == 21) DrawPlayScreen();
 
 #ifdef SPEARDEMO
                 if (gamestate.mapon == 1)
@@ -1552,7 +1524,6 @@ startplayloop:
                 return;
 
             case ex_victorious:
-                if(viewsize == 21) DrawPlayScreen();
 #ifndef SPEAR
                 VW_FadeOut ();
 #else
@@ -1572,7 +1543,6 @@ startplayloop:
                 return;
 
             default:
-                if(viewsize == 21) DrawPlayScreen();
                 ClearMemory ();
                 break;
         }

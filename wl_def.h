@@ -139,8 +139,6 @@ void Quit(const char *errorStr, ...);
 
 #define SCREENBWIDE     80
 
-#define HEIGHTRATIO     0.50            // also defined in id_mm.c
-
 #define BORDERCOLOR     3
 #define FLASHCOLOR      5
 #define FLASHTICS       4
@@ -931,7 +929,6 @@ void    DrawPlayBorder (void);
 void    DrawStatusBorder (byte color);
 void    DrawPlayScreen (void);
 void    DrawPlayBorderSides (void);
-void    ShowActStatus();
 
 void    PlayDemo (int demonumber);
 void    RecordDemo (void);

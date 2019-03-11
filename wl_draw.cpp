@@ -1548,9 +1548,6 @@ void    ThreeDRefresh (void)
 
     DrawPlayerWeapon ();    // draw player's hands
 
-    if(Keyboard[sc_Tab] && viewsize == 21 && gamestate.weapon != -1)
-        ShowActStatus();
-
     VL_UnlockSurface(screenBuffer);
     vbuf = NULL;
 

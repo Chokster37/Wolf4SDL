@@ -297,7 +297,6 @@ void StatusDrawFace(unsigned picnum)
 
 void DrawFace (void)
 {
-    if(viewsize == 21 && ingame) return;
     if (SD_SoundPlaying() == GETGATLINGSND)
         StatusDrawFace(GOTGATLINGPIC);
     else if (gamestate.health)
@@ -408,7 +407,6 @@ static void LatchNumber (int x, int y, unsigned width, int32_t number)
 
 void DrawHealth (void)
 {
-    if(viewsize == 21 && ingame) return;
     LatchNumber (21,16,3,gamestate.health);
 }
 
@@ -450,7 +448,7 @@ void TakeDamage (int points,objtype *attacker)
     // MAKE BJ'S EYES BUG IF MAJOR DAMAGE!
     //
 #ifdef SPEAR
-    if (points > 30 && gamestate.health!=0 && !godmode && viewsize != 21)
+    if (points > 30 && gamestate.health!=0 && !godmode)
     {
         StatusDrawFace(BJOUCHPIC);
         facecount = 0;
@@ -490,7 +488,6 @@ void HealSelf (int points)
 
 void DrawLevel (void)
 {
-    if(viewsize == 21 && ingame) return;
 #ifdef SPEAR
     if (gamestate.mapon == 20)
         LatchNumber (2,16,2,18);
@@ -512,7 +509,6 @@ void DrawLevel (void)
 
 void DrawLives (void)
 {
-    if(viewsize == 21 && ingame) return;
     LatchNumber (14,16,1,gamestate.lives);
 }
 
@@ -545,7 +541,6 @@ void GiveExtraMan (void)
 
 void DrawScore (void)
 {
-    if(viewsize == 21 && ingame) return;
     LatchNumber (6,16,6,gamestate.score);
 }
 
@@ -580,7 +575,6 @@ void GivePoints (int32_t points)
 
 void DrawWeapon (void)
 {
-    if(viewsize == 21 && ingame) return;
     StatusDrawPic (32,8,KNIFEPIC+gamestate.weapon);
 }
 
@@ -595,7 +589,6 @@ void DrawWeapon (void)
 
 void DrawKeys (void)
 {
-    if(viewsize == 21 && ingame) return;
     if (gamestate.keys & 1)
         StatusDrawPic (30,4,GOLDKEYPIC);
     else
@@ -638,7 +631,6 @@ void GiveWeapon (int weapon)
 
 void DrawAmmo (void)
 {
-    if(viewsize == 21 && ingame) return;
     LatchNumber (27,16,2,gamestate.ammo);
 }
 
@@ -777,9 +769,7 @@ void GetBonus (statobj_t *check)
             SD_PlaySound (GETGATLINGSND);
             facetimes = 38;
             GiveWeapon (wp_chaingun);
-
-            if(viewsize != 21)
-                StatusDrawFace (GOTGATLINGPIC);
+            StatusDrawFace (GOTGATLINGPIC);
             facecount = 0;
             break;
 

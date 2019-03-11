@@ -198,7 +198,7 @@ void ReadConfig(void)
         else if(mouseadjustment>9) mouseadjustment=9;
 
         if(viewsize<4) viewsize=4;
-        else if(viewsize>21) viewsize=21;
+        else if(viewsize>19) viewsize=19;
 
         MainMenu[6].active=1;
         MainItems.curpos=0;
@@ -1374,24 +1374,9 @@ void ShowViewSize (int width)
     oldwidth = viewwidth;
     oldheight = viewheight;
 
-    if(width == 21)
-    {
-        viewwidth = screenWidth;
-        viewheight = screenHeight;
-        VWB_BarScaledCoord (0, 0, screenWidth, screenHeight, 0);
-    }
-    else if(width == 20)
-    {
-        viewwidth = screenWidth;
-        viewheight = screenHeight - scaleFactor*STATUSLINES;
-        DrawPlayBorder ();
-    }
-    else
-    {
-        viewwidth = width*16*screenWidth/320;
-        viewheight = (int) (width*16*HEIGHTRATIO*screenHeight/200);
-        DrawPlayBorder ();
-    }
+    viewwidth = width*16*scaleFactor;
+    viewheight =  width*8*scaleFactor;
+    DrawPlayBorder ();
 
     viewwidth = oldwidth;
     viewheight = oldheight;
@@ -1401,12 +1386,7 @@ void ShowViewSize (int width)
 void NewViewSize (int width)
 {
     viewsize = width;
-    if(viewsize == 21)
-        SetViewSize(screenWidth, screenHeight);
-    else if(viewsize == 20)
-        SetViewSize(screenWidth, screenHeight - scaleFactor * STATUSLINES);
-    else
-        SetViewSize(width*16*screenWidth/320, (unsigned) (width*16*HEIGHTRATIO*screenHeight/200));
+    SetViewSize(width*16*scaleFactor, width*8*scaleFactor);
 }
 
 
@@ -1724,25 +1704,8 @@ void CheckParameters(int argc, char *argv[])
                 screenWidth = atoi(argv[++i]);
                 screenHeight = atoi(argv[++i]);
                 unsigned factor = screenWidth / 320;
-                if(screenWidth % 320 || screenHeight != 200 * factor && screenHeight != 240 * factor)
-                    printf("Screen size must be a multiple of 320x200 or 320x240!\n"), hasError = true;
-            }
-        }
-        else IFARG("--resf")
-        {
-            if(i + 2 >= argc)
-            {
-                printf("The resf option needs the width and/or the height argument!\n");
-                hasError = true;
-            }
-            else
-            {
-                screenWidth = atoi(argv[++i]);
-                screenHeight = atoi(argv[++i]);
-                if(screenWidth < 320)
-                    printf("Screen width must be at least 320!\n"), hasError = true;
-                if(screenHeight < 200)
-                    printf("Screen height must be at least 200!\n"), hasError = true;
+                if(screenWidth % 320 || screenHeight != 200 * factor)
+                    printf("Screen size must be a multiple of 320x200!\n"), hasError = true;
             }
         }
         else IFARG("--bits")
@@ -1893,9 +1856,7 @@ void CheckParameters(int argc, char *argv[])
             " --nowait               Skips intro screens\n"
             " --windowed[-mouse]     Starts the game in a window [and grabs mouse]\n"
             " --res <width> <height> Sets the screen resolution\n"
-            "                        (must be multiple of 320x200 or 320x240)\n"
-            " --resf <w> <h>         Sets any screen resolution >= 320x200\n"
-            "                        (which may result in graphic errors)\n"
+            "                        (must be multiple of 320x200)\n"
             " --bits <b>             Sets the screen color depth\n"
             "                        (use this when you have palette/fading problems\n"
             "                        allowed: 8, 16, 24, 32, default: \"best\" depth)\n"

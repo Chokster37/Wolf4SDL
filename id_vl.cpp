@@ -25,7 +25,7 @@ unsigned screenBits = 8;
 #elif defined(GP2X)
 boolean usedoublebuffering = true;
 unsigned screenWidth = 320;
-unsigned screenHeight = 240;
+unsigned screenHeight = 200;
 #if defined(GP2X_940)
 unsigned screenBits = 8;
 #else
@@ -141,7 +141,6 @@ void	VL_SetVGAPlaneMode (void)
     curPitch = bufferPitch;
 
     scaleFactor = screenWidth/320;
-    if(screenHeight/200 < scaleFactor) scaleFactor = screenHeight/200;
 
     pixelangle = (short *) malloc(screenWidth * sizeof(short));
     CHECKMALLOCRESULT(pixelangle);

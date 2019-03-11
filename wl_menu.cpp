@@ -808,8 +808,7 @@ CP_CheckQuick (ScanCode scancode)
                 SETFONTCOLOR (0, 15);
                 IN_ClearKeysDown ();
                 VW_FadeOut();
-                if(viewsize != 21)
-                    DrawPlayScreen ();
+                DrawPlayScreen ();
 
                 if (!startgame && !loadedgame)
                     ContinueMusic (lastgamemusicoffset);
@@ -880,8 +879,7 @@ CP_CheckQuick (ScanCode scancode)
                 SETFONTCOLOR (0, 15);
                 IN_ClearKeysDown ();
                 VW_FadeOut();
-                if(viewsize != 21)
-                    DrawPlayScreen ();
+                DrawPlayScreen ();
 
                 if (!startgame && !loadedgame)
                     ContinueMusic (lastgamemusicoffset);
@@ -2861,9 +2859,9 @@ CP_ChangeView (int)
             case dir_North:
             case dir_East:
                 newview++;
-                if (newview >= 21)
+                if (newview >= 19)
                 {
-                    newview = 21;
+                    newview = 19;
                     DrawChangeView(newview);
                 }
                 else ShowViewSize (newview);

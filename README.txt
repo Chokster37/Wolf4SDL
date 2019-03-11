@@ -32,8 +32,8 @@ Main features:
 
  - Higher screen resolutions:
       Aside from the original 320x200 resolution, Wolf4SDL currently
-      supports any resolutions being multiples of 320x200 or 320x240,
-      the default being 640x400.
+      supports any resolutions being multiples of 320x200, the
+      default being 640x400.
       Unlike some other ports, Wolf4SDL does NOT apply any bilinear
       or similar filtering, so the graphics are NOT blurred but
       pixelated just as we love it.
@@ -45,11 +45,6 @@ Main features:
 
 Additional features:
 --------------------
-
- - Two additional view sizes:
-      Wolf4SDL supports one view size using the full width of the screen
-      and showing the status bar, like in Mac-enstein, and one view size
-      filling the whole screen (press TAB to see the status bar).
 
  - (Nearly) unlimited sound and song lengths:
       Mod developers are not restricted to 64kB for digitized sounds and
@@ -114,9 +109,7 @@ Wolf4SDL supports the following command line options:
  --nowait               Skips intro screens
  --windowed[-mouse]     Starts the game in a window [and grabs mouse]
  --res <width> <height> Sets the screen resolution
-                        (must be multiple of 320x200 or 320x240)
- --resf <w> <h>         Sets any screen resolution >= 320x200
-                        (which may result in graphic errors)
+                        (must be multiple of 320x200)
  --bits <b>             Sets the screen color depth
                         (Use this when you have palette/fading problem
                         or perhaps to optimize speed on old systems.
@@ -178,7 +171,6 @@ TODOs:
 ------
 
  - Center non-ingame screens for resolutions being a multiple of 320x240
- - Add support for any graphic resolution >= 320x200
 
 
 Known bugs:
