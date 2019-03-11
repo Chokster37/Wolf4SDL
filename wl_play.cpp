@@ -77,8 +77,6 @@ memptr demobuffer;
 int controlx, controly;         // range from -100 to 100 per tic
 boolean buttonstate[NUMBUTTONS];
 
-int lastgamemusicoffset = 0;
-
 
 //===========================================================================
 
@@ -87,9 +85,8 @@ void CenterWindow (word w, word h);
 void InitObjList (void);
 void RemoveObj (objtype * gone);
 void PollControls (void);
-int StopMusic (void);
+void StopMusic (void);
 void StartMusic (void);
-void ContinueMusic (int offs);
 void PlayLoop (void);
 
 /*
@@ -664,12 +661,12 @@ void CheckKeys (void)
     if(buttonstate[bt_pause]) Paused = true;
     if(Paused)
     {
-        int lastoffs = StopMusic();
+        StopMusic();
         LatchDrawPic (20 - 4, 80 - 2 * 8, PAUSEDPIC);
         VH_UpdateScreen();
         IN_Ack ();
         Paused = false;
-        ContinueMusic(lastoffs);
+        StartMusic();
         if (MousePresent && IN_IsInputGrabbed())
             IN_CenterMouse();     // Clear accumulated mouse movement
         lasttimecount = GetTimeCount();
@@ -700,7 +697,7 @@ void CheckKeys (void)
 
     if ((scan >= sc_F1 && scan <= sc_F9) || scan == sc_Escape || buttonstate[bt_esc])
     {
-        int lastoffs = StopMusic ();
+        StopMusic ();
         ClearMemory ();
         VW_FadeOut ();
 
@@ -711,7 +708,7 @@ void CheckKeys (void)
         VW_FadeOut();
         DrawPlayScreen ();
         if (!startgame && !loadedgame)
-            ContinueMusic (lastoffs);
+            StartMusic ();
         if (loadedgame)
             playstate = ex_abort;
         lasttimecount = GetTimeCount();
@@ -900,13 +897,11 @@ void RemoveObj (objtype * gone)
 =
 =================
 */
-int StopMusic (void)
+void StopMusic (void)
 {
-    int lastoffs = SD_MusicOff ();
+    SD_MusicOff ();
 
     UNCACHEAUDIOCHUNK (STARTMUSIC + lastmusicchunk);
-
-    return lastoffs;
 }
 
 //==========================================================================
@@ -925,13 +920,6 @@ void StartMusic ()
     SD_MusicOff ();
     lastmusicchunk = (musicnames) songs[gamestate.mapon + gamestate.episode * 10];
     SD_StartMusic(STARTMUSIC + lastmusicchunk);
-}
-
-void ContinueMusic (int offs)
-{
-    SD_MusicOff ();
-    lastmusicchunk = (musicnames) songs[gamestate.mapon + gamestate.episode * 10];
-    SD_ContinueMusic(STARTMUSIC + lastmusicchunk, offs);
 }
 
 /*

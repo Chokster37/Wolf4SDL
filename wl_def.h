@@ -975,8 +975,6 @@ extern  objtype         *player;
 extern  unsigned        tics;
 extern  int             viewsize;
 
-extern  int             lastgamemusicoffset;
-
 //
 // current user input
 //
@@ -1017,9 +1015,8 @@ void    FinishPaletteShifts (void);
 
 void    RemoveObj (objtype *gone);
 void    PollControls (void);
-int     StopMusic(void);
+void    StopMusic(void);
 void    StartMusic(void);
-void    ContinueMusic(int offs);
 void    StartDamageFlash (int damage);
 void    StartBonusFlash (void);
 

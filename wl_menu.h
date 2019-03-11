@@ -140,7 +140,7 @@ void ReadAnyControl(ControlInfo *ci);
 void TicDelay(int count);
 void CacheLump(int lumpstart,int lumpend);
 void UnCacheLump(int lumpstart,int lumpend);
-int StartCPMusic(int song);
+void StartCPMusic(int song);
 int  Confirm(const char *string);
 void Message(const char *string);
 void CheckPause(void);

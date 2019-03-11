@@ -356,17 +356,6 @@ SD_StopDigitized(void)
     }
 }
 
-int SD_GetChannelForDigi(int which)
-{
-    if(DigiChannel[which] != -1) return DigiChannel[which];
-
-    int channel = Mix_GroupAvailable(1);
-    if(channel == -1) channel = Mix_GroupOldest(1);
-    if(channel == -1)           // All sounds stopped in the meantime?
-        return Mix_GroupAvailable(1);
-    return channel;
-}
-
 void SD_SetPosition(int channel, int leftpos, int rightpos)
 {
     if((leftpos < 0) || (leftpos > 15) || (rightpos < 0) || (rightpos > 15)
@@ -444,15 +433,15 @@ void SD_PrepareSound(int which)
         sizeof(headchunk) + sizeof(wavechunk) + destsamples * 2), 1);
 }
 
-int SD_PlayDigitized(word which,int leftpos,int rightpos)
+void SD_PlayDigitized(word which,int leftpos,int rightpos)
 {
     if (!DigiMode)
-        return 0;
+        return;
 
     if (which >= NumDigi)
         Quit("SD_PlayDigitized: bad sound number %i", which);
 
-    int channel = SD_GetChannelForDigi(which);
+    int channel = 1;	// use priorities instead
     SD_SetPosition(channel, leftpos,rightpos);
 
     DigiPlaying = true;
@@ -461,16 +450,13 @@ int SD_PlayDigitized(word which,int leftpos,int rightpos)
     if(sample == NULL)
     {
         printf("SoundChunks[%i] is NULL!\n", which);
-        return 0;
+        return;
     }
 
     if(Mix_PlayChannel(channel, sample, 0) == -1)
     {
         printf("Unable to play sound: %s\n", Mix_GetError());
-        return 0;
     }
-
-    return channel;
 }
 
 void SD_ChannelFinished(int channel)
@@ -994,6 +980,15 @@ SD_PositionSound(int leftvol,int rightvol)
 //      SD_PlaySound() - plays the specified sound on the appropriate hardware
 //
 ///////////////////////////////////////////////////////////////////////////
+void
+SD_DigiFinished(int channel)
+{
+    DigiPlaying = false;
+    DigiNumber = (soundnames) 0;
+    DigiPriority = 0;
+    SoundPositioned = false;
+}
+
 boolean
 SD_PlaySound(soundnames sound)
 {
@@ -1033,16 +1028,14 @@ SD_PlaySound(soundnames sound)
         }
         else
         {
-#ifdef NOTYET
             if (s->priority < DigiPriority)
                 return(false);
-#endif
 
-            int channel = SD_PlayDigitized(DigiMap[sound], lp, rp);
+            SD_PlayDigitized(DigiMap[sound], lp, rp);
             SoundPositioned = ispos;
             DigiNumber = sound;
             DigiPriority = s->priority;
-            return channel + 1;
+            Mix_ChannelFinished(SD_DigiFinished);
         }
 
         return(true);
@@ -1153,10 +1146,9 @@ SD_MusicOn(void)
 ///////////////////////////////////////////////////////////////////////////
 //
 //      SD_MusicOff() - turns off the sequencer and any playing notes
-//      returns the last music offset for music continue
 //
 ///////////////////////////////////////////////////////////////////////////
-int
+void
 SD_MusicOff(void)
 {
     word    i;
@@ -1170,8 +1162,6 @@ SD_MusicOff(void)
                 alOut(alFreqH + i + 1, 0);
             break;
     }
-
-    return (int) (sqHackPtr-sqHack);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1193,45 +1183,6 @@ SD_StartMusic(int chunk)
         sqHackPtr = sqHack;
         sqHackTime = 0;
         alTimeCount = 0;
-        SD_MusicOn();
-    }
-}
-
-void
-SD_ContinueMusic(int chunk, int startoffs)
-{
-    SD_MusicOff();
-
-    if (MusicMode == smm_AdLib)
-    {
-        int32_t chunkLen = CA_CacheAudioChunk(chunk);
-        sqHack = (word *)(void *) audiosegs[chunk];     // alignment is correct
-        if(*sqHack == 0) sqHackLen = sqHackSeqLen = chunkLen;
-        else sqHackLen = sqHackSeqLen = *sqHack++;
-        sqHackPtr = sqHack;
-
-        if(startoffs >= sqHackLen)
-        {
-            Quit("SD_StartMusic: Illegal startoffs provided!");
-        }
-
-        // fast forward to correct position
-        // (needed to reconstruct the instruments)
-
-        for(int i = 0; i < startoffs; i += 2)
-        {
-            byte reg = *(byte *)sqHackPtr;
-            byte val = *(((byte *)sqHackPtr) + 1);
-            if(reg >= 0xb1 && reg <= 0xb8) val &= 0xdf;           // disable play note flag
-            else if(reg == 0xbd) val &= 0xe0;                     // disable drum flags
-
-            alOut(reg,val);
-            sqHackPtr += 2;
-            sqHackLen -= 4;
-        }
-        sqHackTime = 0;
-        alTimeCount = 0;
-
         SD_MusicOn();
     }
 }

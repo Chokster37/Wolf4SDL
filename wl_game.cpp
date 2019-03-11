@@ -1352,7 +1352,7 @@ restartgame:
         ingame = true;
         if(loadedgame)
         {
-            ContinueMusic(lastgamemusicoffset);
+            StartMusic();
             loadedgame = false;
         }
         else StartMusic ();

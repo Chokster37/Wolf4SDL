@@ -26,10 +26,6 @@ Main features:
       hear the AdLib sounds but also music without any AdLib-compatible
       soundcard in near to perfect quality!
 
- - Multichannel digitized sounds:
-      Digitized sounds play on 8 channels! So in a fire fight you will
-      always hear, when a guard opens the door behind you ;)
-
  - Higher screen resolutions:
       Aside from the original 320x200 resolution, Wolf4SDL currently
       supports any resolutions being multiples of 320x200, the
@@ -50,11 +46,6 @@ Additional features:
       Mod developers are not restricted to 64kB for digitized sounds and
       IMF songs anymore, so longer songs and digitized sounds with better
       quality are possible.
-
- - Resuming ingame music:
-      When you come back to the game from the menu or load a save game, the
-      music will be resumed where it was suspended rather than started from
-      the beginning.
 
  - Freely movable pushwalls:
       Moving pushwalls can be viewed from all sides, allowing mod developers
@@ -165,12 +156,6 @@ according search paths in your project.
 
 IMPORTANT: Do not forget to take care of version.h!
    By default it compiles for "Wolfenstein 3D v1.4 full GT/ID/Activision"!
-
-
-TODOs:
-------
-
- - Center non-ingame screens for resolutions being a multiple of 320x240
 
 
 Known bugs:

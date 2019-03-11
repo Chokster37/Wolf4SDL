@@ -17,7 +17,6 @@
 #include "wl_def.h"
 #pragma hdrstop
 
-extern int lastgamemusicoffset;
 extern int numEpisodesMissing;
 
 //
@@ -404,10 +403,11 @@ US_ControlPanel (ScanCode scancode)
     {
         if (CP_CheckQuick (scancode))
             return;
-        lastgamemusicoffset = StartCPMusic (MENUSONG);
+        StartCPMusic (MENUSONG);
     }
     else
         StartCPMusic (MENUSONG);
+
     SetupControlPanel ();
 
     //
@@ -802,7 +802,7 @@ CP_CheckQuick (ScanCode scancode)
                 if(screenHeight % 200 != 0)
                     VL_ClearScreen(0);
 
-                lastgamemusicoffset = StartCPMusic (MENUSONG);
+                StartCPMusic (MENUSONG);
                 pickquick = CP_SaveGame (0);
 
                 SETFONTCOLOR (0, 15);
@@ -811,7 +811,7 @@ CP_CheckQuick (ScanCode scancode)
                 DrawPlayScreen ();
 
                 if (!startgame && !loadedgame)
-                    ContinueMusic (lastgamemusicoffset);
+                    StartMusic ();
 
                 if (loadedgame)
                     playstate = ex_abort;
@@ -873,8 +873,8 @@ CP_CheckQuick (ScanCode scancode)
                 if(screenHeight % 200 != 0)
                     VL_ClearScreen(0);
 
-                lastgamemusicoffset = StartCPMusic (MENUSONG);
-                pickquick = CP_LoadGame (0);    // loads lastgamemusicoffs
+                StartCPMusic (MENUSONG);
+                pickquick = CP_LoadGame (0);
 
                 SETFONTCOLOR (0, 15);
                 IN_ClearKeysDown ();
@@ -882,7 +882,7 @@ CP_CheckQuick (ScanCode scancode)
                 DrawPlayScreen ();
 
                 if (!startgame && !loadedgame)
-                    ContinueMusic (lastgamemusicoffset);
+                    StartMusic ();
 
                 if (loadedgame)
                     playstate = ex_abort;
@@ -1540,7 +1540,7 @@ CP_LoadGame (int quick)
             DrawKeys ();
             DrawWeapon ();
             DrawScore ();
-            ContinueMusic (lastgamemusicoffset);
+            StartMusic ();
             return 1;
         }
     }
@@ -3874,17 +3874,14 @@ Message (const char *string)
 ////////////////////////////////////////////////////////////////////
 static int lastmusic;
 
-int
+void
 StartCPMusic (int song)
 {
-    int lastoffs;
-
     lastmusic = song;
-    lastoffs = SD_MusicOff ();
+    SD_MusicOff ();
     UNCACHEAUDIOCHUNK (STARTMUSIC + lastmusic);
 
     SD_StartMusic(STARTMUSIC + song);
-    return lastoffs;
 }
 
 void

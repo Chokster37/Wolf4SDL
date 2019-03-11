@@ -138,10 +138,9 @@ extern  void    SD_StopSound(void),
                 SD_WaitSoundDone(void);
 
 extern  void    SD_StartMusic(int chunk);
-extern  void    SD_ContinueMusic(int chunk, int startoffs);
 extern  void    SD_MusicOn(void),
                 SD_FadeOutMusic(void);
-extern  int     SD_MusicOff(void);
+extern  void    SD_MusicOff(void);
 
 extern  boolean SD_MusicPlaying(void);
 extern  boolean SD_SetSoundMode(SDMode mode);
@@ -150,7 +149,7 @@ extern  word    SD_SoundPlaying(void);
 
 extern  void    SD_SetDigiDevice(SDSMode);
 extern  void	SD_PrepareSound(int which);
-extern  int     SD_PlayDigitized(word which,int leftpos,int rightpos);
+extern  void    SD_PlayDigitized(word which,int leftpos,int rightpos);
 extern  void    SD_StopDigitized(void);
 
 #endif
