@@ -869,6 +869,7 @@ extern  fixed    focallength;
 extern  int      viewscreenx, viewscreeny;
 extern  int      viewwidth;
 extern  int      viewheight;
+extern  int      anglewidth;
 extern  short    centerx;
 extern  int32_t  heightnumerator;
 extern  fixed    scale;

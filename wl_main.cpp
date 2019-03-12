@@ -60,6 +60,7 @@ unsigned screenofs;
 int      viewscreenx, viewscreeny;
 int      viewwidth;
 int      viewheight;
+int      anglewidth;
 short    centerx;
 int      shootdelta;           // pixels away from centerx a target can be
 fixed    scale;
@@ -1335,6 +1336,7 @@ boolean SetViewSize (unsigned width, unsigned height)
 {
     viewwidth = width&~15;                  // must be divisable by 16
     viewheight = height&~1;                 // must be even
+    anglewidth = viewwidth*8/304;           // for CalcRotate
     centerx = viewwidth/2-1;
     shootdelta = viewwidth/10;
     if((unsigned) viewheight == screenHeight)

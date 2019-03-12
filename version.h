@@ -38,8 +38,6 @@
                               // effect to let the original demos work as in the original Wolf3D v1.4
                               // (actually better, as the second demo rarely worked)
 //#define USE_GPL             // Replaces the MAME OPL emulator by the DosBox one, which is under a GPL license
-
-#define FIXCALCROTATE         // Modified version of Ginyu's fix to make CalcRotate more accurate at high resolutions
 #define REFRESHCORNER         // To fix the "see-through gap in wall corner" problem
 
 #endif
