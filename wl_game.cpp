@@ -1397,6 +1397,7 @@ startplayloop:
 #endif
 
         StopMusic ();
+        SD_StopSound ();
         ingame = false;
 
         if (demorecord && playstate != ex_warped)

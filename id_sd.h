@@ -117,7 +117,6 @@ extern  SDMode          SoundMode;
 extern  SDSMode         DigiMode;
 extern  SMMode          MusicMode;
 extern  int             DigiMap[];
-extern  int             DigiChannel[];
 
 #define GetTimeCount()  ((SDL_GetTicks()*7)/100)
 

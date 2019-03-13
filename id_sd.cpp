@@ -82,7 +82,6 @@ globalsoundpos channelSoundPos[MIX_CHANNELS];
         SDSMode         DigiMode;
 static  byte          **SoundTable;
         int             DigiMap[LASTSOUND];
-        int             DigiChannel[STARTMUSIC - STARTDIGISOUNDS];
 
 //      Internal variables
 static  boolean                 SD_Started;
@@ -539,7 +538,6 @@ SDL_SetupDigi(void)
     for(i = 0; i < LASTSOUND; i++)
     {
         DigiMap[i] = -1;
-        DigiChannel[i] = -1;
     }
 }
 
