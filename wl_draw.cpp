@@ -845,7 +845,7 @@ visobj_t *visptr,*visstep,*farthest;
 void DrawScaleds (void)
 {
     int      i,least,numvisable,height;
-    byte     *tilespot,*visspot;
+    byte     *visspot;
     unsigned spotloc;
 
     statobj_t *statptr;
@@ -892,20 +892,19 @@ void DrawScaleds (void)
 
         spotloc = (obj->tilex<<mapshift)+obj->tiley;   // optimize: keep in struct?
         visspot = &spotvis[0][0]+spotloc;
-        tilespot = &tilemap[0][0]+spotloc;
 
         //
         // could be in any of the nine surrounding tiles
         //
         if (*visspot
-            || ( *(visspot-1) && !*(tilespot-1) )
-            || ( *(visspot+1) && !*(tilespot+1) )
-            || ( *(visspot-(MAPSIZE+1)) && !*(tilespot-(MAPSIZE+1)) )
-            || ( *(visspot-(MAPSIZE)) && !*(tilespot-(MAPSIZE)) )
-            || ( *(visspot-(MAPSIZE-1)) && !*(tilespot-(MAPSIZE-1)) )
-            || ( *(visspot+(MAPSIZE+1)) && !*(tilespot+(MAPSIZE+1)) )
-            || ( *(visspot+(MAPSIZE)) && !*(tilespot+(MAPSIZE)) )
-            || ( *(visspot+(MAPSIZE-1)) && !*(tilespot+(MAPSIZE-1)) ) )
+            || *(visspot-1)
+            || *(visspot+1)
+            || *(visspot-(MAPSIZE+1))
+            || *(visspot-(MAPSIZE))
+            || *(visspot-(MAPSIZE-1))
+            || *(visspot+(MAPSIZE+1))
+            || *(visspot+(MAPSIZE))
+            || *(visspot+(MAPSIZE-1)) )
         {
             obj->active = ac_yes;
             TransformActor (obj);
