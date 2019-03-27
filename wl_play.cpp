@@ -47,22 +47,8 @@ unsigned tics;
 //
 // control info
 //
-boolean mouseenabled, joystickenabled;
 int dirscan[4] = { sc_UpArrow, sc_RightArrow, sc_DownArrow, sc_LeftArrow };
 int buttonscan[NUMBUTTONS] = { sc_Control, sc_Alt, sc_LShift, sc_Space, sc_1, sc_2, sc_3, sc_4 };
-int buttonmouse[4] = { bt_attack, bt_strafe, bt_use, bt_nobutton };
-int buttonjoy[32] = {
-#ifdef _arch_dreamcast
-    bt_attack, bt_strafe, bt_use, bt_run, bt_esc, bt_prevweapon, bt_nobutton, bt_nextweapon,
-    bt_pause, bt_strafeleft, bt_straferight, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton,
-#else
-    bt_attack, bt_strafe, bt_use, bt_run, bt_strafeleft, bt_straferight, bt_esc, bt_pause,
-    bt_prevweapon, bt_nextweapon, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton,
-#endif
-    bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton,
-    bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton
-};
-
 int viewsize;
 
 boolean buttonheld[NUMBUTTONS];
@@ -260,48 +246,6 @@ void PollKeyboardButtons (void)
 /*
 ===================
 =
-= PollMouseButtons
-=
-===================
-*/
-
-void PollMouseButtons (void)
-{
-    int buttons = IN_MouseButtons ();
-
-    if (buttons & 1)
-        buttonstate[buttonmouse[0]] = true;
-    if (buttons & 2)
-        buttonstate[buttonmouse[1]] = true;
-    if (buttons & 4)
-        buttonstate[buttonmouse[2]] = true;
-}
-
-
-
-/*
-===================
-=
-= PollJoystickButtons
-=
-===================
-*/
-
-void PollJoystickButtons (void)
-{
-    int buttons = IN_JoyButtons();
-
-    for(int i = 0, val = 1; i < JoyNumButtons; i++, val <<= 1)
-    {
-        if(buttons & val)
-            buttonstate[buttonjoy[i]] = true;
-    }
-}
-
-
-/*
-===================
-=
 = PollKeyboardMove
 =
 ===================
@@ -321,56 +265,6 @@ void PollKeyboardMove (void)
         controlx += delta;
 }
 
-
-/*
-===================
-=
-= PollMouseMove
-=
-===================
-*/
-
-void PollMouseMove (void)
-{
-    int mousexmove, mouseymove;
-
-    SDL_GetMouseState(&mousexmove, &mouseymove);
-    if(IN_IsInputGrabbed())
-        IN_CenterMouse();
-
-    mousexmove -= screenWidth / 2;
-    mouseymove -= screenHeight / 2;
-
-    controlx += mousexmove * 10 / (13 - mouseadjustment);
-    controly += mouseymove * 20 / (13 - mouseadjustment);
-}
-
-
-/*
-===================
-=
-= PollJoystickMove
-=
-===================
-*/
-
-void PollJoystickMove (void)
-{
-    int joyx, joyy;
-
-    IN_GetJoyDelta (&joyx, &joyy);
-
-    int delta = buttonstate[bt_run] ? RUNMOVE * tics : BASEMOVE * tics;
-
-    if (joyx > 64 || buttonstate[bt_turnright])
-        controlx += delta;
-    else if (joyx < -64  || buttonstate[bt_turnleft])
-        controlx -= delta;
-    if (joyy > 64 || buttonstate[bt_movebackward])
-        controly += delta;
-    else if (joyy < -64 || buttonstate[bt_moveforward])
-        controly -= delta;
-}
 
 /*
 ===================
@@ -449,22 +343,10 @@ void PollControls (void)
 //
     PollKeyboardButtons ();
 
-    if (mouseenabled && IN_IsInputGrabbed())
-        PollMouseButtons ();
-
-    if (joystickenabled)
-        PollJoystickButtons ();
-
 //
 // get movements
 //
     PollKeyboardMove ();
-
-    if (mouseenabled && IN_IsInputGrabbed())
-        PollMouseMove ();
-
-    if (joystickenabled)
-        PollJoystickMove ();
 
 //
 // bound movement to a maximum
@@ -667,8 +549,6 @@ void CheckKeys (void)
         IN_Ack ();
         Paused = false;
         StartMusic();
-        if (MousePresent && IN_IsInputGrabbed())
-            IN_CenterMouse();     // Clear accumulated mouse movement
         lasttimecount = GetTimeCount();
         return;
     }
@@ -712,8 +592,6 @@ void CheckKeys (void)
         if (loadedgame)
             playstate = ex_abort;
         lasttimecount = GetTimeCount();
-        if (MousePresent && IN_IsInputGrabbed())
-            IN_CenterMouse();     // Clear accumulated mouse movement
         return;
     }
 
@@ -728,9 +606,6 @@ void CheckKeys (void)
         SETFONTCOLOR (0, 15);
         if (DebugKeys ())
             DrawPlayBorder ();       // dont let the blue borders flash
-
-        if (MousePresent && IN_IsInputGrabbed())
-            IN_CenterMouse();     // Clear accumulated mouse movement
 
         lasttimecount = GetTimeCount();
         return;
@@ -1253,9 +1128,6 @@ void PlayLoop (void)
     funnyticount = 0;
     memset (buttonstate, 0, sizeof (buttonstate));
     ClearPaletteShifts ();
-
-    if (MousePresent && IN_IsInputGrabbed())
-        IN_CenterMouse();         // Clear accumulated mouse movement
 
     if (demoplayback)
         IN_StartAck ();

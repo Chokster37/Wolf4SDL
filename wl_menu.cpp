@@ -53,7 +53,7 @@ CP_itemtype MainMenu[] = {
 #ifdef JAPAN
     {1, "", CP_NewGame},
     {1, "", CP_Sound},
-    {1, "", CP_Control},
+    {1, "", CP_CustomControls},
     {1, "", CP_LoadGame},
     {0, "", CP_SaveGame},
     {1, "", CP_ChangeView},
@@ -65,7 +65,7 @@ CP_itemtype MainMenu[] = {
 
     {1, STR_NG, CP_NewGame},
     {1, STR_SD, CP_Sound},
-    {1, STR_CL, CP_Control},
+    {1, STR_CL, CP_CustomControls},
     {1, STR_LG, CP_LoadGame},
     {0, STR_SG, CP_SaveGame},
     {1, STR_CV, CP_ChangeView},
@@ -115,28 +115,6 @@ CP_itemtype SndMenu[] = {
     {0, "", 0},
     {1, STR_NONE, 0},
     {1, STR_ALSB, 0}
-#endif
-};
-
-#ifdef JAPAN
-enum { CTL_MOUSEENABLE, CTL_JOYENABLE, CTL_JOY2BUTTONUNKNOWN, CTL_GAMEPADUNKONWN, CTL_MOUSESENS, CTL_CUSTOMIZE };
-#else
-enum { CTL_MOUSEENABLE, CTL_MOUSESENS, CTL_JOYENABLE, CTL_CUSTOMIZE };
-#endif
-
-CP_itemtype CtlMenu[] = {
-#ifdef JAPAN
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", MouseSensitivity},
-    {1, "", CustomControls}
-#else
-    {0, STR_MOUSEEN, 0},
-    {0, STR_SENS, MouseSensitivity},
-    {0, STR_JOYEN, 0},
-    {1, STR_CUSTOM, CustomControls}
 #endif
 };
 
@@ -231,12 +209,6 @@ CP_itemtype LSMenu[] = {
 CP_itemtype CusMenu[] = {
     {1, "", 0},
     {0, "", 0},
-    {0, "", 0},
-    {1, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {1, "", 0},
-    {0, "", 0},
     {1, "", 0}
 };
 
@@ -244,7 +216,6 @@ CP_itemtype CusMenu[] = {
 CP_iteminfo MainItems = { MENU_X, MENU_Y, lengthof(MainMenu), STARTITEM, 24 },
             SndItems  = { SM_X, SM_Y1, lengthof(SndMenu), 0, 52 },
             LSItems   = { LSM_X, LSM_Y, lengthof(LSMenu), 0, 24 },
-            CtlItems  = { CTL_X, CTL_Y, lengthof(CtlMenu), -1, 56 },
             CusItems  = { 8, CST_Y + 13 * 2, lengthof(CusMenu), -1, 0},
 #ifndef SPEAR
             NewEitems = { NE_X, NE_Y, lengthof(NewEmenu), 0, 88 },
@@ -444,7 +415,7 @@ US_ControlPanel (ScanCode scancode)
             goto finishup;
 
         case sc_F6:
-            CP_Control (0);
+            CP_CustomControls (0);
             goto finishup;
 
         finishup:
@@ -817,9 +788,6 @@ CP_CheckQuick (ScanCode scancode)
                     playstate = ex_abort;
                 lasttimecount = GetTimeCount ();
 
-                if (MousePresent && IN_IsInputGrabbed())
-                    IN_CenterMouse();     // Clear accumulated mouse movement
-
 #ifndef SPEAR
                 UNCACHEGRCHUNK (C_CURSOR1PIC);
                 UNCACHEGRCHUNK (C_CURSOR2PIC);
@@ -888,9 +856,6 @@ CP_CheckQuick (ScanCode scancode)
                     playstate = ex_abort;
 
                 lasttimecount = GetTimeCount ();
-
-                if (MousePresent && IN_IsInputGrabbed())
-                    IN_CenterMouse();     // Clear accumulated mouse movement
 
 #ifndef SPEAR
                 UNCACHEGRCHUNK (C_CURSOR1PIC);
@@ -1834,257 +1799,6 @@ CP_SaveGame (int quick)
     return exit;
 }
 
-////////////////////////////////////////////////////////////////////
-//
-// DEFINE CONTROLS
-//
-////////////////////////////////////////////////////////////////////
-int
-CP_Control (int)
-{
-    int which;
-
-#ifdef SPEAR
-    UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-    CacheLump (CONTROL_LUMP_START, CONTROL_LUMP_END);
-#endif
-
-    DrawCtlScreen ();
-    MenuFadeIn ();
-    WaitKeyUp ();
-
-    do
-    {
-        which = HandleMenu (&CtlItems, CtlMenu, NULL);
-        switch (which)
-        {
-            case CTL_MOUSEENABLE:
-                mouseenabled ^= 1;
-                if(IN_IsInputGrabbed())
-                    IN_CenterMouse();
-                DrawCtlScreen ();
-                CusItems.curpos = -1;
-                ShootSnd ();
-                break;
-
-            case CTL_JOYENABLE:
-                joystickenabled ^= 1;
-                DrawCtlScreen ();
-                CusItems.curpos = -1;
-                ShootSnd ();
-                break;
-
-            case CTL_MOUSESENS:
-            case CTL_CUSTOMIZE:
-                DrawCtlScreen ();
-                MenuFadeIn ();
-                WaitKeyUp ();
-                break;
-        }
-    }
-    while (which >= 0);
-
-    MenuFadeOut ();
-
-#ifdef SPEAR
-    UnCacheLump (CONTROL_LUMP_START, CONTROL_LUMP_END);
-    CacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-#endif
-    return 0;
-}
-
-
-////////////////////////////////
-//
-// DRAW MOUSE SENSITIVITY SCREEN
-//
-void
-DrawMouseSens (void)
-{
-#ifdef JAPAN
-    CA_CacheScreen (S_MOUSESENSPIC);
-#else
-    ClearMScreen ();
-    VWB_DrawPic (112, 184, C_MOUSELBACKPIC);
-#ifdef SPANISH
-    DrawWindow (10, 80, 300, 43, BKGDCOLOR);
-#else
-    DrawWindow (10, 80, 300, 30, BKGDCOLOR);
-#endif
-
-    WindowX = 0;
-    WindowW = 320;
-    PrintY = 82;
-    SETFONTCOLOR (READCOLOR, BKGDCOLOR);
-    US_CPrint (STR_MOUSEADJ);
-
-    SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
-#ifdef SPANISH
-    PrintX = 14;
-    PrintY = 95 + 13;
-    US_Print (STR_SLOW);
-    PrintX = 252;
-    US_Print (STR_FAST);
-#else
-    PrintX = 14;
-    PrintY = 95;
-    US_Print (STR_SLOW);
-    PrintX = 269;
-    US_Print (STR_FAST);
-#endif
-#endif
-
-    VWB_Bar (60, 97, 200, 10, TEXTCOLOR);
-    DrawOutline (60, 97, 200, 10, 0, HIGHLIGHT);
-    DrawOutline (60 + 20 * mouseadjustment, 97, 20, 10, 0, READCOLOR);
-    VWB_Bar (61 + 20 * mouseadjustment, 98, 19, 9, READHCOLOR);
-
-    VW_UpdateScreen ();
-    MenuFadeIn ();
-}
-
-
-///////////////////////////
-//
-// ADJUST MOUSE SENSITIVITY
-//
-int
-MouseSensitivity (int)
-{
-    ControlInfo ci;
-    int exit = 0, oldMA;
-
-
-    oldMA = mouseadjustment;
-    DrawMouseSens ();
-    do
-    {
-        SDL_Delay(5);
-        ReadAnyControl (&ci);
-        switch (ci.dir)
-        {
-            case dir_North:
-            case dir_West:
-                if (mouseadjustment)
-                {
-                    mouseadjustment--;
-                    VWB_Bar (60, 97, 200, 10, TEXTCOLOR);
-                    DrawOutline (60, 97, 200, 10, 0, HIGHLIGHT);
-                    DrawOutline (60 + 20 * mouseadjustment, 97, 20, 10, 0, READCOLOR);
-                    VWB_Bar (61 + 20 * mouseadjustment, 98, 19, 9, READHCOLOR);
-                    VW_UpdateScreen ();
-                    SD_PlaySound (MOVEGUN1SND);
-                    TicDelay(20);
-                }
-                break;
-
-            case dir_South:
-            case dir_East:
-                if (mouseadjustment < 9)
-                {
-                    mouseadjustment++;
-                    VWB_Bar (60, 97, 200, 10, TEXTCOLOR);
-                    DrawOutline (60, 97, 200, 10, 0, HIGHLIGHT);
-                    DrawOutline (60 + 20 * mouseadjustment, 97, 20, 10, 0, READCOLOR);
-                    VWB_Bar (61 + 20 * mouseadjustment, 98, 19, 9, READHCOLOR);
-                    VW_UpdateScreen ();
-                    SD_PlaySound (MOVEGUN1SND);
-                    TicDelay(20);
-                }
-                break;
-        }
-
-        if (ci.button0 || Keyboard[sc_Space] || Keyboard[sc_Enter])
-            exit = 1;
-        else if (ci.button1 || Keyboard[sc_Escape])
-            exit = 2;
-
-    }
-    while (!exit);
-
-    if (exit == 2)
-    {
-        mouseadjustment = oldMA;
-        SD_PlaySound (ESCPRESSEDSND);
-    }
-    else
-        SD_PlaySound (SHOOTSND);
-
-    WaitKeyUp ();
-    MenuFadeOut ();
-
-    return 0;
-}
-
-
-///////////////////////////
-//
-// DRAW CONTROL MENU SCREEN
-//
-void
-DrawCtlScreen (void)
-{
-    int i, x, y;
-
-#ifdef JAPAN
-    CA_CacheScreen (S_CONTROLPIC);
-#else
-    ClearMScreen ();
-    DrawStripes (10);
-    VWB_DrawPic (80, 0, C_CONTROLPIC);
-    VWB_DrawPic (112, 184, C_MOUSELBACKPIC);
-    DrawWindow (CTL_X - 8, CTL_Y - 5, CTL_W, CTL_H, BKGDCOLOR);
-#endif
-    WindowX = 0;
-    WindowW = 320;
-    SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
-
-    if (IN_JoyPresent())
-        CtlMenu[CTL_JOYENABLE].active = 1;
-
-    if (MousePresent)
-    {
-        CtlMenu[CTL_MOUSESENS].active = CtlMenu[CTL_MOUSEENABLE].active = 1;
-    }
-
-    CtlMenu[CTL_MOUSESENS].active = mouseenabled;
-
-
-    DrawMenu (&CtlItems, CtlMenu);
-
-
-    x = CTL_X + CtlItems.indent - 24;
-    y = CTL_Y + 3;
-    if (mouseenabled)
-        VWB_DrawPic (x, y, C_SELECTEDPIC);
-    else
-        VWB_DrawPic (x, y, C_NOTSELECTEDPIC);
-
-    y = CTL_Y + 29;
-    if (joystickenabled)
-        VWB_DrawPic (x, y, C_SELECTEDPIC);
-    else
-        VWB_DrawPic (x, y, C_NOTSELECTEDPIC);
-
-    //
-    // PICK FIRST AVAILABLE SPOT
-    //
-    if (CtlItems.curpos < 0 || !CtlMenu[CtlItems.curpos].active)
-    {
-        for (i = 0; i < CtlItems.amount; i++)
-        {
-            if (CtlMenu[i].active)
-            {
-                CtlItems.curpos = i;
-                break;
-            }
-        }
-    }
-
-    DrawMenuGun (&CtlItems);
-    VW_UpdateScreen ();
-}
-
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -2098,7 +1812,7 @@ int8_t order[4] = { RUN, OPEN, FIRE, STRAFE };
 
 
 int
-CustomControls (int)
+CP_CustomControls (int)
 {
     int which;
 
@@ -2109,18 +1823,10 @@ CustomControls (int)
         switch (which)
         {
             case 0:
-                DefineMouseBtns ();
-                DrawCustMouse (1);
-                break;
-            case 3:
-                DefineJoyBtns ();
-                DrawCustJoy (0);
-                break;
-            case 6:
                 DefineKeyBtns ();
                 DrawCustKeybd (0);
                 break;
-            case 8:
+            case 2:
                 DefineKeyMove ();
                 DrawCustKeys (0);
         }
@@ -2135,37 +1841,13 @@ CustomControls (int)
 
 ////////////////////////
 //
-// DEFINE THE MOUSE BUTTONS
-//
-void
-DefineMouseBtns (void)
-{
-    CustomCtrls mouseallowed = { 0, 1, 1, 1 };
-    EnterCtrlData (2, &mouseallowed, DrawCustMouse, PrintCustMouse, MOUSE);
-}
-
-
-////////////////////////
-//
-// DEFINE THE JOYSTICK BUTTONS
-//
-void
-DefineJoyBtns (void)
-{
-    CustomCtrls joyallowed = { 1, 1, 1, 1 };
-    EnterCtrlData (5, &joyallowed, DrawCustJoy, PrintCustJoy, JOYSTICK);
-}
-
-
-////////////////////////
-//
 // DEFINE THE KEYBOARD BUTTONS
 //
 void
 DefineKeyBtns (void)
 {
     CustomCtrls keyallowed = { 1, 1, 1, 1 };
-    EnterCtrlData (8, &keyallowed, DrawCustKeybd, PrintCustKeybd, KEYBOARDBTNS);
+    EnterCtrlData (2, &keyallowed, DrawCustKeybd, PrintCustKeybd, KEYBOARDBTNS);
 }
 
 
@@ -2177,7 +1859,7 @@ void
 DefineKeyMove (void)
 {
     CustomCtrls keyallowed = { 1, 1, 1, 1 };
-    EnterCtrlData (10, &keyallowed, DrawCustKeys, PrintCustKeys, KEYBOARDMOVE);
+    EnterCtrlData (4, &keyallowed, DrawCustKeys, PrintCustKeys, KEYBOARDMOVE);
 }
 
 
@@ -2234,13 +1916,6 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
         SDL_Delay(5);
         ReadAnyControl (&ci);
 
-        if (type == MOUSE || type == JOYSTICK)
-            if (IN_KeyDown (sc_Enter) || IN_KeyDown (sc_Control) || IN_KeyDown (sc_Alt))
-            {
-                IN_ClearKeysDown ();
-                ci.button0 = ci.button1 = false;
-            }
-
         //
         // CHANGE BUTTON VALUE?
         //
@@ -2284,63 +1959,6 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                 //
                 switch (type)
                 {
-                    case MOUSE:
-                        button = IN_MouseButtons();
-                        switch (button)
-                        {
-                            case 1:
-                                result = 1;
-                                break;
-                            case 2:
-                                result = 2;
-                                break;
-                            case 4:
-                                result = 3;
-                                break;
-                        }
-
-                        if (result)
-                        {
-                            for (int z = 0; z < 4; z++)
-                                if (order[which] == buttonmouse[z])
-                                {
-                                    buttonmouse[z] = bt_nobutton;
-                                    break;
-                                }
-
-                            buttonmouse[result - 1] = order[which];
-                            picked = 1;
-                            SD_PlaySound (SHOOTDOORSND);
-                        }
-                        break;
-
-                    case JOYSTICK:
-                        if (ci.button0)
-                            result = 1;
-                        else if (ci.button1)
-                            result = 2;
-                        else if (ci.button2)
-                            result = 3;
-                        else if (ci.button3)
-                            result = 4;
-
-                        if (result)
-                        {
-                            for (int z = 0; z < 4; z++)
-                            {
-                                if (order[which] == buttonjoy[z])
-                                {
-                                    buttonjoy[z] = bt_nobutton;
-                                    break;
-                                }
-                            }
-
-                            buttonjoy[result - 1] = order[which];
-                            picked = 1;
-                            SD_PlaySound (SHOOTDOORSND);
-                        }
-                        break;
-
                     case KEYBOARDBTNS:
                         if (LastScan && LastScan != sc_Escape)
                         {
@@ -2365,7 +1983,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                 //
                 // EXIT INPUT?
                 //
-                if (IN_KeyDown (sc_Escape) || type != JOYSTICK && ci.button1)
+                if (IN_KeyDown (sc_Escape))
                 {
                     picked = 1;
                     SD_PlaySound (ESCPRESSEDSND);
@@ -2454,15 +2072,9 @@ FixupCustom (int w)
     switch (w)
     {
         case 0:
-            DrawCustMouse (1);
-            break;
-        case 3:
-            DrawCustJoy (1);
-            break;
-        case 6:
             DrawCustKeybd (1);
             break;
-        case 8:
+        case 2:
             DrawCustKeys (1);
     }
 
@@ -2484,15 +2096,9 @@ FixupCustom (int w)
             switch (lastwhich)
             {
                 case 0:
-                    DrawCustMouse (0);
-                    break;
-                case 3:
-                    DrawCustJoy (0);
-                    break;
-                case 6:
                     DrawCustKeybd (0);
                     break;
-                case 8:
+                case 2:
                     DrawCustKeys (0);
             }
     }
@@ -2517,11 +2123,9 @@ DrawCustomScreen (void)
 
     PrintX = CST_START;
     PrintY = CST_Y + 26;
-    DrawCustMouse (0);
 
     PrintX = CST_START;
     US_Print ("\n\n\n");
-    DrawCustJoy (0);
 
     PrintX = CST_START;
     US_Print ("\n\n\n");
@@ -2538,95 +2142,16 @@ DrawCustomScreen (void)
     DrawStripes (10);
     VWB_DrawPic (80, 0, C_CUSTOMIZEPIC);
 
-    //
-    // MOUSE
-    //
-    SETFONTCOLOR (READCOLOR, BKGDCOLOR);
-    WindowX = 0;
-    WindowW = 320;
-
-#ifndef SPEAR
-    PrintY = CST_Y;
-    US_CPrint ("Mouse\n");
-#else
-    PrintY = CST_Y + 13;
-    VWB_DrawPic (128, 48, C_MOUSEPIC);
-#endif
-
-    SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
-#ifdef SPANISH
-    PrintX = CST_START - 16;
-    US_Print (STR_CRUN);
-    PrintX = CST_START - 16 + CST_SPC * 1;
-    US_Print (STR_COPEN);
-    PrintX = CST_START - 16 + CST_SPC * 2;
-    US_Print (STR_CFIRE);
-    PrintX = CST_START - 16 + CST_SPC * 3;
-    US_Print (STR_CSTRAFE "\n");
-#else
-    PrintX = CST_START;
-    US_Print (STR_CRUN);
-    PrintX = CST_START + CST_SPC * 1;
-    US_Print (STR_COPEN);
-    PrintX = CST_START + CST_SPC * 2;
-    US_Print (STR_CFIRE);
-    PrintX = CST_START + CST_SPC * 3;
-    US_Print (STR_CSTRAFE "\n");
-#endif
-
-    DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
-    DrawCustMouse (0);
-    US_Print ("\n");
-
-
-    //
-    // JOYSTICK/PAD
-    //
-#ifndef SPEAR
-    SETFONTCOLOR (READCOLOR, BKGDCOLOR);
-    US_CPrint ("Joystick/Gravis GamePad\n");
-#else
-    PrintY += 13;
-    VWB_DrawPic (40, 88, C_JOYSTICKPIC);
-#endif
-
-#ifdef SPEAR
-    VWB_DrawPic (112, 120, C_KEYBOARDPIC);
-#endif
-
-    SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
-#ifdef SPANISH
-    PrintX = CST_START - 16;
-    US_Print (STR_CRUN);
-    PrintX = CST_START - 16 + CST_SPC * 1;
-    US_Print (STR_COPEN);
-    PrintX = CST_START - 16 + CST_SPC * 2;
-    US_Print (STR_CFIRE);
-    PrintX = CST_START - 16 + CST_SPC * 3;
-    US_Print (STR_CSTRAFE "\n");
-#else
-    PrintX = CST_START;
-    US_Print (STR_CRUN);
-    PrintX = CST_START + CST_SPC * 1;
-    US_Print (STR_COPEN);
-    PrintX = CST_START + CST_SPC * 2;
-    US_Print (STR_CFIRE);
-    PrintX = CST_START + CST_SPC * 3;
-    US_Print (STR_CSTRAFE "\n");
-#endif
-    DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
-    DrawCustJoy (0);
-    US_Print ("\n");
-
 
     //
     // KEYBOARD
     //
 #ifndef SPEAR
+    PrintY = CST_Y;
     SETFONTCOLOR (READCOLOR, BKGDCOLOR);
     US_CPrint ("Keyboard\n");
 #else
-    PrintY += 13;
+    PrintY = CST_Y + 13;
 #endif
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
 #ifdef SPANISH
@@ -2697,82 +2222,6 @@ DrawCustomScreen (void)
 
 
 void
-PrintCustMouse (int i)
-{
-    int j;
-
-    for (j = 0; j < 4; j++)
-        if (order[i] == buttonmouse[j])
-        {
-            PrintX = CST_START + CST_SPC * i;
-            US_Print (mbarray[j]);
-            break;
-        }
-}
-
-void
-DrawCustMouse (int hilight)
-{
-    int i, color;
-
-
-    color = TEXTCOLOR;
-    if (hilight)
-        color = HIGHLIGHT;
-    SETFONTCOLOR (color, BKGDCOLOR);
-
-    if (!mouseenabled)
-    {
-        SETFONTCOLOR (DEACTIVE, BKGDCOLOR);
-        CusMenu[0].active = 0;
-    }
-    else
-        CusMenu[0].active = 1;
-
-    PrintY = CST_Y + 13 * 2;
-    for (i = 0; i < 4; i++)
-        PrintCustMouse (i);
-}
-
-void
-PrintCustJoy (int i)
-{
-    for (int j = 0; j < 4; j++)
-    {
-        if (order[i] == buttonjoy[j])
-        {
-            PrintX = CST_START + CST_SPC * i;
-            US_Print (mbarray[j]);
-            break;
-        }
-    }
-}
-
-void
-DrawCustJoy (int hilight)
-{
-    int i, color;
-
-    color = TEXTCOLOR;
-    if (hilight)
-        color = HIGHLIGHT;
-    SETFONTCOLOR (color, BKGDCOLOR);
-
-    if (!joystickenabled)
-    {
-        SETFONTCOLOR (DEACTIVE, BKGDCOLOR);
-        CusMenu[3].active = 0;
-    }
-    else
-        CusMenu[3].active = 1;
-
-    PrintY = CST_Y + 13 * 5;
-    for (i = 0; i < 4; i++)
-        PrintCustJoy (i);
-}
-
-
-void
 PrintCustKeybd (int i)
 {
     PrintX = CST_START + CST_SPC * i;
@@ -2790,7 +2239,7 @@ DrawCustKeybd (int hilight)
         color = HIGHLIGHT;
     SETFONTCOLOR (color, BKGDCOLOR);
 
-    PrintY = CST_Y + 13 * 8;
+    PrintY = CST_Y + 13 * 2;
     for (i = 0; i < 4; i++)
         PrintCustKeybd (i);
 }
@@ -2813,7 +2262,7 @@ DrawCustKeys (int hilight)
         color = HIGHLIGHT;
     SETFONTCOLOR (color, BKGDCOLOR);
 
-    PrintY = CST_Y + 13 * 10;
+    PrintY = CST_Y + 13 * 4;
     for (i = 0; i < 4; i++)
         PrintCustKeys (i);
 }
@@ -3036,11 +2485,6 @@ IntroScreen (void)
     //
     // FILL BOXES
     //
-    if (MousePresent)
-        VWB_Bar (164, 82, 12, 2, FILLCOLOR);
-
-    if (IN_JoyPresent())
-        VWB_Bar (164, 105, 12, 2, FILLCOLOR);
 
     if (AdLibPresent && !SoundBlasterPresent)
         VWB_Bar (164, 128, 12, 2, FILLCOLOR);
@@ -3154,12 +2598,6 @@ SetupControlPanel (void)
         CA_LoadAllSounds ();
     else
         MainMenu[savegame].active = 1;
-
-    //
-    // CENTER MOUSE
-    //
-    if(IN_IsInputGrabbed())
-        IN_CenterMouse();
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -3610,85 +3048,13 @@ WaitKeyUp (void)
 
 ////////////////////////////////////////////////////////////////////
 //
-// READ KEYBOARD, JOYSTICK AND MOUSE FOR INPUT
+// READ KEYBOARD FOR INPUT
 //
 ////////////////////////////////////////////////////////////////////
 void
 ReadAnyControl (ControlInfo * ci)
 {
-    int mouseactive = 0;
-
     IN_ReadControl (0, ci);
-
-    if (mouseenabled && IN_IsInputGrabbed())
-    {
-        int mousex, mousey, buttons;
-        buttons = SDL_GetMouseState(&mousex, &mousey);
-        int middlePressed = buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE);
-        int rightPressed = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
-        buttons &= ~(SDL_BUTTON(SDL_BUTTON_MIDDLE) | SDL_BUTTON(SDL_BUTTON_RIGHT));
-        if(middlePressed) buttons |= 1 << 2;
-        if(rightPressed) buttons |= 1 << 1;
-
-        if(mousey - CENTERY < -SENSITIVE)
-        {
-            ci->dir = dir_North;
-            mouseactive = 1;
-        }
-        else if(mousey - CENTERY > SENSITIVE)
-        {
-            ci->dir = dir_South;
-            mouseactive = 1;
-        }
-
-        if(mousex - CENTERX < -SENSITIVE)
-        {
-            ci->dir = dir_West;
-            mouseactive = 1;
-        }
-        else if(mousex - CENTERX > SENSITIVE)
-        {
-            ci->dir = dir_East;
-            mouseactive = 1;
-        }
-
-        if(mouseactive)
-            IN_CenterMouse();
-
-        if (buttons)
-        {
-            ci->button0 = buttons & 1;
-            ci->button1 = buttons & 2;
-            ci->button2 = buttons & 4;
-            ci->button3 = false;
-            mouseactive = 1;
-        }
-    }
-
-    if (joystickenabled && !mouseactive)
-    {
-        int jx, jy, jb;
-
-        IN_GetJoyDelta (&jx, &jy);
-        if (jy < -SENSITIVE)
-            ci->dir = dir_North;
-        else if (jy > SENSITIVE)
-            ci->dir = dir_South;
-
-        if (jx < -SENSITIVE)
-            ci->dir = dir_West;
-        else if (jx > SENSITIVE)
-            ci->dir = dir_East;
-
-        jb = IN_JoyButtons ();
-        if (jb)
-        {
-            ci->button0 = jb & 1;
-            ci->button1 = jb & 2;
-            ci->button2 = jb & 4;
-            ci->button3 = jb & 8;
-        }
-    }
 }
 
 

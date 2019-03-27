@@ -155,8 +155,6 @@ void SetTextColor(CP_itemtype *items,int hlight);
 void DrawMenuGun(CP_iteminfo *iteminfo);
 void DrawStripes(int y);
 
-void DefineMouseBtns(void);
-void DefineJoyBtns(void);
 void DefineKeyBtns(void);
 void DefineKeyMove(void);
 void EnterCtrlData(int index,CustomCtrls *cust,void (*DrawRtn)(int),void (*PrintRtn)(int),int type);
@@ -167,16 +165,11 @@ void DrawLoadSaveScreen(int loadsave);
 void DrawNewEpisode(void);
 void DrawNewGame(void);
 void DrawChangeView(int view);
-void DrawMouseSens(void);
 void DrawCtlScreen(void);
 void DrawCustomScreen(void);
 void DrawLSAction(int which);
-void DrawCustMouse(int hilight);
-void DrawCustJoy(int hilight);
 void DrawCustKeybd(int hilight);
 void DrawCustKeys(int hilight);
-void PrintCustMouse(int i);
-void PrintCustJoy(int i);
 void PrintCustKeybd(int i);
 void PrintCustKeys(int i);
 
@@ -189,22 +182,20 @@ int CP_NewGame(int);
 int CP_Sound(int);
 int  CP_LoadGame(int quick);
 int  CP_SaveGame(int quick);
-int CP_Control(int);
 int CP_ChangeView(int);
 int CP_ExitOptions(int);
 int CP_Quit(int);
 int CP_ViewScores(int);
 int  CP_EndGame(int);
 int  CP_CheckQuick(ScanCode scancode);
-int CustomControls(int);
-int MouseSensitivity(int);
+int CP_CustomControls(int);
 
 void CheckForEpisodes(void);
 
 void FreeMusic(void);
 
 
-enum {MOUSE,JOYSTICK,KEYBOARDBTNS,KEYBOARDMOVE};        // FOR INPUT TYPES
+enum {KEYBOARDBTNS,KEYBOARDMOVE};        // FOR INPUT TYPES
 
 enum menuitems
 {

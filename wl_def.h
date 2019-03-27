@@ -876,7 +876,6 @@ extern  fixed    scale;
 
 extern  int      dirangle[9];
 
-extern  int      mouseadjustment;
 extern  int      shootdelta;
 extern  unsigned screenofs;
 
@@ -892,8 +891,6 @@ extern  boolean  param_debugmode;
 extern  boolean  param_nowait;
 extern  int      param_difficulty;
 extern  int      param_tedlevel;
-extern  int      param_joystickindex;
-extern  int      param_joystickhat;
 extern  int      param_samplerate;
 extern  int      param_audiobuffer;
 extern  int      param_mission;
@@ -965,8 +962,6 @@ void UpdateSoundLoc(void);
 #define BASETURN                35
 #define RUNTURN                 70
 
-#define JOYSCALE                2
-
 extern  byte            tilemap[MAPSIZE][MAPSIZE];      // wall values only
 extern  byte            spotvis[MAPSIZE][MAPSIZE];
 extern  objtype         *actorat[MAPSIZE][MAPSIZE];
@@ -999,11 +994,8 @@ extern  memptr      demobuffer;
 //
 // control info
 //
-extern  boolean     mouseenabled,joystickenabled;
 extern  int         dirscan[4];
 extern  int         buttonscan[NUMBUTTONS];
-extern  int         buttonmouse[4];
-extern  int         buttonjoy[32];
 
 void    InitActorList (void);
 void    GetNewActor (void);

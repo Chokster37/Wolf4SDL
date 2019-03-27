@@ -34,11 +34,6 @@ Main features:
       or similar filtering, so the graphics are NOT blurred but
       pixelated just as we love it.
 
- - Fully playable with only a game controller:
-      Wolf4SDL can be played completely without a keyboard. At least two
-      buttons are required (shoot/YES and open door/NO), but five or more
-      are recommended (run, strafe, ESC).
-
 Additional features:
 --------------------
 
@@ -83,9 +78,6 @@ according data files version as the differences are hardcoded into the binary!
 On Windows SDL.dll and SDL_mixer.dll must also be copied into this directory.
 They are also available at http://www.chaos-software.de.vu
 
-If you play in windowed mode (--windowed parameter), press SCROLLLOCK or F12
-to grab the mouse. Press it again to release the mouse.
-
 
 Usage:
 ------
@@ -98,7 +90,7 @@ Wolf4SDL supports the following command line options:
  --normal               Sets the difficulty to normal for tedlevel
  --hard                 Sets the difficulty to hard for tedlevel
  --nowait               Skips intro screens
- --windowed[-mouse]     Starts the game in a window [and grabs mouse]
+ --windowed             Starts the game in a window
  --res <width> <height> Sets the screen resolution
                         (must be multiple of 320x200)
  --bits <b>             Sets the screen color depth
@@ -109,8 +101,6 @@ Wolf4SDL supports the following command line options:
  --extravbls <vbls>     Sets a delay after each frame, which may help to
                         reduce flickering (SDL does not support vsync...)
                         (unit is currently 8 ms, default: 0)
- --joystick <index>     Use the index-th joystick if available
- --joystickhat <index>  Enables movement with the given coolie hat
  --samplerate <rate>    Sets the sound sample rate (given in Hz)
  --audiobuffer <size>   Sets the size of the audio buffer (-> sound latency)
                         (given in bytes)

@@ -671,12 +671,6 @@ void SetupGameLevel (void)
                 tilemap[x][y] = (byte) tile;
                 actorat[x][y] = (objtype *)(uintptr_t) tile;
             }
-            else
-            {
-                // area floor
-                tilemap[x][y] = 0;
-                actorat[x][y] = 0;
-            }
         }
     }
 

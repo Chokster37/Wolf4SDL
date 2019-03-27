@@ -29,13 +29,6 @@
 */
 
 
-//
-// configuration variables
-//
-boolean MousePresent;
-boolean forcegrabmouse;
-
-
 // 	Global variables
 volatile boolean    Keyboard[SDLK_LAST];
 volatile boolean	Paused;
@@ -56,11 +49,6 @@ static KeyboardDef KbdDefs = {
     sc_PgDn                 // downright
 };
 
-static SDL_Joystick *Joystick;
-int JoyNumButtons;
-static int JoyNumHats;
-
-static bool GrabInput = false;
 static bool NeedRestore = false;
 
 /*
@@ -118,125 +106,6 @@ static	Direction	DirTable[] =		// Quick lookup for total direction
 };
 
 
-///////////////////////////////////////////////////////////////////////////
-//
-//	INL_GetMouseButtons() - Gets the status of the mouse buttons from the
-//		mouse driver
-//
-///////////////////////////////////////////////////////////////////////////
-static int
-INL_GetMouseButtons(void)
-{
-    int buttons = SDL_GetMouseState(NULL, NULL);
-    int middlePressed = buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE);
-    int rightPressed = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
-    buttons &= ~(SDL_BUTTON(SDL_BUTTON_MIDDLE) | SDL_BUTTON(SDL_BUTTON_RIGHT));
-    if(middlePressed) buttons |= 1 << 2;
-    if(rightPressed) buttons |= 1 << 1;
-
-    return buttons;
-}
-
-///////////////////////////////////////////////////////////////////////////
-//
-//	IN_GetJoyDelta() - Returns the relative movement of the specified
-//		joystick (from +/-127)
-//
-///////////////////////////////////////////////////////////////////////////
-void IN_GetJoyDelta(int *dx,int *dy)
-{
-    if(!Joystick)
-    {
-        *dx = *dy = 0;
-        return;
-    }
-
-    SDL_JoystickUpdate();
-#ifdef _arch_dreamcast
-    int x = 0;
-    int y = 0;
-#else
-    int x = SDL_JoystickGetAxis(Joystick, 0) >> 8;
-    int y = SDL_JoystickGetAxis(Joystick, 1) >> 8;
-#endif
-
-    if(param_joystickhat != -1)
-    {
-        uint8_t hatState = SDL_JoystickGetHat(Joystick, param_joystickhat);
-        if(hatState & SDL_HAT_RIGHT)
-            x += 127;
-        else if(hatState & SDL_HAT_LEFT)
-            x -= 127;
-        if(hatState & SDL_HAT_DOWN)
-            y += 127;
-        else if(hatState & SDL_HAT_UP)
-            y -= 127;
-
-        if(x < -128) x = -128;
-        else if(x > 127) x = 127;
-
-        if(y < -128) y = -128;
-        else if(y > 127) y = 127;
-    }
-
-    *dx = x;
-    *dy = y;
-}
-
-///////////////////////////////////////////////////////////////////////////
-//
-//	IN_GetJoyFineDelta() - Returns the relative movement of the specified
-//		joystick without dividing the results by 256 (from +/-127)
-//
-///////////////////////////////////////////////////////////////////////////
-void IN_GetJoyFineDelta(int *dx, int *dy)
-{
-    if(!Joystick)
-    {
-        *dx = 0;
-        *dy = 0;
-        return;
-    }
-
-    SDL_JoystickUpdate();
-    int x = SDL_JoystickGetAxis(Joystick, 0);
-    int y = SDL_JoystickGetAxis(Joystick, 1);
-
-    if(x < -128) x = -128;
-    else if(x > 127) x = 127;
-
-    if(y < -128) y = -128;
-    else if(y > 127) y = 127;
-
-    *dx = x;
-    *dy = y;
-}
-
-/*
-===================
-=
-= IN_JoyButtons
-=
-===================
-*/
-
-int IN_JoyButtons()
-{
-    if(!Joystick) return 0;
-
-    SDL_JoystickUpdate();
-
-    int res = 0;
-    for(int i = 0; i < JoyNumButtons && i < 32; i++)
-        res |= SDL_JoystickGetButton(Joystick, i) << i;
-    return res;
-}
-
-boolean IN_JoyPresent()
-{
-    return Joystick != NULL;
-}
-
 static void processEvent(SDL_Event *event)
 {
     switch (event->type)
@@ -248,13 +117,6 @@ static void processEvent(SDL_Event *event)
         // check for keypresses
         case SDL_KEYDOWN:
         {
-            if(event->key.keysym.sym==SDLK_SCROLLOCK || event->key.keysym.sym==SDLK_F12)
-            {
-                GrabInput = !GrabInput;
-                SDL_WM_GrabInput(GrabInput ? SDL_GRAB_ON : SDL_GRAB_OFF);
-                return;
-            }
-
             LastScan = event->key.keysym.sym;
             SDLMod mod = SDL_GetModState();
             if(Keyboard[sc_Alt])
@@ -345,16 +207,6 @@ static void processEvent(SDL_Event *event)
                 else NeedRestore = true;
             }
         }
-
-#if defined(GP2X)
-        case SDL_JOYBUTTONDOWN:
-            GP2X_ButtonDown(event->jbutton.button);
-            break;
-
-        case SDL_JOYBUTTONUP:
-            GP2X_ButtonUp(event->jbutton.button);
-            break;
-#endif
     }
 }
 
@@ -393,36 +245,6 @@ IN_Startup(void)
 
     IN_ClearKeysDown();
 
-    if(param_joystickindex >= 0 && param_joystickindex < SDL_NumJoysticks())
-    {
-        Joystick = SDL_JoystickOpen(param_joystickindex);
-        if(Joystick)
-        {
-            JoyNumButtons = SDL_JoystickNumButtons(Joystick);
-            if(JoyNumButtons > 32) JoyNumButtons = 32;      // only up to 32 buttons are supported
-            JoyNumHats = SDL_JoystickNumHats(Joystick);
-            if(param_joystickhat < -1 || param_joystickhat >= JoyNumHats)
-                Quit("The joystickhat param must be between 0 and %i!", JoyNumHats - 1);
-        }
-    }
-
-    SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
-
-    if(fullscreen || forcegrabmouse)
-    {
-        GrabInput = true;
-        SDL_WM_GrabInput(SDL_GRAB_ON);
-    }
-
-    // I didn't find a way to ask libSDL whether a mouse is present, yet...
-#if defined(GP2X)
-    MousePresent = false;
-#elif defined(_arch_dreamcast)
-    MousePresent = DC_MousePresent();
-#else
-    MousePresent = true;
-#endif
-
     IN_Started = true;
 }
 
@@ -436,9 +258,6 @@ IN_Shutdown(void)
 {
 	if (!IN_Started)
 		return;
-
-    if(Joystick)
-        SDL_JoystickClose(Joystick);
 
 	IN_Started = false;
 }
@@ -565,15 +384,6 @@ void IN_StartAck(void)
 //
 	IN_ClearKeysDown();
 	memset(btnstate, 0, sizeof(btnstate));
-
-	int buttons = IN_JoyButtons() << 4;
-
-	if(MousePresent)
-		buttons |= IN_MouseButtons();
-
-	for(int i = 0; i < NUMBUTTONS; i++, buttons >>= 1)
-		if(buttons & 1)
-			btnstate[i] = true;
 }
 
 
@@ -585,35 +395,6 @@ boolean IN_CheckAck (void)
 //
 	if(LastScan)
 		return true;
-
-	int buttons = IN_JoyButtons() << 4;
-
-	if(MousePresent)
-		buttons |= IN_MouseButtons();
-
-	for(int i = 0; i < NUMBUTTONS; i++, buttons >>= 1)
-	{
-		if(buttons & 1)
-		{
-			if(!btnstate[i])
-            {
-                // Wait until button has been released
-                do
-                {
-                    IN_WaitAndProcessEvents();
-                    buttons = IN_JoyButtons() << 4;
-
-                    if(MousePresent)
-                        buttons |= IN_MouseButtons();
-                }
-                while(buttons & (1 << i));
-
-				return true;
-            }
-		}
-		else
-			btnstate[i] = false;
-	}
 
 	return false;
 }
@@ -634,9 +415,7 @@ void IN_Ack (void)
 ///////////////////////////////////////////////////////////////////////////
 //
 //	IN_UserInput() - Waits for the specified delay time (in ticks) or the
-//		user pressing a key or a mouse button. If the clear flag is set, it
-//		then either clears the key or waits for the user to let the mouse
-//		button up.
+//		user pressing a key. If the clear flag is set, it then clears the key.
 //
 ///////////////////////////////////////////////////////////////////////////
 boolean IN_UserInput(longword delay)
@@ -655,29 +434,3 @@ boolean IN_UserInput(longword delay)
 	return(false);
 }
 
-//===========================================================================
-
-/*
-===================
-=
-= IN_MouseButtons
-=
-===================
-*/
-int IN_MouseButtons (void)
-{
-	if (MousePresent)
-		return INL_GetMouseButtons();
-	else
-		return 0;
-}
-
-bool IN_IsInputGrabbed()
-{
-    return GrabInput;
-}
-
-void IN_CenterMouse()
-{
-    SDL_WarpMouse(screenWidth / 2, screenHeight / 2);
-}

@@ -11,9 +11,6 @@
 =============================================================================
 */
 
-#define MAXMOUSETURN    10
-
-
 #define MOVESCALE       150l
 #define BACKMOVESCALE   100l
 #define ANGLESCALE      20
@@ -106,15 +103,6 @@ void CheckWeaponChange (void)
 
     if (!gamestate.ammo)            // must use knife with no ammo
         return;
-
-#ifdef _arch_dreamcast
-    int joyx, joyy;
-    IN_GetJoyFineDelta (&joyx, &joyy);
-    if(joyx < -64)
-        buttonstate[bt_prevweapon] = true;
-    else if(joyx > 64)
-        buttonstate[bt_nextweapon] = true;
-#endif
 
     if(buttonstate[bt_nextweapon] && !buttonheld[bt_nextweapon])
     {

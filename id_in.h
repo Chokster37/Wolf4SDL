@@ -97,10 +97,7 @@ typedef	enum		{
 					} Demo;
 typedef	enum		{
 						ctrl_Keyboard,
-						ctrl_Keyboard1 = ctrl_Keyboard,ctrl_Keyboard2,
-						ctrl_Joystick,
-						ctrl_Joystick1 = ctrl_Joystick,ctrl_Joystick2,
-						ctrl_Mouse
+						ctrl_Keyboard1 = ctrl_Keyboard,ctrl_Keyboard2
 					} ControlType;
 typedef	enum		{
 						motion_Left = -1,motion_Up = -1,
@@ -127,22 +124,12 @@ typedef	struct		{
 									left,				right,
 									downleft,	down,	downright;
 					} KeyboardDef;
-typedef	struct		{
-						word		joyMinX,joyMinY,
-									threshMinX,threshMinY,
-									threshMaxX,threshMaxY,
-									joyMaxX,joyMaxY,
-									joyMultXL,joyMultYL,
-									joyMultXH,joyMultYH;
-					} JoystickDef;
+
 // Global variables
 extern  volatile boolean    Keyboard[];
-extern           boolean    MousePresent;
 extern  volatile boolean    Paused;
 extern  volatile char       LastASCII;
 extern  volatile ScanCode   LastScan;
-extern           int        JoyNumButtons;
-extern           boolean    forcegrabmouse;
 
 
 // Function prototypes
@@ -154,31 +141,17 @@ extern           boolean    forcegrabmouse;
 extern	void		IN_Startup(void),IN_Shutdown(void);
 extern	void		IN_ClearKeysDown(void);
 extern	void		IN_ReadControl(int,ControlInfo *);
-extern	void		IN_GetJoyAbs(word joy,word *xp,word *yp);
-extern	void		IN_SetupJoy(word joy,word minx,word maxx,
-								word miny,word maxy);
 extern	void		IN_StopDemo(void),IN_FreeDemoBuffer(void),
 					IN_Ack(void);
 extern	boolean		IN_UserInput(longword delay);
 extern	char		IN_WaitForASCII(void);
 extern	ScanCode	IN_WaitForKey(void);
-extern	word		IN_GetJoyButtonsDB(word joy);
 extern	const char *IN_GetScanName(ScanCode);
 
 void    IN_WaitAndProcessEvents();
 void    IN_ProcessEvents();
 
-int     IN_MouseButtons (void);
-
-boolean IN_JoyPresent();
-void    IN_SetJoyCurrent(int joyIndex);
-int     IN_JoyButtons (void);
-void    IN_GetJoyDelta(int *dx,int *dy);
-void    IN_GetJoyFineDelta(int *dx, int *dy);
-
 void    IN_StartAck(void);
 boolean IN_CheckAck (void);
-bool    IN_IsInputGrabbed();
-void    IN_CenterMouse();
 
 #endif

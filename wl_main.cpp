@@ -71,7 +71,6 @@ void    Quit (const char *error,...);
 
 boolean startgame;
 boolean loadedgame;
-int     mouseadjustment;
 
 char    configdir[256] = "";
 char    configname[13] = "config.";
@@ -83,18 +82,14 @@ boolean param_debugmode = false;
 boolean param_nowait = false;
 int     param_difficulty = 1;           // default is "normal"
 int     param_tedlevel = -1;            // default is not to start a level
-int     param_joystickindex = 0;
 
 #if defined(_arch_dreamcast)
-int     param_joystickhat = 0;
 int     param_samplerate = 11025;       // higher samplerates result in "out of memory"
 int     param_audiobuffer = 4096 / (44100 / param_samplerate);
 #elif defined(GP2X_940)
-int     param_joystickhat = -1;
 int     param_samplerate = 11025;       // higher samplerates result in "out of memory"
 int     param_audiobuffer = 128;
 #else
-int     param_joystickhat = -1;
 int     param_samplerate = 44100;
 int     param_audiobuffer = 2048 / (44100 / param_samplerate);
 #endif
@@ -145,7 +140,7 @@ void ReadConfig(void)
         //
         word tmp;
         read(file,&tmp,sizeof(tmp));
-        if(tmp!=0xfefa)
+        if(tmp!=0xfefb)
         {
             close(file);
             goto noconfig;
@@ -156,22 +151,9 @@ void ReadConfig(void)
         read(file,&sm,sizeof(sm));
         read(file,&sds,sizeof(sds));
 
-        read(file,&mouseenabled,sizeof(mouseenabled));
-        read(file,&joystickenabled,sizeof(joystickenabled));
-        boolean dummyJoypadEnabled;
-        read(file,&dummyJoypadEnabled,sizeof(dummyJoypadEnabled));
-        boolean dummyJoystickProgressive;
-        read(file,&dummyJoystickProgressive,sizeof(dummyJoystickProgressive));
-        int dummyJoystickPort = 0;
-        read(file,&dummyJoystickPort,sizeof(dummyJoystickPort));
-
         read(file,dirscan,sizeof(dirscan));
         read(file,buttonscan,sizeof(buttonscan));
-        read(file,buttonmouse,sizeof(buttonmouse));
-        read(file,buttonjoy,sizeof(buttonjoy));
-
         read(file,&viewsize,sizeof(viewsize));
-        read(file,&mouseadjustment,sizeof(mouseadjustment));
 
         close(file);
 
@@ -186,18 +168,6 @@ void ReadConfig(void)
             sds = sds_Off;
 
         // make sure values are correct
-
-        if(mouseenabled) mouseenabled=true;
-        if(joystickenabled) joystickenabled=true;
-
-        if (!MousePresent)
-            mouseenabled = false;
-        if (!IN_JoyPresent())
-            joystickenabled = false;
-
-        if(mouseadjustment<0) mouseadjustment=0;
-        else if(mouseadjustment>9) mouseadjustment=9;
-
         if(viewsize<4) viewsize=4;
         else if(viewsize>19) viewsize=19;
 
@@ -226,14 +196,7 @@ noconfig:
         else
             sds = sds_Off;
 
-        if (MousePresent)
-            mouseenabled = true;
-
-        if (IN_JoyPresent())
-            joystickenabled = true;
-
         viewsize = 19;                          // start with a good size
-        mouseadjustment=5;
     }
 
     SD_SetMusicMode (sm);
@@ -265,7 +228,7 @@ void WriteConfig(void)
     const int file = open(configpath, O_CREAT | O_WRONLY | O_BINARY, 0644);
     if (file != -1)
     {
-        word tmp=0xfefa;
+        word tmp=0xfefb;
         write(file,&tmp,sizeof(tmp));
         write(file,Scores,sizeof(HighScore) * MaxScores);
 
@@ -273,22 +236,9 @@ void WriteConfig(void)
         write(file,&MusicMode,sizeof(MusicMode));
         write(file,&DigiMode,sizeof(DigiMode));
 
-        write(file,&mouseenabled,sizeof(mouseenabled));
-        write(file,&joystickenabled,sizeof(joystickenabled));
-        boolean dummyJoypadEnabled = false;
-        write(file,&dummyJoypadEnabled,sizeof(dummyJoypadEnabled));
-        boolean dummyJoystickProgressive = false;
-        write(file,&dummyJoystickProgressive,sizeof(dummyJoystickProgressive));
-        int dummyJoystickPort = 0;
-        write(file,&dummyJoystickPort,sizeof(dummyJoystickPort));
-
         write(file,dirscan,sizeof(dirscan));
         write(file,buttonscan,sizeof(buttonscan));
-        write(file,buttonmouse,sizeof(buttonmouse));
-        write(file,buttonjoy,sizeof(buttonjoy));
-
         write(file,&viewsize,sizeof(viewsize));
-        write(file,&mouseadjustment,sizeof(mouseadjustment));
 
         close(file);
     }
@@ -1195,22 +1145,12 @@ static void InitGame()
 #if defined _WIN32
     putenv("SDL_VIDEODRIVER=directx");
 #endif
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) < 0)
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
     {
         printf("Unable to init SDL: %s\n", SDL_GetError());
         exit(1);
     }
     atexit(SDL_Quit);
-
-    int numJoysticks = SDL_NumJoysticks();
-    if(param_joystickindex && (param_joystickindex < -1 || param_joystickindex >= numJoysticks))
-    {
-        if(!numJoysticks)
-            printf("No joysticks are available to SDL!\n");
-        else
-            printf("The joystick index must be between -1 and %i!\n", numJoysticks - 1);
-        exit(1);
-    }
 
 #if defined(GP2X_940)
     GP2X_MemoryInit();
@@ -1677,11 +1617,6 @@ void CheckParameters(int argc, char *argv[])
         }
         else IFARG("--windowed")
             fullscreen = false;
-        else IFARG("--windowed-mouse")
-        {
-            fullscreen = false;
-            forcegrabmouse = true;
-        }
         else IFARG("--res")
         {
             if(i + 2 >= argc)
@@ -1741,24 +1676,6 @@ void CheckParameters(int argc, char *argv[])
                     hasError = true;
                 }
             }
-        }
-        else IFARG("--joystick")
-        {
-            if(++i >= argc)
-            {
-                printf("The joystick option is missing the index argument!\n");
-                hasError = true;
-            }
-            else param_joystickindex = atoi(argv[i]);   // index is checked in InitGame
-        }
-        else IFARG("--joystickhat")
-        {
-            if(++i >= argc)
-            {
-                printf("The joystickhat option is missing the index argument!\n");
-                hasError = true;
-            }
-            else param_joystickhat = atoi(argv[i]);
         }
         else IFARG("--samplerate")
         {
@@ -1844,7 +1761,7 @@ void CheckParameters(int argc, char *argv[])
             " --normal               Sets the difficulty to normal for tedlevel\n"
             " --hard                 Sets the difficulty to hard for tedlevel\n"
             " --nowait               Skips intro screens\n"
-            " --windowed[-mouse]     Starts the game in a window [and grabs mouse]\n"
+            " --windowed             Starts the game in a window\n"
             " --res <width> <height> Sets the screen resolution\n"
             "                        (must be multiple of 320x200)\n"
             " --bits <b>             Sets the screen color depth\n"
@@ -1853,9 +1770,6 @@ void CheckParameters(int argc, char *argv[])
             " --nodblbuf             Don't use SDL's double buffering\n"
             " --extravbls <vbls>     Sets a delay after each frame, which may help to\n"
             "                        reduce flickering (unit is currently 8 ms, default: 0)\n"
-            " --joystick <index>     Use the index-th joystick if available\n"
-            "                        (-1 to disable joystick, default: 0)\n"
-            " --joystickhat <index>  Enables movement with the given coolie hat\n"
             " --samplerate <rate>    Sets the sound sample rate (given in Hz, default: %i)\n"
             " --audiobuffer <size>   Sets the size of the audio buffer (-> sound latency)\n"
             "                        (given in bytes, default: 2048 / (44100 / samplerate))\n"
