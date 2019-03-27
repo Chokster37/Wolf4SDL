@@ -31,7 +31,6 @@
 
 #endif
 
-#define DEBUGKEYS             // Comment this out to compile without the Tab debug keys
 #define ARTSEXTERN
 #define DEMOSEXTERN
 #define PLAYDEMOLIKEORIGINAL  // When playing or recording demos, several bug fixes do not take

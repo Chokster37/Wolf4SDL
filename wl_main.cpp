@@ -78,10 +78,7 @@ char    configname[13] = "config.";
 //
 // Command line parameter variables
 //
-boolean param_debugmode = false;
 boolean param_nowait = false;
-int     param_difficulty = 1;           // default is "normal"
-int     param_tedlevel = -1;            // default is not to start a level
 int     param_samplerate = 44100;
 int     param_audiobuffer = 2048 / (44100 / param_samplerate);
 int     param_mission = 0;
@@ -487,7 +484,6 @@ boolean LoadTheGame(FILE *file,int x,int y)
 
     while (1)
     {
-        DiskFlopAnim(x,y);
         fread (&nullobj,sizeof(nullobj),1,file);
         if (nullobj.active == ac_badobject)
             break;
@@ -1159,7 +1155,7 @@ static void InitGame()
 #ifndef SPEAR
     if (mminfo.mainmem < 235000L)
 #else
-    if (mminfo.mainmem < 257000L && !MS_CheckParm("debugmode"))
+    if (mminfo.mainmem < 257000L)
 #endif
     {
         byte *screen;
@@ -1396,27 +1392,6 @@ static void DemoLoop()
     int LastDemo = 0;
 
 //
-// check for launch from ted
-//
-    if (param_tedlevel != -1)
-    {
-        param_nowait = true;
-        EnableEndGameMenuItem();
-        NewGame(param_difficulty,0);
-
-#ifndef SPEAR
-        gamestate.episode = param_tedlevel/10;
-        gamestate.mapon = param_tedlevel%10;
-#else
-        gamestate.episode = 0;
-        gamestate.mapon = param_tedlevel;
-#endif
-        GameLoop();
-        Quit (NULL);
-    }
-
-
-//
 // main game cycle
 //
 
@@ -1523,14 +1498,7 @@ static void DemoLoop()
 
         VW_FadeOut ();
 
-#ifdef DEBUGKEYS
-        if (Keyboard[sc_Tab] && param_debugmode)
-            RecordDemo ();
-        else
-            US_ControlPanel (0);
-#else
         US_ControlPanel (0);
-#endif
 
         if (startgame || loadedgame)
         {
@@ -1558,31 +1526,9 @@ void CheckParameters(int argc, char *argv[])
     for(int i = 1; i < argc; i++)
     {
         char *arg = argv[i];
-#ifndef SPEAR
-        IFARG("--goobers")
-#else
-        IFARG("--debugmode")
-#endif
-            param_debugmode = true;
-        else IFARG("--baby")
-            param_difficulty = 0;
-        else IFARG("--easy")
-            param_difficulty = 1;
-        else IFARG("--normal")
-            param_difficulty = 2;
-        else IFARG("--hard")
-            param_difficulty = 3;
-        else IFARG("--nowait")
+
+        IFARG("--nowait")
             param_nowait = true;
-        else IFARG("--tedlevel")
-        {
-            if(++i >= argc)
-            {
-                printf("The tedlevel option is missing the level argument!\n");
-                hasError = true;
-            }
-            else param_tedlevel = atoi(argv[i]);
-        }
         else IFARG("--windowed")
             fullscreen = false;
         else IFARG("--res")
@@ -1723,11 +1669,6 @@ void CheckParameters(int argc, char *argv[])
             "Usage: Wolf4SDL [options]\n"
             "Options:\n"
             " --help                 This help page\n"
-            " --tedlevel <level>     Starts the game in the given level\n"
-            " --baby                 Sets the difficulty to baby for tedlevel\n"
-            " --easy                 Sets the difficulty to easy for tedlevel\n"
-            " --normal               Sets the difficulty to normal for tedlevel\n"
-            " --hard                 Sets the difficulty to hard for tedlevel\n"
             " --nowait               Skips intro screens\n"
             " --windowed             Starts the game in a window\n"
             " --res <width> <height> Sets the screen resolution\n"

@@ -32,8 +32,7 @@ static int DebugOk;
 objtype objlist[MAXACTORS];
 objtype *newobj, *obj, *player, *lastobj, *objfreelist, *killerobj;
 
-boolean noclip, ammocheat;
-int godmode, singlestep, extravbls = 0;
+int extravbls = 0;
 
 byte tilemap[MAPSIZE][MAPSIZE]; // wall values only
 byte spotvis[MAPSIZE][MAPSIZE];
@@ -53,7 +52,7 @@ int viewsize;
 
 boolean buttonheld[NUMBUTTONS];
 
-boolean demorecord, demoplayback;
+boolean demoplayback;
 int8_t *demoptr, *lastdemoptr;
 memptr demobuffer;
 
@@ -291,7 +290,7 @@ void PollControls (void)
 //
 // get timing info for last frame
 //
-    if (demoplayback || demorecord)   // demo recording and playback needs to be constant
+    if (demoplayback)   // demo recording and playback needs to be constant
     {
         // wait up to DEMOTICS Wolf tics
         uint32_t curtime = SDL_GetTicks();
@@ -362,37 +361,6 @@ void PollControls (void)
         controly = max;
     else if (controly < min)
         controly = min;
-
-    if (demorecord)
-    {
-        //
-        // save info out to demo buffer
-        //
-        controlx /= (int) tics;
-        controly /= (int) tics;
-
-        buttonbits = 0;
-
-        // TODO: Support 32-bit buttonbits
-        for (i = NUMBUTTONS - 1; i >= 0; i--)
-        {
-            buttonbits <<= 1;
-            if (buttonstate[i])
-                buttonbits |= 1;
-        }
-
-        *demoptr++ = buttonbits;
-        *demoptr++ = controlx;
-        *demoptr++ = controly;
-
-        if (demoptr >= lastdemoptr - 8)
-            playstate = ex_completed;
-        else
-        {
-            controlx *= (int) tics;
-            controly *= (int) tics;
-        }
-    }
 }
 
 
@@ -436,146 +404,7 @@ void CheckKeys (void)
 
     scan = LastScan;
 
-
-#ifdef SPEAR
-    //
-    // SECRET CHEAT CODE: TAB-G-F10
-    //
-    if (Keyboard[sc_Tab] && Keyboard[sc_G] && Keyboard[sc_F10])
-    {
-        WindowH = 160;
-        if (godmode)
-        {
-            Message ("God mode OFF");
-            SD_PlaySound (NOBONUSSND);
-        }
-        else
-        {
-            Message ("God mode ON");
-            SD_PlaySound (ENDBONUS2SND);
-        }
-
-        IN_Ack ();
-        godmode ^= 1;
-        DrawPlayBorderSides ();
-        IN_ClearKeysDown ();
-        return;
-    }
-#endif
-
-
-    //
-    // SECRET CHEAT CODE: 'MLI'
-    //
-    if (Keyboard[sc_M] && Keyboard[sc_L] && Keyboard[sc_I])
-    {
-        gamestate.health = 100;
-        gamestate.ammo = 99;
-        gamestate.keys = 3;
-        gamestate.score = 0;
-        gamestate.TimeCount += 42000L;
-        GiveWeapon (wp_chaingun);
-        DrawWeapon ();
-        DrawHealth ();
-        DrawKeys ();
-        DrawAmmo ();
-        DrawScore ();
-
-        ClearMemory ();
-        CA_CacheGrChunk (STARTFONT + 1);
-        ClearSplitVWB ();
-
-        Message (STR_CHEATER1 "\n"
-                 STR_CHEATER2 "\n\n" STR_CHEATER3 "\n" STR_CHEATER4 "\n" STR_CHEATER5);
-
-        UNCACHEGRCHUNK (STARTFONT + 1);
-        IN_ClearKeysDown ();
-        IN_Ack ();
-
-        if (viewsize < 17)
-            DrawPlayBorder ();
-    }
-
-    //
-    // OPEN UP DEBUG KEYS
-    //
-#ifdef DEBUGKEYS
-    if (Keyboard[sc_BackSpace] && Keyboard[sc_LShift] && Keyboard[sc_Alt] && param_debugmode)
-    {
-        ClearMemory ();
-        CA_CacheGrChunk (STARTFONT + 1);
-        ClearSplitVWB ();
-
-        Message ("Debugging keys are\nnow available!");
-        UNCACHEGRCHUNK (STARTFONT + 1);
-        IN_ClearKeysDown ();
-        IN_Ack ();
-
-        DrawPlayBorderSides ();
-        DebugOk = 1;
-    }
-#endif
-
-    //
-    // TRYING THE KEEN CHEAT CODE!
-    //
-    if (Keyboard[sc_B] && Keyboard[sc_A] && Keyboard[sc_T])
-    {
-        ClearMemory ();
-        CA_CacheGrChunk (STARTFONT + 1);
-        ClearSplitVWB ();
-
-        Message ("Commander Keen is also\n"
-                 "available from Apogee, but\n"
-                 "then, you already know\n" "that - right, Cheatmeister?!");
-
-        UNCACHEGRCHUNK (STARTFONT + 1);
-        IN_ClearKeysDown ();
-        IN_Ack ();
-
-        if (viewsize < 18)
-            DrawPlayBorder ();
-    }
-
-//
-// pause key weirdness can't be checked as a scan code
-//
-    if(buttonstate[bt_pause]) Paused = true;
-    if(Paused)
-    {
-        StopMusic();
-        LatchDrawPic (20 - 4, 80 - 2 * 8, PAUSEDPIC);
-        VH_UpdateScreen();
-        IN_Ack ();
-        Paused = false;
-        StartMusic();
-        lasttimecount = GetTimeCount();
-        return;
-    }
-
-//
-// F1-F7/ESC to enter control panel
-//
-    if (
-#ifndef DEBCHECK
-           scan == sc_F10 ||
-#endif
-           scan == sc_F9 || scan == sc_F7 || scan == sc_F8)     // pop up quit dialog
-    {
-        short oldmapon = gamestate.mapon;
-        short oldepisode = gamestate.episode;
-        ClearMemory ();
-        ClearSplitVWB ();
-        US_ControlPanel (scan);
-
-        DrawPlayBorderSides ();
-
-        SETFONTCOLOR (0, 15);
-        IN_ClearKeysDown ();
-        return;
-    }
-
-    if ((scan >= sc_F1 && scan <= sc_F9) || scan == sc_Escape || buttonstate[bt_esc])
+    if (scan == sc_Escape || buttonstate[bt_esc])
     {
         StopMusic ();
         ClearMemory ();
@@ -594,23 +423,6 @@ void CheckKeys (void)
         lasttimecount = GetTimeCount();
         return;
     }
-
-//
-// TAB-? debug keys
-//
-#ifdef DEBUGKEYS
-    if (Keyboard[sc_Tab] && DebugOk)
-    {
-        CA_CacheGrChunk (STARTFONT);
-        fontnumber = 0;
-        SETFONTCOLOR (0, 15);
-        if (DebugKeys ())
-            DrawPlayBorder ();       // dont let the blue borders flash
-
-        lasttimecount = GetTimeCount();
-        return;
-    }
-#endif
 }
 
 
@@ -1122,7 +934,6 @@ void PlayLoop (void)
 {
     playstate = ex_stillplaying;
     lasttimecount = GetTimeCount();
-    frameon = 0;
     anglefrac = 0;
     facecount = 0;
     funnyticount = 0;
@@ -1172,14 +983,6 @@ void PlayLoop (void)
 
         CheckKeys ();
 
-//
-// debug aids
-//
-        if (singlestep)
-        {
-            VW_WaitVBL (singlestep);
-            lasttimecount = GetTimeCount();
-        }
         if (extravbls)
             VW_WaitVBL (extravbls);
 

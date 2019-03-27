@@ -180,8 +180,8 @@ void FixupCustom(int w);
 
 int CP_NewGame(int);
 int CP_Sound(int);
-int  CP_LoadGame(int quick);
-int  CP_SaveGame(int quick);
+int  CP_LoadGame(int);
+int  CP_SaveGame(int);
 int CP_ChangeView(int);
 int CP_ExitOptions(int);
 int CP_Quit(int);

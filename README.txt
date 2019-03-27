@@ -84,11 +84,6 @@ Usage:
 
 Wolf4SDL supports the following command line options:
  --help                 This help page
- --tedlevel <level>     Starts the game in the given level
- --baby                 Sets the difficulty to baby for tedlevel
- --easy                 Sets the difficulty to easy for tedlevel
- --normal               Sets the difficulty to normal for tedlevel
- --hard                 Sets the difficulty to hard for tedlevel
  --nowait               Skips intro screens
  --windowed             Starts the game in a window
  --res <width> <height> Sets the screen resolution

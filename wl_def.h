@@ -746,7 +746,7 @@ typedef struct objstruct
 
     short       viewx;
     word        viewheight;
-    fixed       transx,transy;      // in global coord
+    fixed       transx;      // in global coord
 
     short       angle;
     short       hitpoints;
@@ -876,10 +876,7 @@ extern  char     configname[13];
 //
 // Command line parameter variables
 //
-extern  boolean  param_debugmode;
 extern  boolean  param_nowait;
-extern  int      param_difficulty;
-extern  int      param_tedlevel;
 extern  int      param_samplerate;
 extern  int      param_audiobuffer;
 extern  int      param_mission;
@@ -918,7 +915,6 @@ void    DrawPlayScreen (void);
 void    DrawPlayBorderSides (void);
 
 void    PlayDemo (int demonumber);
-void    RecordDemo (void);
 
 
 #ifdef SPEAR
@@ -974,9 +970,8 @@ extern  statobj_t   *laststatobj;
 extern  objtype     *newobj,*killerobj;
 extern  doorobj_t   doorobjlist[MAXDOORS];
 extern  doorobj_t   *lastdoorobj;
-extern  int         godmode;
 
-extern  boolean     demorecord,demoplayback;
+extern  boolean     demoplayback;
 extern  int8_t      *demoptr, *lastdemoptr;
 extern  memptr      demobuffer;
 
@@ -1008,8 +1003,7 @@ extern  int32_t     funnyticount;           // FOR FUNNY BJ FACE
 
 extern  objtype     *objfreelist;     // *obj,*player,*lastobj,
 
-extern  boolean     noclip,ammocheat;
-extern  int         singlestep, extravbls;
+extern  int         extravbls;
 
 /*
 =============================================================================
@@ -1058,11 +1052,10 @@ extern  fixed *costable;
 extern  int *wallheight;
 extern  word horizwall[],vertwall[];
 extern  int32_t    lasttimecount;
-extern  int32_t    frameon;
 
 extern  unsigned screenloc[3];
 
-extern  boolean fizzlein, fpscounter;
+extern  boolean fizzlein;
 
 extern  fixed   viewx,viewy;                    // the focal point
 extern  fixed   viewsin,viewcos;
@@ -1304,8 +1297,8 @@ static inline fixed FixedMul(fixed a, fixed b)
 }
 
 #ifdef PLAYDEMOLIKEORIGINAL
-    #define DEMOCHOOSE_ORIG_SDL(orig, sdl) ((demorecord || demoplayback) ? (orig) : (sdl))
-    #define DEMOCOND_ORIG                  (demorecord || demoplayback)
+    #define DEMOCHOOSE_ORIG_SDL(orig, sdl) ((demoplayback) ? (orig) : (sdl))
+    #define DEMOCOND_ORIG                  (demoplayback)
     #define DEMOIF_SDL                     if(DEMOCOND_SDL)
 #else
     #define DEMOCHOOSE_ORIG_SDL(orig, sdl) (sdl)

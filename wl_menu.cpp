@@ -242,7 +242,6 @@ int EpisodeSelect[6] = { 1 };
 static int SaveGamesAvail[10];
 static int StartGame;
 static int SoundStatus = 1;
-static int pickquick;
 static char SaveGameNames[10][32];
 static char SaveName[13] = "savegam?.";
 
@@ -367,60 +366,11 @@ US_ControlPanel (ScanCode scancode)
     int which;
 
     if (ingame)
-    {
-        if (CP_CheckQuick (scancode))
-            return;
         StartCPMusic (MENUSONG);
-    }
     else
         StartCPMusic (MENUSONG);
 
     SetupControlPanel ();
-
-    //
-    // F-KEYS FROM WITHIN GAME
-    //
-    switch (scancode)
-    {
-        case sc_F1:
-#ifdef SPEAR
-            BossKey ();
-#else
-#ifdef GOODTIMES
-            BossKey ();
-#else
-            HelpScreens ();
-#endif
-#endif
-            goto finishup;
-
-        case sc_F2:
-            CP_SaveGame (0);
-            goto finishup;
-
-        case sc_F3:
-            CP_LoadGame (0);
-            goto finishup;
-
-        case sc_F4:
-            CP_Sound (0);
-            goto finishup;
-
-        case sc_F5:
-            CP_ChangeView (0);
-            goto finishup;
-
-        case sc_F6:
-            CP_CustomControls (0);
-            goto finishup;
-
-        finishup:
-            CleanupControlPanel ();
-#ifdef SPEAR
-            UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-#endif
-            return;
-    }
 
 #ifdef SPEAR
     CacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
@@ -640,269 +590,6 @@ CP_ReadThis (int)
 #endif
 
 
-#ifdef GOODTIMES
-////////////////////////////////////////////////////////////////////
-//
-// BOSS KEY
-//
-////////////////////////////////////////////////////////////////////
-void
-BossKey (void)
-{
-#ifdef NOTYET
-    byte palette1[256][3];
-    SD_MusicOff ();
-/*       _AX = 3;
-        geninterrupt(0x10); */
-    _asm
-    {
-    mov eax, 3 int 0x10}
-    puts ("C>");
-    SetTextCursor (2, 0);
-//      while (!Keyboard[sc_Escape])
-    IN_Ack ();
-    IN_ClearKeysDown ();
-
-    SD_MusicOn ();
-    VL_SetVGAPlaneMode ();
-    for (int i = 0; i < 768; i++)
-        palette1[0][i] = 0;
-
-    VL_SetPalette (&palette1[0][0]);
-    LoadLatchMem ();
-#endif
-}
-#else
-#ifdef SPEAR
-void
-BossKey (void)
-{
-#ifdef NOTYET
-    byte palette1[256][3];
-    SD_MusicOff ();
-/*       _AX = 3;
-        geninterrupt(0x10); */
-    _asm
-    {
-    mov eax, 3 int 0x10}
-    puts ("C>");
-    SetTextCursor (2, 0);
-//      while (!Keyboard[sc_Escape])
-    IN_Ack ();
-    IN_ClearKeysDown ();
-
-    SD_MusicOn ();
-    VL_SetVGAPlaneMode ();
-    for (int i = 0; i < 768; i++)
-        palette1[0][i] = 0;
-
-    VL_SetPalette (&palette1[0][0]);
-    LoadLatchMem ();
-#endif
-}
-#endif
-#endif
-
-
-////////////////////////////////////////////////////////////////////
-//
-// CHECK QUICK-KEYS & QUIT (WHILE IN A GAME)
-//
-////////////////////////////////////////////////////////////////////
-int
-CP_CheckQuick (ScanCode scancode)
-{
-    switch (scancode)
-    {
-        //
-        // END GAME
-        //
-        case sc_F7:
-            CA_CacheGrChunk (STARTFONT + 1);
-
-            WindowH = 160;
-#ifdef JAPAN
-            if (GetYorN (7, 8, C_JAPQUITPIC))
-#else
-            if (Confirm (ENDGAMESTR))
-#endif
-            {
-                playstate = ex_died;
-                killerobj = NULL;
-                pickquick = gamestate.lives = 0;
-            }
-
-            WindowH = 200;
-            fontnumber = 0;
-            MainMenu[savegame].active = 0;
-            return 1;
-
-        //
-        // QUICKSAVE
-        //
-        case sc_F8:
-            if (SaveGamesAvail[LSItems.curpos] && pickquick)
-            {
-                CA_CacheGrChunk (STARTFONT + 1);
-                fontnumber = 1;
-                Message (STR_SAVING "...");
-                CP_SaveGame (1);
-                fontnumber = 0;
-            }
-            else
-            {
-#ifndef SPEAR
-                CA_CacheGrChunk (STARTFONT + 1);
-                CA_CacheGrChunk (C_CURSOR1PIC);
-                CA_CacheGrChunk (C_CURSOR2PIC);
-                CA_CacheGrChunk (C_DISKLOADING1PIC);
-                CA_CacheGrChunk (C_DISKLOADING2PIC);
-                CA_CacheGrChunk (C_SAVEGAMEPIC);
-                CA_CacheGrChunk (C_MOUSELBACKPIC);
-#else
-                CacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
-                CA_CacheGrChunk (STARTFONT + 1);
-                CA_CacheGrChunk (C_CURSOR1PIC);
-#endif
-
-                VW_FadeOut ();
-                if(screenHeight % 200 != 0)
-                    VL_ClearScreen(0);
-
-                StartCPMusic (MENUSONG);
-                pickquick = CP_SaveGame (0);
-
-                SETFONTCOLOR (0, 15);
-                IN_ClearKeysDown ();
-                VW_FadeOut();
-                DrawPlayScreen ();
-
-                if (!startgame && !loadedgame)
-                    StartMusic ();
-
-                if (loadedgame)
-                    playstate = ex_abort;
-                lasttimecount = GetTimeCount ();
-
-#ifndef SPEAR
-                UNCACHEGRCHUNK (C_CURSOR1PIC);
-                UNCACHEGRCHUNK (C_CURSOR2PIC);
-                UNCACHEGRCHUNK (C_DISKLOADING1PIC);
-                UNCACHEGRCHUNK (C_DISKLOADING2PIC);
-                UNCACHEGRCHUNK (C_SAVEGAMEPIC);
-                UNCACHEGRCHUNK (C_MOUSELBACKPIC);
-#else
-                UnCacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
-#endif
-            }
-            return 1;
-
-        //
-        // QUICKLOAD
-        //
-        case sc_F9:
-            if (SaveGamesAvail[LSItems.curpos] && pickquick)
-            {
-                char string[100] = STR_LGC;
-
-
-                CA_CacheGrChunk (STARTFONT + 1);
-                fontnumber = 1;
-
-                strcat (string, SaveGameNames[LSItems.curpos]);
-                strcat (string, "\"?");
-
-                if (Confirm (string))
-                    CP_LoadGame (1);
-
-                fontnumber = 0;
-            }
-            else
-            {
-#ifndef SPEAR
-                CA_CacheGrChunk (STARTFONT + 1);
-                CA_CacheGrChunk (C_CURSOR1PIC);
-                CA_CacheGrChunk (C_CURSOR2PIC);
-                CA_CacheGrChunk (C_DISKLOADING1PIC);
-                CA_CacheGrChunk (C_DISKLOADING2PIC);
-                CA_CacheGrChunk (C_LOADGAMEPIC);
-                CA_CacheGrChunk (C_MOUSELBACKPIC);
-#else
-                CA_CacheGrChunk (C_CURSOR1PIC);
-                CA_CacheGrChunk (STARTFONT + 1);
-                CacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
-#endif
-
-                VW_FadeOut ();
-                if(screenHeight % 200 != 0)
-                    VL_ClearScreen(0);
-
-                StartCPMusic (MENUSONG);
-                pickquick = CP_LoadGame (0);
-
-                SETFONTCOLOR (0, 15);
-                IN_ClearKeysDown ();
-                VW_FadeOut();
-                DrawPlayScreen ();
-
-                if (!startgame && !loadedgame)
-                    StartMusic ();
-
-                if (loadedgame)
-                    playstate = ex_abort;
-
-                lasttimecount = GetTimeCount ();
-
-#ifndef SPEAR
-                UNCACHEGRCHUNK (C_CURSOR1PIC);
-                UNCACHEGRCHUNK (C_CURSOR2PIC);
-                UNCACHEGRCHUNK (C_DISKLOADING1PIC);
-                UNCACHEGRCHUNK (C_DISKLOADING2PIC);
-                UNCACHEGRCHUNK (C_LOADGAMEPIC);
-                UNCACHEGRCHUNK (C_MOUSELBACKPIC);
-#else
-                UnCacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
-#endif
-            }
-            return 1;
-
-        //
-        // QUIT
-        //
-        case sc_F10:
-            CA_CacheGrChunk (STARTFONT + 1);
-
-            WindowX = WindowY = 0;
-            WindowW = 320;
-            WindowH = 160;
-#ifdef JAPAN
-            if (GetYorN (7, 8, C_QUITMSGPIC))
-#else
-#ifdef SPANISH
-            if (Confirm (ENDGAMESTR))
-#else
-            if (Confirm (endStrings[US_RndT () & 0x7 + (US_RndT () & 1)]))
-#endif
-#endif
-            {
-                VW_UpdateScreen ();
-                SD_MusicOff ();
-                SD_StopSound ();
-                MenuFadeOut ();
-
-                Quit (NULL);
-            }
-
-            DrawPlayBorder ();
-            WindowH = 200;
-            fontnumber = 0;
-            return 1;
-    }
-
-    return 0;
-}
-
-
 ////////////////////////////////////////////////////////////////////
 //
 // END THE CURRENT GAME
@@ -920,7 +607,7 @@ CP_EndGame (int)
     DrawMainMenu();
     if(!res) return 0;
 
-    pickquick = gamestate.lives = 0;
+    gamestate.lives = 0;
     playstate = ex_died;
     killerobj = NULL;
 
@@ -1084,8 +771,6 @@ CP_NewGame (int)
     MainMenu[readthis].active = 1;
 #endif
 #endif
-
-    pickquick = 0;
 
 #ifdef SPEAR
     UnCacheLump (NEWGAME_LUMP_START, NEWGAME_LUMP_END);
@@ -1457,7 +1142,7 @@ DrawLSAction (int which)
 //
 ////////////////////////////////////////////////////////////////////
 int
-CP_LoadGame (int quick)
+CP_LoadGame (int)
 {
     FILE *file;
     int which, exit = 0;
@@ -1465,43 +1150,6 @@ CP_LoadGame (int quick)
     char loadpath[300];
 
     strcpy (name, SaveName);
-
-    //
-    // QUICKLOAD?
-    //
-    if (quick)
-    {
-        which = LSItems.curpos;
-
-        if (SaveGamesAvail[which])
-        {
-            name[7] = which + '0';
-
-            if(configdir[0])
-                snprintf(loadpath, sizeof(loadpath), "%s/%s", configdir, name);
-            else
-                strcpy(loadpath, name);
-
-            file = fopen (loadpath, "rb");
-            fseek (file, 32, SEEK_SET);
-            loadedgame = true;
-            LoadTheGame (file, 0, 0);
-            loadedgame = false;
-            fclose (file);
-
-            DrawFace ();
-            DrawHealth ();
-            DrawLives ();
-            DrawLevel ();
-            DrawAmmo ();
-            DrawKeys ();
-            DrawWeapon ();
-            DrawScore ();
-            StartMusic ();
-            return 1;
-        }
-    }
-
 
 #ifdef SPEAR
     UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
@@ -1641,7 +1289,7 @@ PrintLSEntry (int w, int color)
 //
 ////////////////////////////////////////////////////////////////////
 int
-CP_SaveGame (int quick)
+CP_SaveGame (int)
 {
     int which, exit = 0;
     FILE *file;
@@ -1650,37 +1298,6 @@ CP_SaveGame (int quick)
     char input[32];
 
     strcpy (name, SaveName);
-
-    //
-    // QUICKSAVE?
-    //
-    if (quick)
-    {
-        which = LSItems.curpos;
-
-        if (SaveGamesAvail[which])
-        {
-            name[7] = which + '0';
-
-            if(configdir[0])
-                snprintf(savepath, sizeof(savepath), "%s/%s", configdir, name);
-            else
-                strcpy(savepath, name);
-
-            unlink (savepath);
-            file = fopen (savepath, "wb");
-
-            strcpy (input, &SaveGameNames[which][0]);
-
-            fwrite (input, 1, 32, file);
-            fseek (file, 32, SEEK_SET);
-            SaveTheGame (file, 0, 0);
-            fclose (file);
-
-            return 1;
-        }
-    }
-
 
 #ifdef SPEAR
     UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);

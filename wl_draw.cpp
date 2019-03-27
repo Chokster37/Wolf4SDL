@@ -28,10 +28,6 @@ static byte *vbuf = NULL;
 unsigned vbufPitch = 0;
 
 int32_t    lasttimecount;
-int32_t    frameon;
-boolean fpscounter;
-
-int fps_frames=0, fps_time=0, fps=0;
 
 int *wallheight;
 int min_wallheight;
@@ -151,7 +147,6 @@ void TransformActor (objtype *ob)
 // calculate perspective ratio
 //
     ob->transx = nx;
-    ob->transy = ny;
 
     if (nx<MINDIST)                 // too close, don't overflow the divide
     {
@@ -995,7 +990,7 @@ void DrawPlayerWeapon (void)
         SimpleScaleShape(viewwidth/2,shapenum,viewheight+1);
     }
 
-    if (demorecord || demoplayback)
+    if (demoplayback)
         SimpleScaleShape(viewwidth/2,SPR_DEMO,viewheight+1);
 }
 
@@ -1559,33 +1554,7 @@ void    ThreeDRefresh (void)
     }
     else
     {
-#ifndef REMDEBUG
-        if (fpscounter)
-        {
-            fontnumber = 0;
-            SETFONTCOLOR(7,127);
-            PrintX=4; PrintY=1;
-            VWB_Bar(0,0,50,10,bordercol);
-            US_PrintSigned(fps);
-            US_Print(" fps");
-        }
-#endif
         SDL_BlitSurface(screenBuffer, NULL, screen, NULL);
         SDL_Flip(screen);
     }
-
-#ifndef REMDEBUG
-    if (fpscounter)
-    {
-        fps_frames++;
-        fps_time+=tics;
-
-        if(fps_time>35)
-        {
-            fps_time-=35;
-            fps=fps_frames<<1;
-            fps_frames=0;
-        }
-    }
-#endif
 }

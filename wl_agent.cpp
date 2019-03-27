@@ -285,12 +285,7 @@ void DrawFace (void)
         StatusDrawFace(GOTGATLINGPIC);
     else if (gamestate.health)
     {
-#ifdef SPEAR
-        if (godmode)
-            StatusDrawFace(GODMODEFACE1PIC+gamestate.faceframe);
-        else
-#endif
-            StatusDrawFace(FACE1APIC+3*((100-gamestate.health)/16)+gamestate.faceframe);
+        StatusDrawFace(FACE1APIC+3*((100-gamestate.health)/16)+gamestate.faceframe);
     }
     else
     {
@@ -319,7 +314,7 @@ int facetimes = 0;
 void UpdateFace (void)
 {
     // don't make demo depend on sound playback
-    if(demoplayback || demorecord)
+    if(demoplayback)
     {
         if(facetimes > 0)
         {
@@ -412,8 +407,7 @@ void TakeDamage (int points,objtype *attacker)
     if (gamestate.difficulty==gd_baby)
         points>>=2;
 
-    if (!godmode)
-        gamestate.health -= points;
+    gamestate.health -= points;
 
     if (gamestate.health<=0)
     {
@@ -422,9 +416,6 @@ void TakeDamage (int points,objtype *attacker)
         killerobj = attacker;
     }
 
-    if (godmode != 2)
-        StartDamageFlash (points);
-
     DrawHealth ();
     DrawFace ();
 
@@ -432,7 +423,7 @@ void TakeDamage (int points,objtype *attacker)
     // MAKE BJ'S EYES BUG IF MAJOR DAMAGE!
     //
 #ifdef SPEAR
-    if (points > 30 && gamestate.health!=0 && !godmode)
+    if (points > 30 && gamestate.health!=0)
     {
         StatusDrawFace(BJOUCHPIC);
         facecount = 0;
@@ -918,13 +909,6 @@ void ClipMove (objtype *ob, int32_t xmove, int32_t ymove)
     ob->y = basey+ymove;
     if (TryMove (ob))
         return;
-
-#ifndef REMDEBUG
-    if (noclip && ob->x > 2*TILEGLOBAL && ob->y > 2*TILEGLOBAL
-        && ob->x < (((int32_t)(mapwidth-1))<<TILESHIFT)
-        && ob->y < (((int32_t)(mapheight-1))<<TILESHIFT) )
-        return;         // walk through walls
-#endif
 
     if (!SD_SoundPlaying())
         SD_PlaySound (HITWALLSND);
@@ -1415,8 +1399,7 @@ void    T_Attack (objtype *ob)
                     break;
                 }
                 GunAttack (ob);
-                if (!ammocheat)
-                    gamestate.ammo--;
+                gamestate.ammo--;
                 DrawAmmo ();
                 break;
 
