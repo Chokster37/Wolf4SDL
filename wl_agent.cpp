@@ -268,10 +268,6 @@ void StatusDrawPic (unsigned x, unsigned y, unsigned picnum)
 void StatusDrawFace(unsigned picnum)
 {
     StatusDrawPic(17, 4, picnum);
-
-#ifdef _arch_dreamcast
-    DC_StatusDrawLCD(picnum);
-#endif
 }
 
 

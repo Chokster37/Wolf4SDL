@@ -82,18 +82,8 @@ boolean param_debugmode = false;
 boolean param_nowait = false;
 int     param_difficulty = 1;           // default is "normal"
 int     param_tedlevel = -1;            // default is not to start a level
-
-#if defined(_arch_dreamcast)
-int     param_samplerate = 11025;       // higher samplerates result in "out of memory"
-int     param_audiobuffer = 4096 / (44100 / param_samplerate);
-#elif defined(GP2X_940)
-int     param_samplerate = 11025;       // higher samplerates result in "out of memory"
-int     param_audiobuffer = 128;
-#else
 int     param_samplerate = 44100;
 int     param_audiobuffer = 2048 / (44100 / param_samplerate);
-#endif
-
 int     param_mission = 0;
 boolean param_goodtimes = false;
 boolean param_ignorenumchunks = false;
@@ -122,10 +112,6 @@ void ReadConfig(void)
     SDSMode sds;
 
     char configpath[300];
-
-#ifdef _arch_dreamcast
-    DC_LoadFromVMU(configname);
-#endif
 
     if(configdir[0])
         snprintf(configpath, sizeof(configpath), "%s/%s", configdir, configname);
@@ -216,10 +202,6 @@ void WriteConfig(void)
 {
     char configpath[300];
 
-#ifdef _arch_dreamcast
-    fs_unlink(configname);
-#endif
-
     if(configdir[0])
         snprintf(configpath, sizeof(configpath), "%s/%s", configdir, configname);
     else
@@ -242,9 +224,6 @@ void WriteConfig(void)
 
         close(file);
     }
-#ifdef _arch_dreamcast
-    DC_SaveToVMU(configname, NULL);
-#endif
 }
 
 
@@ -624,9 +603,6 @@ void ShutdownId (void)
     IN_Shutdown ();
     VW_Shutdown ();
     CA_Shutdown ();
-#if defined(GP2X_940)
-    GP2X_Shutdown();
-#endif
 }
 
 
@@ -1152,10 +1128,6 @@ static void InitGame()
     }
     atexit(SDL_Quit);
 
-#if defined(GP2X_940)
-    GP2X_MemoryInit();
-#endif
-
     SignonScreen ();
 
 #if defined _WIN32
@@ -1229,10 +1201,6 @@ static void InitGame()
 // draw intro screen stuff
 //
     IntroScreen ();
-
-#ifdef _arch_dreamcast
-    //TODO: VMU Selection Screen
-#endif
 
 //
 // load in and lock down some basic chunks
@@ -1776,7 +1744,7 @@ void CheckParameters(int argc, char *argv[])
             " --ignorenumchunks      Ignores the number of chunks in VGAHEAD.*\n"
             "                        (may be useful for some broken mods)\n"
             " --configdir <dir>      Directory where config file and save games are stored\n"
-#if defined(_arch_dreamcast) || defined(_WIN32)
+#if defined(_WIN32)
             "                        (default: current directory)\n"
 #else
             "                        (default: $HOME/.wolf4sdl)\n"
@@ -1805,11 +1773,7 @@ void CheckParameters(int argc, char *argv[])
 
 int main (int argc, char *argv[])
 {
-#if defined(_arch_dreamcast)
-    DC_Init();
-#else
     CheckParameters(argc, argv);
-#endif
 
     CheckForEpisodes();
 

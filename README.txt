@@ -118,8 +118,8 @@ For Spear of Destiny the following additional options are available:
 Compiling from source code:
 ---------------------------
 
-The current version of the source code is available in the svn repository at:
-   svn://tron.homeunix.org:3690/wolf3d/trunk
+The current version of the source code is available in the git repository at:
+   https://github.com/Chokster37/Wolf4SDL
 
 The following ways of compiling the source code are supported:
  - Makefile (for Linux, BSD variants and MinGW/MSYS)
@@ -129,12 +129,10 @@ The following ways of compiling the source code are supported:
  - Code::Blocks 8.02 (Wolf4SDL.cbp)
  - Dev-C++ 5.0 Beta 9.2 (4.9.9.2) (Wolf4SDL.dev) (see README-devcpp.txt)
  - Xcode (for Mac OS X, macosx/Wolf4SDL.xcodeproj/project.pbxproj)
- - Special compiling for Dreamcast (see README-dc.txt)
- - Special compiling for GP2X (see README-GP2X.txt)
 
 To compile the source code you need the development libraries of
  - SDL (http://www.libsdl.org/download-1.2.php) and
- - SDL_mixer (http://www.libsdl.org/projects/SDL_mixer/)
+ - SDL_mixer (http://www.libsdl.org/projects/SDL_mixer/release-1.2.html)
 and have to adjust the include and library paths in the projects accordingly.
 
 Please note, that there is no official SDL_mixer development pack for MinGW,
@@ -172,8 +170,6 @@ Credits:
  - Many thanks to "Der Tron" for hosting the svn repository, making Wolf4SDL
    FreeBSD compatible, testing, bugfixing and cleaning up the code!
  - Thanks to Chris Chokan for his improvements on Wolf4GW (base of Wolf4SDL)
- - Thanks to Pickle for the GP2X support and help on 320x240 support
- - Thanks to fackue for the Dreamcast support
  - Thanks to Chris Ballinger for the Mac OS X support
  - Thanks to Xilinx, Inc. for providing a list of maximum-length LFSR counters
    used for higher resolutions of fizzle fade
