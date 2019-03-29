@@ -66,7 +66,6 @@ boolean buttonstate[NUMBUTTONS];
 //===========================================================================
 
 
-void CenterWindow (word w, word h);
 void InitObjList (void);
 void RemoveObj (objtype * gone);
 void PollControls (void);
@@ -82,8 +81,6 @@ void PlayLoop (void);
 =============================================================================
 */
 
-
-objtype dummyobj;
 
 //
 // LIST OF SONGS FOR EACH VERSION
@@ -365,24 +362,6 @@ void PollControls (void)
 
 
 
-//==========================================================================
-
-
-
-///////////////////////////////////////////////////////////////////////////
-//
-//      CenterWindow() - Generates a window of a given width & height in the
-//              middle of the screen
-//
-///////////////////////////////////////////////////////////////////////////
-#define MAXX    320
-#define MAXY    160
-
-void CenterWindow (word w, word h)
-{
-    US_DrawWindow (((MAXX / 8) - w) / 2, ((MAXY / 8) - h) / 2, w, h);
-}
-
 //===========================================================================
 
 
@@ -461,8 +440,6 @@ next element.
 =========================
 */
 
-int objcount;
-
 void InitActorList (void)
 {
     int i;
@@ -480,8 +457,6 @@ void InitActorList (void)
 
     objfreelist = &objlist[0];
     lastobj = NULL;
-
-    objcount = 0;
 
 //
 // give the player the first free spots
@@ -522,8 +497,6 @@ void GetNewActor (void)
 
     newobj->active = ac_no;
     lastobj = newobj;
-
-    objcount++;
 }
 
 //===========================================================================
@@ -564,8 +537,6 @@ void RemoveObj (objtype * gone)
 //
     gone->prev = objfreelist;
     objfreelist = gone;
-
-    objcount--;
 }
 
 /*
@@ -927,8 +898,9 @@ think:
 =
 ===================
 */
+#ifdef SPEAR
 int32_t funnyticount;
-
+#endif
 
 void PlayLoop (void)
 {
@@ -936,7 +908,9 @@ void PlayLoop (void)
     lasttimecount = GetTimeCount();
     anglefrac = 0;
     facecount = 0;
+#ifdef SPEAR
     funnyticount = 0;
+#endif
     memset (buttonstate, 0, sizeof (buttonstate));
     ClearPaletteShifts ();
 

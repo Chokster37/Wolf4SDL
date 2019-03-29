@@ -54,12 +54,12 @@ statetype   s_attack = {false,0,0,(statefunc) T_Attack,NULL,NULL};
 struct atkinf
 {
     int8_t    tics,attack,frame;              // attack is 1 for gun, 2 for knife
-} attackinfo[4][14] =
+} attackinfo[NUMWEAPONS][4] =
 {
     { {6,0,1},{6,2,2},{6,0,3},{6,-1,4} },
     { {6,0,1},{6,1,2},{6,0,3},{6,-1,4} },
     { {6,0,1},{6,1,2},{6,3,3},{6,-1,4} },
-    { {6,0,1},{6,1,2},{6,4,3},{6,-1,4} },
+    { {6,0,1},{6,1,2},{6,4,3},{6,-1,4} }
 };
 
 //===========================================================================
@@ -151,36 +151,10 @@ void CheckWeaponChange (void)
 
 void ControlMovement (objtype *ob)
 {
-    int32_t oldx,oldy;
     int     angle;
     int     angleunits;
 
     thrustspeed = 0;
-
-    oldx = player->x;
-    oldy = player->y;
-
-    if(buttonstate[bt_strafeleft])
-    {
-        angle = ob->angle + ANGLES/4;
-        if(angle >= ANGLES)
-            angle -= ANGLES;
-        if(buttonstate[bt_run])
-            Thrust(angle, RUNMOVE * MOVESCALE * tics);
-        else
-            Thrust(angle, BASEMOVE * MOVESCALE * tics);
-    }
-
-    if(buttonstate[bt_straferight])
-    {
-        angle = ob->angle - ANGLES/4;
-        if(angle < 0)
-            angle += ANGLES;
-        if(buttonstate[bt_run])
-            Thrust(angle, RUNMOVE * MOVESCALE * tics );
-        else
-            Thrust(angle, BASEMOVE * MOVESCALE * tics);
-    }
 
     //
     // side to side move
@@ -415,6 +389,8 @@ void TakeDamage (int points,objtype *attacker)
         playstate = ex_died;
         killerobj = attacker;
     }
+    
+    StartDamageFlash (points);
 
     DrawHealth ();
     DrawFace ();

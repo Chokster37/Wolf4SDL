@@ -20,7 +20,6 @@ typedef struct
 {
     short      picnum;
     wl_stat_t  type;
-    uint32_t   specialFlags;    // they are ORed to the statobj_t flags
 } statinfo_t;
 
 statinfo_t statinfo[] =
@@ -28,8 +27,8 @@ statinfo_t statinfo[] =
     {SPR_STAT_0},                           // puddle          spr1v
     {SPR_STAT_1,block},                     // Green Barrel    "
     {SPR_STAT_2,block},                     // Table/chairs    "
-    {SPR_STAT_3,block,FL_FULLBRIGHT},       // Floor lamp      "
-    {SPR_STAT_4,none,FL_FULLBRIGHT},        // Chandelier      "
+    {SPR_STAT_3,block},                     // Floor lamp      "
+    {SPR_STAT_4,none},                      // Chandelier      "
     {SPR_STAT_5,block},                     // Hanged man      "
     {SPR_STAT_6,bo_alpo},                   // Bad food        "
     {SPR_STAT_7,block},                     // Red pillar      "
@@ -42,7 +41,7 @@ statinfo_t statinfo[] =
     {SPR_STAT_11,block},                    // Potted plant    "
     {SPR_STAT_12,block},                    // Urn             "
     {SPR_STAT_13,block},                    // Bare table      "
-    {SPR_STAT_14,none,FL_FULLBRIGHT},       // Ceiling light   "
+    {SPR_STAT_14,none},                     // Ceiling light   "
     #ifndef SPEAR
     {SPR_STAT_15},                          // Kitchen stuff   "
     #else
@@ -74,7 +73,7 @@ statinfo_t statinfo[] =
     // NEW PAGE
     //
     {SPR_STAT_32,bo_crown},                 // crown           spr5v
-    {SPR_STAT_33,bo_fullheal,FL_FULLBRIGHT},// one up          "
+    {SPR_STAT_33,bo_fullheal},              // one up          "
     {SPR_STAT_34,bo_gibs},                  // gibs            "
     {SPR_STAT_35,block},                    // barrel          "
     {SPR_STAT_36,block},                    // well            "
@@ -181,8 +180,6 @@ void SpawnStatic (int tilex, int tiley, int type)
             break;
     }
 
-    laststatobj->flags |= statinfo[type].specialFlags;
-
     laststatobj++;
 
     if (laststatobj == &statobjlist[MAXSTATS])
@@ -241,7 +238,7 @@ void PlaceItemType (int itemtype, int tilex, int tiley)
     spot->tilex = tilex;
     spot->tiley = tiley;
     spot->visspot = &spotvis[tilex][tiley];
-    spot->flags = FL_BONUS | statinfo[type].specialFlags;
+    spot->flags = FL_BONUS;
     spot->itemnumber = statinfo[type].type;
 }
 

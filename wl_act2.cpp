@@ -38,9 +38,6 @@
 */
 
 
-dirtype dirtable[9] = {northwest,north,northeast,west,nodir,east,
-    southwest,south,southeast};
-
 short starthitpoints[4][NUMENEMIES] =
 //
 // BABY MODE

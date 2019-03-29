@@ -141,34 +141,6 @@ void CAL_GetGrChunkLength (int chunk)
     chunkcomplen = GRFILEPOS(chunk+1)-GRFILEPOS(chunk)-4;
 }
 
-
-/*
-==========================
-=
-= CA_WriteFile
-=
-= Writes a file from a memory buffer
-=
-==========================
-*/
-
-boolean CA_WriteFile (const char *filename, void *ptr, int32_t length)
-{
-    const int handle = open(filename, O_CREAT | O_WRONLY | O_BINARY, 0644);
-    if (handle == -1)
-        return false;
-
-    if (!write (handle,ptr,length))
-    {
-        close (handle);
-        return false;
-    }
-    close (handle);
-    return true;
-}
-
-
-
 /*
 ==========================
 =
@@ -329,60 +301,6 @@ void CAL_CarmackExpand (byte *source, word *dest, int length)
         }
     }
 }
-
-/*
-======================
-=
-= CA_RLEWcompress
-=
-======================
-*/
-
-int32_t CA_RLEWCompress (word *source, int32_t length, word *dest, word rlewtag)
-{
-    word value,count;
-    unsigned i;
-    word *start,*end;
-
-    start = dest;
-
-    end = source + (length+1)/2;
-
-    //
-    // compress it
-    //
-    do
-    {
-        count = 1;
-        value = *source++;
-        while (*source == value && source<end)
-        {
-            count++;
-            source++;
-        }
-        if (count>3 || value == rlewtag)
-        {
-            //
-            // send a tag / count / value string
-            //
-            *dest++ = rlewtag;
-            *dest++ = count;
-            *dest++ = value;
-        }
-        else
-        {
-            //
-            // send word without compressing
-            //
-            for (i=1;i<=count;i++)
-                *dest++ = value;
-        }
-
-    } while (source<end);
-
-    return (int32_t)(2*(dest-start));
-}
-
 
 /*
 ======================
@@ -867,24 +785,11 @@ void CAL_ExpandGrChunk (int chunk, int32_t *source)
     if (chunk >= STARTTILE8 && chunk < STARTEXTERNS)
     {
         //
-        // expanded sizes of tile8/16/32 are implicit
+        // expanded sizes of tile8 are implicit
         //
-
 #define BLOCK           64
-#define MASKBLOCK       128
 
-        if (chunk<STARTTILE8M)          // tile 8s are all in one chunk!
-            expanded = BLOCK*NUMTILE8;
-        else if (chunk<STARTTILE16)
-            expanded = MASKBLOCK*NUMTILE8M;
-        else if (chunk<STARTTILE16M)    // all other tiles are one/chunk
-            expanded = BLOCK*4;
-        else if (chunk<STARTTILE32)
-            expanded = MASKBLOCK*4;
-        else if (chunk<STARTTILE32M)
-            expanded = BLOCK*16;
-        else
-            expanded = MASKBLOCK*16;
+        expanded = BLOCK*NUMTILE8;
     }
     else
     {

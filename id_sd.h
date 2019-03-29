@@ -37,12 +37,6 @@ typedef struct
 #define ORIG_SOUNDCOMMON_SIZE 6
 
 //      PC Sound stuff
-#define pcTimer         0x42
-#define pcTAccess       0x43
-#define pcSpeaker       0x61
-
-#define pcSpkBits       3
-
 typedef struct
 {
     SoundCommon     common;
@@ -97,12 +91,6 @@ typedef struct
 
 typedef struct
 {
-    word    length;
-    word    values[1];
-} MusicGroup;
-
-typedef struct
-{
     int valid;
     fixed globalsoundx, globalsoundy;
 } globalsoundpos;
@@ -129,7 +117,6 @@ inline void Delay(int wolfticks)
 extern  void    SD_Startup(void),
                 SD_Shutdown(void);
 
-extern  int     SD_GetChannelForDigi(int which);
 extern  void    SD_PositionSound(int leftvol,int rightvol);
 extern  boolean SD_PlaySound(soundnames sound);
 extern  void    SD_SetPosition(int channel, int leftvol,int rightvol);

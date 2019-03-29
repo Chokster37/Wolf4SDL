@@ -123,16 +123,6 @@ void VH_UpdateScreen()
 }
 
 
-void VWB_DrawTile8 (int x, int y, int tile)
-{
-	LatchDrawChar(x,y,tile);
-}
-
-void VWB_DrawTile8M (int x, int y, int tile)
-{
-	VL_MemToScreen (((byte *)grsegs[STARTTILE8M])+tile*64,8,8,x,y);
-}
-
 void VWB_DrawPic (int x, int y, int chunknum)
 {
 	int	picnum = chunknum - STARTPICS;
@@ -161,14 +151,6 @@ void VWB_DrawPicScaledCoord (int scx, int scy, int chunknum)
 void VWB_Bar (int x, int y, int width, int height, int color)
 {
 	VW_Bar (x,y,width,height,color);
-}
-
-void VWB_Plot (int x, int y, int color)
-{
-    if(scaleFactor == 1)
-        VW_Plot(x,y,color);
-    else
-        VW_Bar(x, y, 1, 1, color);
 }
 
 void VWB_Hlin (int x1, int x2, int y, int color)

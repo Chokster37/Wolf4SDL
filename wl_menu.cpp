@@ -2995,7 +2995,6 @@ CheckForEpisodes (void)
 #endif
         strcat (configname, extension);
         strcat (SaveName, extension);
-        strcat (demoname, extension);
         EpisodeSelect[1] =
             EpisodeSelect[2] = EpisodeSelect[3] = EpisodeSelect[4] = EpisodeSelect[5] = 1;
     }
@@ -3103,13 +3102,6 @@ CheckForEpisodes (void)
 
     strcat (configname, extension);
     strcat (SaveName, extension);
-    strcat (demoname, extension);
 
-#ifndef SPEAR
-#ifndef GOODTIMES
-    strcat (helpfilename, extension);
-#endif
-    strcat (endfilename, extension);
-#endif
 #endif
 }

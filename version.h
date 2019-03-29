@@ -31,8 +31,6 @@
 
 #endif
 
-#define ARTSEXTERN
-#define DEMOSEXTERN
 #define PLAYDEMOLIKEORIGINAL  // When playing or recording demos, several bug fixes do not take
                               // effect to let the original demos work as in the original Wolf3D v1.4
                               // (actually better, as the second demo rarely worked)

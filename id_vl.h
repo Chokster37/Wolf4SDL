@@ -36,8 +36,6 @@ void VL_Shutdown (void);
 
 void VL_ConvertPalette(byte *srcpal, SDL_Color *destpal, int numColors);
 void VL_FillPalette (int red, int green, int blue);
-void VL_SetColor    (int color, int red, int green, int blue);
-void VL_GetColor    (int color, int *red, int *green, int *blue);
 void VL_SetPalette  (SDL_Color *palette, bool forceupdate);
 void VL_GetPalette  (SDL_Color *palette);
 void VL_FadeOut     (int start, int end, int red, int green, int blue, int steps);
@@ -47,7 +45,6 @@ byte *VL_LockSurface(SDL_Surface *surface);
 void VL_UnlockSurface(SDL_Surface *surface);
 
 byte VL_GetPixel        (int x, int y);
-void VL_Plot            (int x, int y, int color);
 void VL_Hlin            (unsigned x, unsigned y, unsigned width, int color);
 void VL_Vlin            (int x, int y, int height, int color);
 void VL_BarScaledCoord  (int scx, int scy, int scwidth, int scheight, int color);
@@ -62,21 +59,15 @@ void inline VL_ClearScreen(int color)
 }
 
 void VL_MungePic                (byte *source, unsigned width, unsigned height);
-void VL_DrawPicBare             (int x, int y, byte *pic, int width, int height);
 void VL_MemToLatch              (byte *source, int width, int height,
                                     SDL_Surface *destSurface, int x, int y);
-void VL_ScreenToScreen          (SDL_Surface *source, SDL_Surface *dest);
 void VL_MemToScreenScaledCoord  (byte *source, int width, int height, int scx, int scy);
-void VL_MemToScreenScaledCoord  (byte *source, int origwidth, int origheight, int srcx, int srcy,
-                                    int destx, int desty, int width, int height);
 
 void inline VL_MemToScreen (byte *source, int width, int height, int x, int y)
 {
     VL_MemToScreenScaledCoord(source, width, height,
         scaleFactor*x, scaleFactor*y);
 }
-
-void VL_MaskedToScreen (byte *source, int width, int height, int x, int y);
 
 void VL_LatchToScreenScaledCoord (SDL_Surface *source, int xsrc, int ysrc,
     int width, int height, int scxdest, int scydest);

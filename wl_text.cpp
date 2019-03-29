@@ -739,14 +739,10 @@ void ShowArticle (char *article)
 //===========================================================================
 
 #ifndef JAPAN
-#ifdef ARTSEXTERN
 int     endextern = T_ENDART1;
 #ifndef SPEAR
 int     helpextern = T_HELPART;
 #endif
-#endif
-char helpfilename[13] = "HELPART.",
-    endfilename[13] = "ENDART1.";
 #endif
 
 /*
@@ -761,9 +757,6 @@ void HelpScreens (void)
 {
     int     artnum;
     char    *text;
-#ifndef ARTSEXTERN
-    memptr  layout;
-#endif
 
 
 #ifdef JAPAN
@@ -772,22 +765,13 @@ void HelpScreens (void)
     FreeMusic ();
 #else
 
-#ifdef ARTSEXTERN
     artnum = helpextern;
     CA_CacheGrChunk (artnum);
     text = (char *)grsegs[artnum];
-#else
-    CA_LoadFile (helpfilename,&layout);
-    text = (char *)layout;
-#endif
 
     ShowArticle (text);
 
-#ifdef ARTSEXTERN
     UNCACHEGRCHUNK(artnum);
-#else
-    free(layout);
-#endif
 
     VW_FadeOut();
 
@@ -803,9 +787,6 @@ void EndText (void)
 {
     int     artnum;
     char    *text;
-#ifndef ARTSEXTERN
-    memptr  layout;
-#endif
 
     ClearMemory ();
 
@@ -819,27 +800,13 @@ void EndText (void)
 
     FreeMusic ();
 #else
-
-
-
-#ifdef ARTSEXTERN
     artnum = endextern+gamestate.episode;
     CA_CacheGrChunk (artnum);
     text = (char *)grsegs[artnum];
-#else
-    endfilename[6] = '1'+gamestate.episode;
-    CA_LoadFile (endfilename,&layout);
-    text = (char *)layout;
-#endif
 
     ShowArticle (text);
 
-#ifdef ARTSEXTERN
     UNCACHEGRCHUNK(artnum);
-#else
-    free(layout);
-#endif
-
 
     VW_FadeOut();
     SETFONTCOLOR(0,15);

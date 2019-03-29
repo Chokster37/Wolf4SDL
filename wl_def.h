@@ -206,16 +206,14 @@ void Quit(const char *errorStr, ...);
 
 typedef enum
 {
-    FL_SHOOTABLE        = 0x00000001,
-    FL_BONUS            = 0x00000002,
-    FL_NEVERMARK        = 0x00000004,
-    FL_VISABLE          = 0x00000008,
-    FL_ATTACKMODE       = 0x00000010,
-    FL_FIRSTATTACK      = 0x00000020,
-    FL_AMBUSH           = 0x00000040,
-    FL_NONMARK          = 0x00000080,
-    FL_FULLBRIGHT       = 0x00000100,
-    // next free bit is   0x00001000
+    FL_SHOOTABLE        = 0x01,
+    FL_BONUS            = 0x02,
+    FL_NEVERMARK        = 0x04,
+    FL_VISABLE          = 0x08,
+    FL_ATTACKMODE       = 0x10,
+    FL_FIRSTATTACK      = 0x20,
+    FL_AMBUSH           = 0x40,
+    FL_NONMARK          = 0x80
 } objflag_t;
 
 
@@ -696,7 +694,7 @@ typedef struct statstruct
     byte      tilex,tiley;
     short     shapenum;           // if shapenum == -1 the obj has been removed
     byte      *visspot;
-    uint32_t  flags;
+    byte      flags;
     byte      itemnumber;
 } statobj_t;
 
@@ -735,7 +733,7 @@ typedef struct objstruct
     classtype   obclass;
     statetype   *state;
 
-    uint32_t    flags;              // FL_SHOOTABLE, etc
+    byte        flags;              // FL_SHOOTABLE, etc
 
     int32_t     distance;           // if negative, wait for that door to open
     dirtype     dir;
@@ -905,14 +903,11 @@ void            ShutdownId (void);
 extern  gametype        gamestate;
 extern  byte            bordercol;
 extern  SDL_Surface     *latchpics[NUMLATCHPICS];
-extern  char            demoname[13];
 
 void    SetupGameLevel (void);
 void    GameLoop (void);
 void    DrawPlayBorder (void);
-void    DrawStatusBorder (byte color);
 void    DrawPlayScreen (void);
-void    DrawPlayBorderSides (void);
 
 void    PlayDemo (int demonumber);
 
@@ -985,8 +980,6 @@ void    InitActorList (void);
 void    GetNewActor (void);
 void    PlayLoop (void);
 
-void    CenterWindow(word w,word h);
-
 void    InitRedShifts (void);
 void    FinishPaletteShifts (void);
 
@@ -1023,16 +1016,6 @@ void ClearSplitVWB (void);
 
 void PreloadGraphics(void);
 
-
-/*
-=============================================================================
-
-                                WL_DEBUG
-
-=============================================================================
-*/
-
-int DebugKeys (void);
 
 /*
 =============================================================================
@@ -1276,8 +1259,6 @@ void SpawnBJVictory (void);
 
 =============================================================================
 */
-
-extern  char    helpfilename[],endfilename[];
 
 extern  void    HelpScreens(void);
 extern  void    EndText(void);

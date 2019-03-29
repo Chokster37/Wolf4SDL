@@ -147,14 +147,6 @@ SetSoundLoc(fixed gx,fixed gy)
         x = ATABLEMAX - 1;
     leftchannel  =  lefttable[x][y + ATABLEMAX];
     rightchannel = righttable[x][y + ATABLEMAX];
-
-#if 0
-    CenterWindow(8,1);
-    US_PrintSigned(leftchannel);
-    US_Print(",");
-    US_PrintSigned(rightchannel);
-    VW_UpdateScreen();
-#endif
 }
 
 /*
@@ -759,88 +751,6 @@ void SetupGameLevel (void)
 /*
 ===================
 =
-= DrawPlayBorderSides
-=
-= To fix window overwrites
-=
-===================
-*/
-void DrawPlayBorderSides(void)
-{
-	const int sw = screenWidth;
-	const int sh = screenHeight;
-	const int vw = viewwidth;
-	const int vh = viewheight;
-	const int px = scaleFactor; // size of one "pixel"
-
-	const int h  = sh - px * STATUSLINES;
-	const int xl = sw / 2 - vw / 2;
-	const int yl = (h - vh) / 2;
-
-    if(xl != 0)
-    {
-	    VWB_BarScaledCoord(0,            0, xl - px,     h, bordercol);                 // left side
-	    VWB_BarScaledCoord(xl + vw + px, 0, xl - px * 2, h, bordercol);                 // right side
-    }
-
-    if(yl != 0)
-    {
-	    VWB_BarScaledCoord(0, 0,            sw, yl - px, bordercol);                    // upper side
-	    VWB_BarScaledCoord(0, yl + vh + px, sw, yl - px, bordercol);                    // lower side
-    }
-
-    if(xl != 0)
-    {
-        // Paint game view border lines
-	    VWB_BarScaledCoord(xl - px, yl - px, vw + px, px,          0);                      // upper border
-	    VWB_BarScaledCoord(xl,      yl + vh, vw + px, px,          bordercol - 2);          // lower border
-	    VWB_BarScaledCoord(xl - px, yl - px, px,      vh + px,     0);                      // left border
-	    VWB_BarScaledCoord(xl + vw, yl - px, px,      vh + px * 2, bordercol - 2);          // right border
-	    VWB_BarScaledCoord(xl - px, yl + vh, px,      px,          bordercol - 3);          // lower left highlight
-    }
-    else
-    {
-        // Just paint a lower border line
-        VWB_BarScaledCoord(0, yl+vh, vw, px, bordercol-2);       // lower border
-    }
-}
-
-
-/*
-===================
-=
-= DrawStatusBorder
-=
-===================
-*/
-
-void DrawStatusBorder (byte color)
-{
-    int statusborderw = (screenWidth-scaleFactor*320)/2;
-
-    VWB_BarScaledCoord (0,0,screenWidth,screenHeight-scaleFactor*(STATUSLINES-3),color);
-    VWB_BarScaledCoord (0,screenHeight-scaleFactor*(STATUSLINES-3),
-        statusborderw+scaleFactor*8,scaleFactor*(STATUSLINES-4),color);
-    VWB_BarScaledCoord (0,screenHeight-scaleFactor*2,screenWidth,scaleFactor*2,color);
-    VWB_BarScaledCoord (screenWidth-statusborderw-scaleFactor*8, screenHeight-scaleFactor*(STATUSLINES-3),
-        statusborderw+scaleFactor*8,scaleFactor*(STATUSLINES-4),color);
-
-    VWB_BarScaledCoord (statusborderw+scaleFactor*9, screenHeight-scaleFactor*3,
-        scaleFactor*97, scaleFactor*1, color-1);
-    VWB_BarScaledCoord (statusborderw+scaleFactor*106, screenHeight-scaleFactor*3,
-        scaleFactor*161, scaleFactor*1, color-2);
-    VWB_BarScaledCoord (statusborderw+scaleFactor*267, screenHeight-scaleFactor*3,
-        scaleFactor*44, scaleFactor*1, color-3);
-    VWB_BarScaledCoord (screenWidth-statusborderw-scaleFactor*9, screenHeight-scaleFactor*(STATUSLINES-4),
-        scaleFactor*1, scaleFactor*20, color-2);
-    VWB_BarScaledCoord (screenWidth-statusborderw-scaleFactor*9, screenHeight-scaleFactor*(STATUSLINES/2-4),
-        scaleFactor*1, scaleFactor*14, color-3);
-}
-
-
-/*
-===================
-=
 = DrawPlayBorder
 =
 ===================
@@ -849,17 +759,11 @@ void DrawStatusBorder (byte color)
 void DrawPlayBorder (void)
 {
 	const int px = scaleFactor; // size of one "pixel"
-
-    if (bordercol != VIEWCOLOR)
-        DrawStatusBorder(bordercol);
-    else
-    {
-        const int statusborderw = (screenWidth-px*320)/2;
-        VWB_BarScaledCoord (0, screenHeight-px*STATUSLINES,
-            statusborderw+px*8, px*STATUSLINES, bordercol);
-        VWB_BarScaledCoord (screenWidth-statusborderw-px*8, screenHeight-px*STATUSLINES,
-            statusborderw+px*8, px*STATUSLINES, bordercol);
-    }
+    const int statusborderw = (screenWidth-px*320)/2;
+    VWB_BarScaledCoord (0, screenHeight-px*STATUSLINES,
+        statusborderw+px*8, px*STATUSLINES, bordercol);
+    VWB_BarScaledCoord (screenWidth-statusborderw-px*8, screenHeight-px*STATUSLINES,
+        statusborderw+px*8, px*STATUSLINES, bordercol);
 
     if((unsigned) viewheight == screenHeight) return;
 
@@ -909,33 +813,6 @@ void DrawPlayScreen (void)
     DrawScore ();
 }
 
-// Uses LatchDrawPic instead of StatusDrawPic
-void LatchNumberHERE (int x, int y, unsigned width, int32_t number)
-{
-    unsigned length,c;
-    char str[20];
-
-    ltoa (number,str,10);
-
-    length = (unsigned) strlen (str);
-
-    while (length<width)
-    {
-        LatchDrawPic (x,y,N_BLANKPIC);
-        x++;
-        width--;
-    }
-
-    c = length <= width ? 0 : length-width;
-
-    while (c<length)
-    {
-        LatchDrawPic (x,y,str[c]-'0'+ N_0PIC);
-        x++;
-        c++;
-    }
-}
-
 
 //==========================================================================
 
@@ -949,13 +826,9 @@ void LatchNumberHERE (int x, int y, unsigned width, int32_t number)
 ==================
 */
 
-char    demoname[13] = "DEMO?.";
-
 void PlayDemo (int demonumber)
 {
     int length;
-#ifdef DEMOSEXTERN
-// debug: load chunk
 #ifndef SPEARDEMO
     int dems[4]={T_DEMO0,T_DEMO1,T_DEMO2,T_DEMO3};
 #else
@@ -964,11 +837,6 @@ void PlayDemo (int demonumber)
 
     CA_CacheGrChunk(dems[demonumber]);
     demoptr = (int8_t *) grsegs[dems[demonumber]];
-#else
-    demoname[4] = '0'+demonumber;
-    CA_LoadFile (demoname,&demobuffer);
-    demoptr = (int8_t *)demobuffer;
-#endif
 
     NewGame (1,0);
     gamestate.mapon = *demoptr++;
@@ -992,11 +860,7 @@ void PlayDemo (int demonumber)
 
     PlayLoop ();
 
-#ifdef DEMOSEXTERN
     UNCACHEGRCHUNK(dems[demonumber]);
-//#else
-//  MM_FreePtr (&demobuffer);
-#endif
 
     demoplayback = false;
 

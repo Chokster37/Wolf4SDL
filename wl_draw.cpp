@@ -68,10 +68,10 @@ int     lasttexture;
 //
 // ray tracing variables
 //
-short    focaltx,focalty,viewtx,viewty;
+short    focaltx,focalty;
 longword xpartialup,xpartialdown,ypartialup,ypartialdown;
 
-short   midangle,angle;
+short   midangle;
 
 word    tilehit;
 int     pixx;
@@ -1488,9 +1488,6 @@ void CalcViewVariables()
 
     focaltx = (short)(viewx>>TILESHIFT);
     focalty = (short)(viewy>>TILESHIFT);
-
-    viewtx = (short)(player->x >> TILESHIFT);
-    viewty = (short)(player->y >> TILESHIFT);
 }
 
 //==========================================================================
