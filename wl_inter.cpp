@@ -31,7 +31,6 @@ ClearSplitVWB (void)
 //==========================================================================
 
 #ifdef SPEAR
-#ifndef SPEARDEMO
 ////////////////////////////////////////////////////////
 //
 // End of Spear of Destiny
@@ -100,7 +99,6 @@ EndSpear (void)
     MainMenu[savegame].active = 0;
 }
 #endif
-#endif
 
 //==========================================================================
 
@@ -115,7 +113,6 @@ EndSpear (void)
 void
 Victory (void)
 {
-#ifndef SPEARDEMO
     int32_t sec;
     int i, min, kr, sr, tr, x;
     char tempstr[8];
@@ -168,11 +165,9 @@ Victory (void)
     VWB_Bar (0, 0, 320, screenHeight / scaleFactor - STATUSLINES + 1, VIEWCOLOR);
 
 #ifdef JAPAN
-#ifndef JAPDEMO
     CA_CacheGrChunk (C_ENDRATIOSPIC);
     VWB_DrawPic (0, 0, C_ENDRATIOSPIC);
     UNCACHEGRCHUNK (C_ENDRATIOSPIC);
-#endif
 #else
     Write (18, 2, STR_YOUWIN);
 
@@ -180,22 +175,12 @@ Victory (void)
 
     Write (12, RATIOY - 2, "averages");
 
-#ifdef SPANISH
-    Write (RATIOX + 2, RATIOY, STR_RATKILL);
-    Write (RATIOX + 2, RATIOY + 2, STR_RATSECRET);
-    Write (RATIOX + 2, RATIOY + 4, STR_RATTREASURE);
-#else
     Write (RATIOX + 8, RATIOY, STR_RATKILL);
     Write (RATIOX + 4, RATIOY + 2, STR_RATSECRET);
     Write (RATIOX, RATIOY + 4, STR_RATTREASURE);
 #endif
 
-#endif
-
-#ifndef JAPDEMO
     VWB_DrawPic (8, 4, L_BJWINSPIC);
-#endif
-
 
     for (kr = sr = tr = sec = i = 0; i < LRpack; i++)
     {
@@ -245,8 +230,6 @@ Victory (void)
     x = RATIOX + 24 - (int) strlen(tempstr) * 2;
     Write (x, RATIOY + 4, tempstr);
 
-#ifndef SPANISH
-#ifndef UPLOAD
 #ifndef SPEAR
     //
     // TOTAL TIME VERIFICATION CODE
@@ -265,8 +248,6 @@ Victory (void)
         tempstr[3] = 0;
         US_Print (tempstr);
     }
-#endif
-#endif
 #endif
 
     fontnumber = 1;
@@ -290,8 +271,6 @@ Victory (void)
 #else
     EndSpear ();
 #endif
-
-#endif // SPEARDEMO
 }
 
 
@@ -364,12 +343,10 @@ Write (int x, int y, const char *string)
                     nx += 8;
                     continue;
 
-#ifndef APOGEE_1_0
                 case '\'':
                     VWB_DrawPic (nx, ny, L_APOSTROPHEPIC);
                     nx += 8;
                     continue;
-#endif
 
                 case ' ':
                     break;
@@ -581,34 +558,20 @@ LevelCompleted (void)
 #endif
     {
 #ifndef JAPAN
-#ifdef SPANISH
-        Write (14, 2, "piso\ncompletado");
-#else
         Write (14, 2, "floor\ncompleted");
-#endif
 
         Write (14, 7, STR_BONUS "     0");
         Write (16, 10, STR_TIME);
         Write (16, 12, STR_PAR);
 
-#ifdef SPANISH
-        Write (11, 14, STR_RAT2KILL);
-        Write (11, 16, STR_RAT2SECRET);
-        Write (11, 18, STR_RAT2TREASURE);
-#else
         Write (9, 14, STR_RAT2KILL);
         Write (5, 16, STR_RAT2SECRET);
         Write (1, 18, STR_RAT2TREASURE);
-#endif
 
         Write (26, 2, itoa (gamestate.mapon + 1, tempstr, 10));
 #endif
 
-#ifdef SPANISH
-        Write (30, 12, parTimes[gamestate.episode * 10 + mapon].timestr);
-#else
         Write (26, 12, parTimes[gamestate.episode * 10 + mapon].timestr);
-#endif
 
         //
         // PRINT TIME
@@ -624,11 +587,7 @@ LevelCompleted (void)
         min = sec / 60;
         sec %= 60;
 
-#ifdef SPANISH
-        i = 30 * 8;
-#else
         i = 26 * 8;
-#endif
         VWB_DrawPic (i, 10 * 8, L_NUM0PIC + (min / 10));
         i += 2 * 8;
         VWB_DrawPic (i, 10 * 8, L_NUM0PIC + (min % 10));
@@ -683,11 +642,7 @@ LevelCompleted (void)
         }
 
 
-#ifdef SPANISH
-#define RATIOXX                33
-#else
 #define RATIOXX                37
-#endif
         //
         // KILL RATIO
         //
@@ -847,7 +802,6 @@ done:   itoa (kr, tempstr, 10);
     else
     {
 #ifdef SPEAR
-#ifndef SPEARDEMO
         switch (mapon)
         {
             case 4:
@@ -869,7 +823,6 @@ done:   itoa (kr, tempstr, 10);
                 Write (13, 4, "secret castle\n" "    area\n" "  completed!");
                 break;
         }
-#endif
 #else
         Write (14, 4, "secret floor\n completed!");
 #endif
@@ -894,35 +847,6 @@ done:   itoa (kr, tempstr, 10);
 //
 // done
 //
-#ifdef SPEARDEMO
-    if (gamestate.mapon == 1)
-    {
-        SD_PlaySound (BONUS1UPSND);
-
-        CA_CacheGrChunk (STARTFONT + 1);
-        Message ("This concludes your demo\n"
-                 "of Spear of Destiny! Now,\n" "go to your local software\n" "store and buy it!");
-        UNCACHEGRCHUNK (STARTFONT + 1);
-
-        IN_ClearKeysDown ();
-        IN_Ack ();
-    }
-#endif
-
-#ifdef JAPDEMO
-    if (gamestate.mapon == 3)
-    {
-        SD_PlaySound (BONUS1UPSND);
-
-        CA_CacheGrChunk (STARTFONT + 1);
-        Message ("This concludes your demo\n"
-                 "of Wolfenstein 3-D! Now,\n" "go to your local software\n" "store and buy it!");
-        UNCACHEGRCHUNK (STARTFONT + 1);
-
-        IN_ClearKeysDown ();
-        IN_Ack ();
-    }
-#endif
 
     VW_FadeOut ();
     DrawPlayBorder();
@@ -1015,9 +939,7 @@ DrawHighScores (void)
     char buffer[16];
 #ifndef SPEAR
     char *str;
-#ifndef UPLOAD
     char buffer1[5];
-#endif
 #endif
     word i, w, h;
     HighScore *s;
@@ -1025,13 +947,9 @@ DrawHighScores (void)
 #ifndef SPEAR
     CA_CacheGrChunk (HIGHSCORESPIC);
     CA_CacheGrChunk (STARTFONT);
-#ifndef APOGEE_1_0
     CA_CacheGrChunk (C_LEVELPIC);
     CA_CacheGrChunk (C_SCOREPIC);
     CA_CacheGrChunk (C_NAMEPIC);
-#else
-    CA_CacheGrChunk (C_CODEPIC);
-#endif
 
     ClearMScreen ();
     DrawStripes (10);
@@ -1039,13 +957,9 @@ DrawHighScores (void)
     VWB_DrawPic (48, 0, HIGHSCORESPIC);
     UNCACHEGRCHUNK (HIGHSCORESPIC);
 
-#ifndef APOGEE_1_0
     VWB_DrawPic (4 * 8, 68, C_NAMEPIC);
     VWB_DrawPic (20 * 8, 68, C_LEVELPIC);
     VWB_DrawPic (28 * 8, 68, C_SCOREPIC);
-#else
-    VWB_DrawPic(35*8,68,C_CODEPIC);
-#endif
     fontnumber = 0;
 
 #else
@@ -1096,14 +1010,12 @@ DrawHighScores (void)
         PrintX = 194 - w;
 #endif
 
-#ifndef UPLOAD
 #ifndef SPEAR
         PrintX -= 6;
         itoa (s->episode + 1, buffer1, 10);
         US_Print ("E");
         US_Print (buffer1);
         US_Print ("/L");
-#endif
 #endif
 
 #ifdef SPEAR
@@ -1127,33 +1039,6 @@ DrawHighScores (void)
         PrintX = 292 - w;
 #endif
         US_Print (buffer);
-
-#ifdef APOGEE_1_0
-//#ifndef UPLOAD
-#ifndef SPEAR
-        //
-        // verification #
-        //
-        if (!i)
-        {
-            char temp = (((s->score >> 28) & 0xf) ^ ((s->score >> 24) & 0xf)) + 'A';
-            char temp1 = (((s->score >> 20) & 0xf) ^ ((s->score >> 16) & 0xf)) + 'A';
-            char temp2 = (((s->score >> 12) & 0xf) ^ ((s->score >> 8) & 0xf)) + 'A';
-            char temp3 = (((s->score >> 4) & 0xf) ^ ((s->score >> 0) & 0xf)) + 'A';
-
-            SETFONTCOLOR (0x49, 0x29);
-            PrintX = 35 * 8;
-            buffer[0] = temp;
-            buffer[1] = temp1;
-            buffer[2] = temp2;
-            buffer[3] = temp3;
-            buffer[4] = 0;
-            US_Print (buffer);
-            SETFONTCOLOR (15, 0x29);
-        }
-#endif
-//#endif
-#endif
     }
 
     VW_UpdateScreen ();
@@ -1239,7 +1124,6 @@ CheckHighScore (int32_t score, word other)
 }
 
 
-#ifndef UPLOAD
 #ifndef SPEAR
 #ifndef JAPAN
 ////////////////////////////////////////////////////////
@@ -1262,24 +1146,14 @@ NonShareware (void)
     PrintX = 110;
     PrintY = 15;
 
-#ifdef SPANISH
-    US_Print ("Atencion");
-#else
     US_Print ("Attention");
-#endif
 
     SETFONTCOLOR (HIGHLIGHT, BKGDCOLOR);
     WindowX = PrintX = 40;
     PrintY = 60;
-#ifdef SPANISH
-    US_Print ("Este juego NO es gratis y\n");
-    US_Print ("NO es Shareware; favor de\n");
-    US_Print ("no distribuirlo.\n\n");
-#else
     US_Print ("This game is NOT shareware.\n");
     US_Print ("Please do not distribute it.\n");
     US_Print ("Thanks.\n\n");
-#endif
     US_Print ("        Id Software\n");
 
     VW_UpdateScreen ();
@@ -1288,11 +1162,9 @@ NonShareware (void)
 }
 #endif
 #endif
-#endif
 
 #ifdef SPEAR
 #ifndef GOODTIMES
-#ifndef SPEARDEMO
 ////////////////////////////////////////////////////////
 //
 // COPY PROTECTION FOR FormGen
@@ -1712,7 +1584,6 @@ CopyProtection (void)
     exit (1);
 }
 
-#endif // SPEARDEMO
 #endif // GOODTIMES
 #endif // SPEAR
 //===========================================================================

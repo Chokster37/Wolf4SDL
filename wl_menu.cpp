@@ -72,13 +72,7 @@ CP_itemtype MainMenu[] = {
 
 #ifndef GOODTIMES
 #ifndef SPEAR
-
-#ifdef SPANISH
-    {2, "Ve esto!", CP_ReadThis},
-#else
     {2, "Read This!", CP_ReadThis},
-#endif
-
 #endif
 #endif
 
@@ -121,20 +115,6 @@ CP_itemtype SndMenu[] = {
 #ifndef SPEAR
 CP_itemtype NewEmenu[] = {
 #ifdef JAPAN
-#ifdef JAPDEMO
-    {1, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-#else
     {1, "", 0},
     {0, "", 0},
     {1, "", 0},
@@ -147,20 +127,6 @@ CP_itemtype NewEmenu[] = {
     {0, "", 0},
     {1, "", 0},
     {0, "", 0}
-#endif
-#else
-#ifdef SPANISH
-    {1, "Episodio 1\n" "Fuga desde Wolfenstein", 0},
-    {0, "", 0},
-    {3, "Episodio 2\n" "Operacion Eisenfaust", 0},
-    {0, "", 0},
-    {3, "Episodio 3\n" "Muere, Fuhrer, Muere!", 0},
-    {0, "", 0},
-    {3, "Episodio 4\n" "Un Negro Secreto", 0},
-    {0, "", 0},
-    {3, "Episodio 5\n" "Huellas del Loco", 0},
-    {0, "", 0},
-    {3, "Episodio 6\n" "Confrontacion", 0}
 #else
     {1, "Episode 1\n" "Escape from Wolfenstein", 0},
     {0, "", 0},
@@ -173,7 +139,6 @@ CP_itemtype NewEmenu[] = {
     {3, "Episode 5\n" "Trail of the Madman", 0},
     {0, "", 0},
     {3, "Episode 6\n" "Confrontation", 0}
-#endif
 #endif
 };
 #endif
@@ -207,6 +172,12 @@ CP_itemtype LSMenu[] = {
 };
 
 CP_itemtype CusMenu[] = {
+    {0, "", 0},
+    {0, "", 0},
+    {0, "", 0},
+    {0, "", 0},
+    {0, "", 0},
+    {0, "", 0},
     {1, "", 0},
     {0, "", 0},
     {1, "", 0}
@@ -252,62 +223,6 @@ static char SaveName[13] = "savegam?.";
 //
 ////////////////////////////////////////////////////////////////////
 
-#if 0
-static const char *ScanNames[] =      // Scan code names with single chars
-{
-    "?", "?", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "+", "?", "?",
-    "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "[", "]", "|", "?", "A", "S",
-    "D", "F", "G", "H", "J", "K", "L", ";", "\"", "?", "?", "?", "Z", "X", "C", "V",
-    "B", "N", "M", ",", ".", "/", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",
-    "?", "?", "?", "?", "?", "?", "?", "?", "\xf", "?", "-", "\x15", "5", "\x11", "+", "?",
-    "\x13", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",
-    "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",
-    "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?"
-};                              // DEBUG - consolidate these
-static ScanCode ExtScanCodes[] =        // Scan codes with >1 char names
-{
-    1, 0xe, 0xf, 0x1d, 0x2a, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e,
-    0x3f, 0x40, 0x41, 0x42, 0x43, 0x44, 0x57, 0x59, 0x46, 0x1c, 0x36,
-    0x37, 0x38, 0x47, 0x49, 0x4f, 0x51, 0x52, 0x53, 0x45, 0x48,
-    0x50, 0x4b, 0x4d, 0x00
-};
-static const char *ExtScanNames[] =   // Names corresponding to ExtScanCodes
-{
-    "Esc", "BkSp", "Tab", "Ctrl", "LShft", "Space", "CapsLk", "F1", "F2", "F3", "F4",
-    "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "ScrlLk", "Enter", "RShft",
-    "PrtSc", "Alt", "Home", "PgUp", "End", "PgDn", "Ins", "Del", "NumLk", "Up",
-    "Down", "Left", "Right", ""
-};
-
-/*#pragma warning 737 9
-static byte
-                                        *ScanNames[] =          // Scan code names with single chars
-                                        {
-        "?","?","1","2","3","4","5","6","7","8","9","0","-","+","?","?",
-        "Q","W","E","R","T","Y","U","I","O","P","[","]","|","?","A","S",
-        "D","F","G","H","J","K","L",";","\"","?","?","?","Z","X","C","V",
-        "B","N","M",",",".","/","?","?","?","?","?","?","?","?","?","?",
-        "?","?","?","?","?","?","?","?","\xf","?","-","\x15","5","\x11","+","?",
-        "\x13","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?",
-        "?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?",
-        "?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?"
-                                        };      // DEBUG - consolidate these
-static byte ExtScanCodes[] =    // Scan codes with >1 char names
-                                        {
-        1,0xe,0xf,0x1d,0x2a,0x39,0x3a,0x3b,0x3c,0x3d,0x3e,
-        0x3f,0x40,0x41,0x42,0x43,0x44,0x57,0x59,0x46,0x1c,0x36,
-        0x37,0x38,0x47,0x49,0x4f,0x51,0x52,0x53,0x45,0x48,
-        0x50,0x4b,0x4d,0x00
-                                        };
-static byte *ExtScanNames[] =   // Names corresponding to ExtScanCodes
-                                        {
-        "Esc","BkSp","Tab","Ctrl","LShft","Space","CapsLk","F1","F2","F3","F4",
-        "F5","F6","F7","F8","F9","F10","F11","F12","ScrlLk","Enter","RShft",
-        "PrtSc","Alt","Home","PgUp","End","PgDn","Ins","Del","NumLk","Up",
-        "Down","Left","Right",""
-                                        };*/
-
-#else
 static const char* const ScanNames[SDLK_LAST] =
     {
         "?","?","?","?","?","?","?","?",                                //   0
@@ -353,7 +268,6 @@ static const char* const ScanNames[SDLK_LAST] =
         "?","?"                                                         // 320
     };
 
-#endif
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -388,7 +302,6 @@ US_ControlPanel (ScanCode scancode)
         which = HandleMenu (&MainItems, &MainMenu[0], NULL);
 
 #ifdef SPEAR
-#ifndef SPEARDEMO
         IN_ProcessEvents();
 
         //
@@ -432,7 +345,6 @@ US_ControlPanel (ScanCode scancode)
             StartCPMusic (MENUSONG);
             MenuFadeIn ();
         }
-#endif
 #endif
 
         switch (which)
@@ -518,11 +430,7 @@ DrawMainMenu (void)
     DrawStripes (10);
     VWB_DrawPic (84, 0, C_OPTIONSPIC);
 
-#ifdef SPANISH
-    DrawWindow (MENU_X - 8, MENU_Y - 3, MENU_W + 8, MENU_H, BKGDCOLOR);
-#else
     DrawWindow (MENU_X - 8, MENU_Y - 3, MENU_W, MENU_H, BKGDCOLOR);
-#endif
 #endif
 
     //
@@ -531,13 +439,7 @@ DrawMainMenu (void)
     if (ingame)
     {
 #ifndef JAPAN
-
-#ifdef SPANISH
-        strcpy (&MainMenu[backtodemo].string, STR_GAME);
-#else
         strcpy (&MainMenu[backtodemo].string[8], STR_GAME);
-#endif
-
 #else
         CA_CacheGrChunk (C_MRETGAMEPIC);
         VWB_DrawPic (12 * 8, 20 * 8, C_MRETGAMEPIC);
@@ -551,11 +453,7 @@ DrawMainMenu (void)
     else
     {
 #ifndef JAPAN
-#ifdef SPANISH
-        strcpy (&MainMenu[backtodemo].string, STR_BD);
-#else
         strcpy (&MainMenu[backtodemo].string[8], STR_DEMO);
-#endif
 #else
         CA_CacheGrChunk (C_MRETDEMOPIC);
         VWB_DrawPic (12 * 8, 20 * 8, C_MRETDEMOPIC);
@@ -801,11 +699,7 @@ DrawNewEpisode (void)
     SETFONTCOLOR (READHCOLOR, BKGDCOLOR);
     PrintY = 2;
     WindowX = 0;
-#ifdef SPANISH
-    US_CPrint ("Cual episodio jugar?");
-#else
     US_CPrint ("Which episode to play?");
-#endif
 #endif
 
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
@@ -838,11 +732,7 @@ DrawNewGame (void)
     PrintY = NM_Y - 32;
 
 #ifndef SPEAR
-#ifdef SPANISH
-    US_Print ("Eres macho?");
-#else
     US_Print ("How tough are you?");
-#endif
 #else
     VWB_DrawPic (PrintX, PrintY, C_HOWTOUGHPIC);
 #endif
@@ -1413,17 +1303,22 @@ CP_CustomControls (int)
 {
     int which;
 
+#ifdef SPEAR
+    UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
+    CacheLump (CONTROL_LUMP_START, CONTROL_LUMP_END);
+#endif
+
     DrawCustomScreen ();
     do
     {
         which = HandleMenu (&CusItems, &CusMenu[0], FixupCustom);
         switch (which)
         {
-            case 0:
+            case 6:
                 DefineKeyBtns ();
                 DrawCustKeybd (0);
                 break;
-            case 2:
+            case 8:
                 DefineKeyMove ();
                 DrawCustKeys (0);
         }
@@ -1431,6 +1326,11 @@ CP_CustomControls (int)
     while (which >= 0);
 
     MenuFadeOut ();
+
+#ifdef SPEAR
+    UnCacheLump (CONTROL_LUMP_START, CONTROL_LUMP_END);
+    CacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
+#endif
 
     return 0;
 }
@@ -1444,7 +1344,7 @@ void
 DefineKeyBtns (void)
 {
     CustomCtrls keyallowed = { 1, 1, 1, 1 };
-    EnterCtrlData (2, &keyallowed, DrawCustKeybd, PrintCustKeybd, KEYBOARDBTNS);
+    EnterCtrlData (8, &keyallowed, DrawCustKeybd, PrintCustKeybd, KEYBOARDBTNS);
 }
 
 
@@ -1456,7 +1356,7 @@ void
 DefineKeyMove (void)
 {
     CustomCtrls keyallowed = { 1, 1, 1, 1 };
-    EnterCtrlData (4, &keyallowed, DrawCustKeys, PrintCustKeys, KEYBOARDMOVE);
+    EnterCtrlData (10, &keyallowed, DrawCustKeys, PrintCustKeys, KEYBOARDMOVE);
 }
 
 
@@ -1668,10 +1568,10 @@ FixupCustom (int w)
 
     switch (w)
     {
-        case 0:
+        case 6:
             DrawCustKeybd (1);
             break;
-        case 2:
+        case 8:
             DrawCustKeys (1);
     }
 
@@ -1692,10 +1592,10 @@ FixupCustom (int w)
         if (lastwhich != w)
             switch (lastwhich)
             {
-                case 0:
+                case 6:
                     DrawCustKeybd (0);
                     break;
-                case 2:
+                case 8:
                     DrawCustKeys (0);
             }
     }
@@ -1738,29 +1638,15 @@ DrawCustomScreen (void)
     VWB_DrawPic (112, 184, C_MOUSELBACKPIC);
     DrawStripes (10);
     VWB_DrawPic (80, 0, C_CUSTOMIZEPIC);
+    DrawStripes (60);
+    VWB_DrawPic (80, 50, C_CONTROLPIC);
 
 
     //
     // KEYBOARD
     //
-#ifndef SPEAR
-    PrintY = CST_Y;
-    SETFONTCOLOR (READCOLOR, BKGDCOLOR);
-    US_CPrint ("Keyboard\n");
-#else
-    PrintY = CST_Y + 13;
-#endif
+    PrintY = CST_Y + 13 * 7;
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
-#ifdef SPANISH
-    PrintX = CST_START - 16;
-    US_Print (STR_CRUN);
-    PrintX = CST_START - 16 + CST_SPC * 1;
-    US_Print (STR_COPEN);
-    PrintX = CST_START - 16 + CST_SPC * 2;
-    US_Print (STR_CFIRE);
-    PrintX = CST_START - 16 + CST_SPC * 3;
-    US_Print (STR_CSTRAFE "\n");
-#else
     PrintX = CST_START;
     US_Print (STR_CRUN);
     PrintX = CST_START + CST_SPC * 1;
@@ -1769,7 +1655,6 @@ DrawCustomScreen (void)
     US_Print (STR_CFIRE);
     PrintX = CST_START + CST_SPC * 3;
     US_Print (STR_CSTRAFE "\n");
-#endif
     DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
     DrawCustKeybd (0);
     US_Print ("\n");
@@ -1779,16 +1664,6 @@ DrawCustomScreen (void)
     // KEYBOARD MOVE KEYS
     //
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
-#ifdef SPANISH
-    PrintX = 4;
-    US_Print (STR_LEFT);
-    US_Print ("/");
-    US_Print (STR_RIGHT);
-    US_Print ("/");
-    US_Print (STR_FRWD);
-    US_Print ("/");
-    US_Print (STR_BKWD "\n");
-#else
     PrintX = CST_START;
     US_Print (STR_LEFT);
     PrintX = CST_START + CST_SPC * 1;
@@ -1797,7 +1672,6 @@ DrawCustomScreen (void)
     US_Print (STR_FRWD);
     PrintX = CST_START + CST_SPC * 3;
     US_Print (STR_BKWD "\n");
-#endif
     DrawWindow (5, PrintY - 1, 310, 13, BKGDCOLOR);
     DrawCustKeys (0);
 #endif
@@ -1836,7 +1710,7 @@ DrawCustKeybd (int hilight)
         color = HIGHLIGHT;
     SETFONTCOLOR (color, BKGDCOLOR);
 
-    PrintY = CST_Y + 13 * 2;
+    PrintY = CST_Y + 13 * 8;
     for (i = 0; i < 4; i++)
         PrintCustKeybd (i);
 }
@@ -1859,7 +1733,7 @@ DrawCustKeys (int hilight)
         color = HIGHLIGHT;
     SETFONTCOLOR (color, BKGDCOLOR);
 
-    PrintY = CST_Y + 13 * 4;
+    PrintY = CST_Y + 13 * 10;
     for (i = 0; i < 4; i++)
         PrintCustKeys (i);
 }
@@ -1987,13 +1861,7 @@ CP_Quit (int)
 #ifdef JAPAN
     if (GetYorN (7, 11, C_QUITMSGPIC))
 #else
-
-#ifdef SPANISH
-    if (Confirm (ENDGAMESTR))
-#else
     if (Confirm (endStrings[US_RndT () & 0x7 + (US_RndT () & 1)]))
-#endif
-
 #endif
     {
         VW_UpdateScreen ();
@@ -2690,28 +2558,14 @@ Confirm (const char *string)
             lastBlinkTime = GetTimeCount();
         }
         else SDL_Delay(5);
-
-#ifdef SPANISH
-    }
-    while (!Keyboard[sc_S] && !Keyboard[sc_N] && !Keyboard[sc_Escape]);
-#else
     }
     while (!Keyboard[sc_Y] && !Keyboard[sc_N] && !Keyboard[sc_Escape] && !ci.button0 && !ci.button1);
-#endif
 
-#ifdef SPANISH
-    if (Keyboard[sc_S] || ci.button0)
-    {
-        xit = 1;
-        ShootSnd ();
-    }
-#else
     if (Keyboard[sc_Y] || ci.button0)
     {
         xit = 1;
         ShootSnd ();
     }
-#endif
 
     IN_ClearKeysDown ();
     WaitKeyUp ();
@@ -2744,23 +2598,7 @@ GetYorN (int x, int y, int pic)
     {
         IN_WaitAndProcessEvents();
     }
-#ifdef SPANISH
-    while (!Keyboard[sc_S] && !Keyboard[sc_N] && !Keyboard[sc_Escape]);
-#else
     while (!Keyboard[sc_Y] && !Keyboard[sc_N] && !Keyboard[sc_Escape]);
-#endif
-
-#ifdef SPANISH
-    if (Keyboard[sc_S])
-    {
-        xit = 1;
-        ShootSnd ();
-    }
-
-    while (Keyboard[sc_S] || Keyboard[sc_N] || Keyboard[sc_Escape])
-        IN_WaitAndProcessEvents();
-
-#else
 
     if (Keyboard[sc_Y])
     {
@@ -2770,7 +2608,6 @@ GetYorN (int x, int y, int pic)
 
     while (Keyboard[sc_Y] || Keyboard[sc_N] || Keyboard[sc_Escape])
         IN_WaitAndProcessEvents();
-#endif
 
     IN_ClearKeysDown ();
     SD_PlaySound (whichsnd[xit]);
@@ -2979,44 +2816,29 @@ CheckForEpisodes (void)
         }
     }
 
+#ifdef SPEAR
+    if(!stat("vswap.sod", &statbuf))
+        strcpy (extension, "sod");
+    else
+        Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
+#else
 //
 // JAPANESE VERSION
 //
 #ifdef JAPAN
-#ifdef JAPDEMO
-    if(!stat("vswap.wj1", &statbuf))
-    {
-        strcpy (extension, "wj1");
-        numEpisodesMissing = 5;
-#else
     if(!stat("vswap.wj6", &statbuf))
     {
         strcpy (extension, "wj6");
-#endif
-        strcat (configname, extension);
-        strcat (SaveName, extension);
         EpisodeSelect[1] =
             EpisodeSelect[2] = EpisodeSelect[3] = EpisodeSelect[4] = EpisodeSelect[5] = 1;
     }
     else
         Quit ("NO JAPANESE WOLFENSTEIN 3-D DATA FILES to be found!");
-    strcpy (graphext, extension);
-    strcpy (audioext, extension);
 #else
 
 //
 // ENGLISH
 //
-#ifdef UPLOAD
-    if(!stat("vswap.wl1", &statbuf))
-    {
-        strcpy (extension, "wl1");
-        numEpisodesMissing = 5;
-    }
-    else
-        Quit ("NO WOLFENSTEIN 3-D DATA FILES to be found!");
-#else
-#ifndef SPEAR
     if(!stat("vswap.wl6", &statbuf))
     {
         strcpy (extension, "wl6");
@@ -3037,71 +2859,12 @@ CheckForEpisodes (void)
             NewEmenu[2].active = NewEmenu[4].active = EpisodeSelect[1] = EpisodeSelect[2] = 1;
         }
         else
-        {
-            if(!stat("vswap.wl1", &statbuf))
-            {
-                strcpy (extension, "wl1");
-                numEpisodesMissing = 5;
-            }
-            else
-                Quit ("NO WOLFENSTEIN 3-D DATA FILES to be found!");
-        }
+            Quit ("NO WOLFENSTEIN 3-D DATA FILES to be found!");
     }
 #endif
 #endif
-
-
-#ifdef SPEAR
-#ifndef SPEARDEMO
-    if(param_mission == 0)
-    {
-        if(!stat("vswap.sod", &statbuf))
-            strcpy (extension, "sod");
-        else
-            Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
-    }
-    else if(param_mission == 1)
-    {
-        if(!stat("vswap.sd1", &statbuf))
-            strcpy (extension, "sd1");
-        else
-            Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
-    }
-    else if(param_mission == 2)
-    {
-        if(!stat("vswap.sd2", &statbuf))
-            strcpy (extension, "sd2");
-        else
-            Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
-    }
-    else if(param_mission == 3)
-    {
-        if(!stat("vswap.sd3", &statbuf))
-            strcpy (extension, "sd3");
-        else
-            Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
-    }
-    else
-        Quit ("UNSUPPORTED MISSION!");
-    strcpy (graphext, "sod");
-    strcpy (audioext, "sod");
-#else
-    if(!stat("vswap.sdm", &statbuf))
-    {
-        strcpy (extension, "sdm");
-    }
-    else
-        Quit ("NO SPEAR OF DESTINY DEMO DATA FILES TO BE FOUND!");
-    strcpy (graphext, "sdm");
-    strcpy (audioext, "sdm");
-#endif
-#else
     strcpy (graphext, extension);
     strcpy (audioext, extension);
-#endif
-
     strcat (configname, extension);
     strcat (SaveName, extension);
-
-#endif
 }

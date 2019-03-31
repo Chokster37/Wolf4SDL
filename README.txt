@@ -17,8 +17,6 @@ Main features:
          (32 and 64 bit), Windows 7 (32 and 64 bit)
        - Linux
        - BSD variants
-       - Mac OS X (x86)
-       - KallistiOS (used for Dreamcast)
       Only little endian platforms like x86, ARM and SH-4 are supported, yet.
 
  - AdLib sounds and music:
@@ -57,14 +55,7 @@ version.h as described in that file):
  - Wolfenstein 3D v1.4 full Apogee
  - Wolfenstein 3D v1.4 full GT/ID/Activision
  - Wolfenstein 3D v1.4 full Imagineer (Japanese)
- - Wolfenstein 3D v1.0 shareware Apogee
- - Wolfenstein 3D v1.1 shareware Apogee
- - Wolfenstein 3D v1.2 shareware Apogee
- - Wolfenstein 3D v1.4 shareware
  - Spear of Destiny full
- - Spear of Destiny demo
- - Spear of Destiny - Mission 2: Return to Danger (not tested)
- - Spear of Destiny - Mission 3: Ultimate Challenge (not tested)
 
 
 How to play:
@@ -106,7 +97,6 @@ Wolf4SDL supports the following command line options:
                         others: $HOME/.wolf4sdl)
 
 For Spear of Destiny the following additional options are available:
- --mission <mission>    Mission number to play (1-3)
  --goodtimes            Disable copy protection quiz
 
 
@@ -118,12 +108,8 @@ The current version of the source code is available in the git repository at:
 
 The following ways of compiling the source code are supported:
  - Makefile (for Linux, BSD variants and MinGW/MSYS)
- - Visual C++ 2008 (Wolf4SDL.VC9.sln and Wolf4SDL.VC9.vcproj)
- - Visual C++ 2005 (Wolf4SDL.sln and Wolf4SDL.vcproj)
- - Visual C++ 6 (Wolf4SDL.dsw and Wolf4SDL.dsp)
  - Code::Blocks 8.02 (Wolf4SDL.cbp)
  - Dev-C++ 5.0 Beta 9.2 (4.9.9.2) (Wolf4SDL.dev) (see README-devcpp.txt)
- - Xcode (for Mac OS X, macosx/Wolf4SDL.xcodeproj/project.pbxproj)
 
 To compile the source code you need the development libraries of
  - SDL (http://www.libsdl.org/download-1.2.php) and
@@ -165,7 +151,6 @@ Credits:
  - Many thanks to "Der Tron" for hosting the svn repository, making Wolf4SDL
    FreeBSD compatible, testing, bugfixing and cleaning up the code!
  - Thanks to Chris Chokan for his improvements on Wolf4GW (base of Wolf4SDL)
- - Thanks to Chris Ballinger for the Mac OS X support
  - Thanks to Xilinx, Inc. for providing a list of maximum-length LFSR counters
    used for higher resolutions of fizzle fade
 

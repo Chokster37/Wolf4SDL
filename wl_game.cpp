@@ -829,11 +829,7 @@ void DrawPlayScreen (void)
 void PlayDemo (int demonumber)
 {
     int length;
-#ifndef SPEARDEMO
     int dems[4]={T_DEMO0,T_DEMO1,T_DEMO2,T_DEMO3};
-#else
-    int dems[1]={T_DEMO0};
-#endif
 
     CA_CacheGrChunk(dems[demonumber]);
     demoptr = (int8_t *) grsegs[dems[demonumber]];
@@ -1121,42 +1117,6 @@ startplayloop:
                 ClearMemory ();
 
                 LevelCompleted ();              // do the intermission
-
-#ifdef SPEARDEMO
-                if (gamestate.mapon == 1)
-                {
-                    died = true;                    // don't "get psyched!"
-
-                    VW_FadeOut ();
-
-                    ClearMemory ();
-
-                    CheckHighScore (gamestate.score,gamestate.mapon+1);
-#ifndef JAPAN
-                    strcpy(MainMenu[viewscores].string,STR_VS);
-#endif
-                    MainMenu[viewscores].routine = CP_ViewScores;
-                    return;
-                }
-#endif
-
-#ifdef JAPDEMO
-                if (gamestate.mapon == 3)
-                {
-                    died = true;                    // don't "get psyched!"
-
-                    VW_FadeOut ();
-
-                    ClearMemory ();
-
-                    CheckHighScore (gamestate.score,gamestate.mapon+1);
-#ifndef JAPAN
-                    strcpy(MainMenu[viewscores].string,STR_VS);
-#endif
-                    MainMenu[viewscores].routine = CP_ViewScores;
-                    return;
-                }
-#endif
 
                 gamestate.oldscore = gamestate.score;
 

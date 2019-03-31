@@ -30,17 +30,13 @@
 
 #ifndef SPEAR
     #include "audiowl6.h"
-    #ifdef UPLOAD
-        #include "gfxv_apo.h"
+    #ifdef JAPAN
+        #include "gfxv_jap.h"
     #else
-		#ifdef JAPAN
-			#include "gfxv_jap.h"
-		#else
-			#ifdef GOODTIMES
-	            #include "gfxv_wl6.h"
-		    #else
-			    #include "gfxv_apo.h"
-			#endif
+        #ifdef GOODTIMES
+            #include "gfxv_wl6.h"
+        #else
+            #include "gfxv_apo.h"
         #endif
     #endif
 #else
@@ -224,9 +220,7 @@ typedef enum
 enum
 {
     SPR_DEMO,
-#ifndef APOGEE_1_0
     SPR_DEATHCAM,
-#endif
 //
 // static sprites
 //
@@ -461,14 +455,7 @@ enum
 //
 // bj
 //
-#ifdef APOGEE_1_0
-    SPR_BJ_W1=360,
-#elif defined(APOGEE_1_1) && defined(UPLOAD)
-    SPR_BJ_W1=406,
-#else
-    SPR_BJ_W1,
-#endif
-    SPR_BJ_W2,SPR_BJ_W3,SPR_BJ_W4,
+    SPR_BJ_W1,SPR_BJ_W2,SPR_BJ_W3,SPR_BJ_W4,
     SPR_BJ_JUMP1,SPR_BJ_JUMP2,SPR_BJ_JUMP3,SPR_BJ_JUMP4,
 #else
 //
@@ -877,7 +864,6 @@ extern  char     configname[13];
 extern  boolean  param_nowait;
 extern  int      param_samplerate;
 extern  int      param_audiobuffer;
-extern  int      param_mission;
 extern  boolean  param_goodtimes;
 extern  boolean  param_ignorenumchunks;
 

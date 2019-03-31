@@ -1,7 +1,7 @@
 [Project]
 FileName=Wolf4SDL.dev
 Name=Wolf4SDL
-UnitCount=40
+UnitCount=39
 Type=0
 Ver=1
 ObjFiles=
@@ -290,16 +290,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit28]
-FileName=wl_debug.cpp
-CompileCpp=1
-Folder=Wolf4SDL
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit29]
 FileName=wl_def.h
 CompileCpp=1
 Folder=Wolf4SDL
@@ -309,7 +299,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit30]
+[Unit29]
 FileName=wl_draw.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -319,7 +309,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit31]
+[Unit30]
 FileName=wl_game.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -329,7 +319,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit32]
+[Unit31]
 FileName=wl_inter.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -339,7 +329,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit33]
+[Unit32]
 FileName=wl_main.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -349,7 +339,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit34]
+[Unit33]
 FileName=wl_menu.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -359,7 +349,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit35]
+[Unit34]
 FileName=wl_menu.h
 CompileCpp=1
 Folder=Wolf4SDL
@@ -369,7 +359,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit36]
+[Unit35]
 FileName=wl_play.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -379,7 +369,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit37]
+[Unit36]
 FileName=wl_state.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -417,7 +407,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit38]
+[Unit37]
 FileName=sdl_winmain.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -427,7 +417,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit39]
+[Unit38]
 FileName=version.h
 CompileCpp=1
 Folder=Wolf4SDL
@@ -437,7 +427,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit40]
+[Unit39]
 FileName=gfxv_jap.h
 CompileCpp=1
 Folder=Wolf4SDL

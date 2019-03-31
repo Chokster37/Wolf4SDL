@@ -51,7 +51,6 @@
 		<Unit filename="wl_act1.cpp" />
 		<Unit filename="wl_act2.cpp" />
 		<Unit filename="wl_agent.cpp" />
-		<Unit filename="wl_debug.cpp" />
 		<Unit filename="wl_def.h" />
 		<Unit filename="wl_draw.cpp" />
 		<Unit filename="wl_game.cpp" />

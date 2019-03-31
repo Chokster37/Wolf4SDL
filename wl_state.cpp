@@ -1304,7 +1304,6 @@ void FirstSighting (objtype *ob)
             ob->speed = SPDPATROL*3;        // go faster when chasing player
             break;
 
-#ifndef APOGEE_1_0
         case gretelobj:
             SD_PlaySound(KEINSND);
             NewState (ob,&s_gretelchase1);
@@ -1322,7 +1321,6 @@ void FirstSighting (objtype *ob)
             NewState (ob,&s_fatchase1);
             ob->speed *= 3;                 // go faster when chasing player
             break;
-#endif
 
         case schabbobj:
             SD_PlaySound(SCHABBSHASND);

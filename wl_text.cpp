@@ -481,13 +481,8 @@ void PageLayout (boolean shownumber)
 
     if (shownumber)
     {
-#ifdef SPANISH
-        sprintf(str, "Hoja %d de %d", pagenum, numpages);
-        px = 208;
-#else
         sprintf(str, "pg %d of %d", pagenum, numpages);
         px = 213;
-#endif
         py = 183;
         fontcolor = 0x4f;                          //12^BACKCOLOR;
 
@@ -611,7 +606,6 @@ void ShowArticle (char *article)
         H_HELP10PIC};
     int enames[14] = {
         0,0,
-#ifndef JAPDEMO
         C_ENDGAME1APIC,
         C_ENDGAME1BPIC,
         C_ENDGAME2APIC,
@@ -624,7 +618,6 @@ void ShowArticle (char *article)
         C_ENDGAME5BPIC,
         C_ENDGAME6APIC,
         C_ENDGAME6BPIC
-#endif
     };
 #endif
     unsigned    oldfontnumber;

@@ -81,7 +81,6 @@ char    configname[13] = "config.";
 boolean param_nowait = false;
 int     param_samplerate = 44100;
 int     param_audiobuffer = 2048 / (44100 / param_samplerate);
-int     param_mission = 0;
 boolean param_goodtimes = false;
 boolean param_ignorenumchunks = false;
 
@@ -770,12 +769,7 @@ void FinishSignon (void)
     #ifndef JAPAN
     SETFONTCOLOR(14,4);
 
-    #ifdef SPANISH
-    US_CPrint ("Oprima una tecla");
-    #else
     US_CPrint ("Press a key");
-    #endif
-
     #endif
 
     VH_UpdateScreen();
@@ -789,11 +783,7 @@ void FinishSignon (void)
     PrintY = 190;
     SETFONTCOLOR(10,4);
 
-    #ifdef SPANISH
-    US_CPrint ("pensando...");
-    #else
     US_CPrint ("Working...");
-    #endif
 
     VH_UpdateScreen();
     #endif
@@ -803,7 +793,7 @@ void FinishSignon (void)
     VH_UpdateScreen();
 
     if (!param_nowait)
-        VW_WaitVBL(3*70);
+        VW_WaitVBL(70);
 #endif
 }
 
@@ -845,7 +835,6 @@ static int wolfdigimap[] =
 
         YEAHSND,                32,
 
-#ifndef UPLOAD
         // These are in all other episodes
         DOGDEATHSND,            16,
         AHHHGSND,               17,
@@ -876,7 +865,6 @@ static int wolfdigimap[] =
         MEINSND,                44,         // EPISODE 6 BOSS DIE
         ROSESND,                45,         // EPISODE 5 BOSS DIE
 
-#endif
 #else
 //
 // SPEAR OF DESTINY DIGISOUNDS
@@ -908,7 +896,6 @@ static int wolfdigimap[] =
         DEATHSCREAM9SND,        28,         // AH GEEZ!
         GETGATLINGSND,          38,         // Got Gat replacement
 
-#ifndef SPEARDEMO
         DOGBARKSND,             1,
         DOGDEATHSND,            14,
         SPIONSND,               19,
@@ -924,7 +911,6 @@ static int wolfdigimap[] =
         ANGELSIGHTSND,          36,         // Angel Sight
         ANGELDEATHSND,          37,         // Angel Death
         GETSPEARSND,            39,         // Got Spear replacement
-#endif
 #endif
         LASTSOUND
     };
@@ -982,7 +968,6 @@ CP_itemtype MusicMenu[]=
     };
 #endif
 
-#ifndef SPEARDEMO
 void DoJukebox(void)
 {
     int which,lastsong=-1;
@@ -1030,11 +1015,7 @@ void DoJukebox(void)
     MenuFadeOut();
 
 #ifndef SPEAR
-#ifndef UPLOAD
     start = ((SDL_GetTicks()/10)%3)*6;
-#else
-    start = 0;
-#endif
 #else
     start = 0;
 #endif
@@ -1095,7 +1076,6 @@ void DoJukebox(void)
     UnCacheLump (CONTROLS_LUMP_START,CONTROLS_LUMP_END);
 #endif
 }
-#endif
 
 /*
 ==========================
@@ -1109,9 +1089,7 @@ void DoJukebox(void)
 
 static void InitGame()
 {
-#ifndef SPEARDEMO
     boolean didjukebox=false;
-#endif
 
     // initialize SDL
 #if defined _WIN32
@@ -1184,14 +1162,12 @@ static void InitGame()
 //
 	IN_ProcessEvents();
 
-#ifndef SPEARDEMO
     if (Keyboard[sc_M])
     {
         DoJukebox();
         didjukebox=true;
     }
     else
-#endif
 
 //
 // draw intro screen stuff
@@ -1215,9 +1191,7 @@ static void InitGame()
 // initialize variables
 //
     InitRedShifts ();
-#ifndef SPEARDEMO
     if(!didjukebox)
-#endif
         FinishSignon();
 
 #ifdef NOTYET
@@ -1397,23 +1371,16 @@ static void DemoLoop()
 
 #ifndef DEMOTEST
 
-    #ifndef UPLOAD
-
-        #ifndef GOODTIMES
+    #ifndef GOODTIMES
         #ifndef SPEAR
-        #ifndef JAPAN
-        if (!param_nowait)
-            NonShareware();
-        #endif
+            #ifndef JAPAN
+            if (!param_nowait)
+                NonShareware();
+            #endif
         #else
-            #ifndef GOODTIMES
-            #ifndef SPEARDEMO
             extern void CopyProtection(void);
             if(!param_goodtimes)
                 CopyProtection();
-            #endif
-            #endif
-        #endif
         #endif
     #endif
 
@@ -1481,12 +1448,7 @@ static void DemoLoop()
 //
 // demo
 //
-
-            #ifndef SPEARDEMO
             PlayDemo (LastDemo++%4);
-            #else
-            PlayDemo (0);
-            #endif
 
             if (playstate == ex_abort)
                 break;
@@ -1611,23 +1573,6 @@ void CheckParameters(int argc, char *argv[])
             else param_audiobuffer = atoi(argv[i]);
             audioBufferGiven = true;
         }
-        else IFARG("--mission")
-        {
-            if(++i >= argc)
-            {
-                printf("The mission option is missing the mission argument!\n");
-                hasError = true;
-            }
-            else
-            {
-                param_mission = atoi(argv[i]);
-                if(param_mission < 0 || param_mission > 3)
-                {
-                    printf("The mission option must be between 0 and 3!\n");
-                    hasError = true;
-                }
-            }
-        }
         else IFARG("--configdir")
         {
             if(++i >= argc)
@@ -1690,9 +1635,7 @@ void CheckParameters(int argc, char *argv[])
 #else
             "                        (default: $HOME/.wolf4sdl)\n"
 #endif
-#if defined(SPEAR) && !defined(SPEARDEMO)
-            " --mission <mission>    Mission number to play (0-3)\n"
-            "                        (default: 0 -> .sod, 1-3 -> .sd*)\n"
+#ifdef SPEAR
             " --goodtimes            Disable copy protection quiz\n"
 #endif
             , defaultSampleRate

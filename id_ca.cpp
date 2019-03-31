@@ -397,11 +397,7 @@ void CAL_SetupGrFile (void)
     long headersize = lseek(handle, 0, SEEK_END);
     lseek(handle, 0, SEEK_SET);
 
-#ifndef APOGEE_1_0
 	int expectedsize = lengthof(grstarts) - numEpisodesMissing;
-#else
-	int expectedsize = lengthof(grstarts);
-#endif
 
     if(!param_ignorenumchunks && headersize / 3 != (long) expectedsize)
         Quit("Wolf4SDL was not compiled for these data files:\n"
