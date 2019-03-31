@@ -943,7 +943,7 @@ boolean CheckSight (objtype *ob);
 */
 
 extern  short    anglefrac;
-extern  int      facecount, facetimes;
+extern  int      facecount;
 extern  word     plux,pluy;         // player coordinates scaled to unsigned
 extern  int32_t  thrustspeed;
 extern  objtype  *LastAttacker;
@@ -1107,17 +1107,6 @@ static inline fixed FixedMul(fixed a, fixed b)
 {
 	return (fixed)(((int64_t)a * b + 0x8000) >> 16);
 }
-
-#ifdef PLAYDEMOLIKEORIGINAL
-    #define DEMOCHOOSE_ORIG_SDL(orig, sdl) ((demoplayback) ? (orig) : (sdl))
-    #define DEMOCOND_ORIG                  (demoplayback)
-    #define DEMOIF_SDL                     if(DEMOCOND_SDL)
-#else
-    #define DEMOCHOOSE_ORIG_SDL(orig, sdl) (sdl)
-    #define DEMOCOND_ORIG                  false
-    #define DEMOIF_SDL
-#endif
-#define DEMOCOND_SDL                   (!DEMOCOND_ORIG)
 
 #define GetTicks() ((SDL_GetTicks()*7)/100)
 

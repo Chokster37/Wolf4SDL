@@ -281,20 +281,10 @@ void DrawFace (void)
 */
 
 int facecount = 0;
-int facetimes = 0;
 
 void UpdateFace (void)
 {
-    // don't make demo depend on sound playback
-    if(demoplayback)
-    {
-        if(facetimes > 0)
-        {
-            facetimes--;
-            return;
-        }
-    }
-    else if(SD_SoundPlaying() == GETGATLINGSND)
+    if(SD_SoundPlaying() == GETGATLINGSND)
         return;
 
     facecount += tics;
@@ -689,7 +679,6 @@ void GetBonus (statobj_t *check)
             break;
         case    bo_chaingun:
             SD_PlaySound (GETGATLINGSND);
-            facetimes = 38;
             GiveWeapon (wp_chaingun);
             StatusDrawFace (GOTGATLINGPIC);
             facecount = 0;
@@ -890,25 +879,6 @@ void VictoryTile (void)
 ===================
 */
 
-// For player movement in demos exactly as in the original Wolf3D v1.4 source code
-static fixed FixedByFracOrig(fixed a, fixed b)
-{
-    int sign = 0;
-    if(b == 65536) b = 65535;
-    else if(b == -65536) b = 65535, sign = 1;
-    else if(b < 0) b = (-b), sign = 1;
-
-    if(a < 0)
-    {
-        a = -a;
-        sign = !sign;
-    }
-    fixed res = (fixed)(((int64_t) a * b) >> 16);
-    if(sign)
-        res = -res;
-    return res;
-}
-
 void Thrust (int angle, int32_t speed)
 {
     int32_t xmove,ymove;
@@ -921,12 +891,8 @@ void Thrust (int angle, int32_t speed)
     if (speed >= MINDIST*2)
         speed = MINDIST*2-1;
 
-    xmove = DEMOCHOOSE_ORIG_SDL(
-                FixedByFracOrig(speed, costable[angle]),
-                FixedMul(speed,costable[angle]));
-    ymove = DEMOCHOOSE_ORIG_SDL(
-                -FixedByFracOrig(speed, sintable[angle]),
-                -FixedMul(speed,sintable[angle]));
+    xmove = FixedMul(speed,costable[angle]);
+    ymove = -FixedMul(speed,sintable[angle]);
 
     ClipMove(player,xmove,ymove);
 

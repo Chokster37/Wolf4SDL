@@ -46,18 +46,12 @@ Additional features:
       a whole tile.
 
 
-The following versions of Wolfenstein 3D data files are currently supported:
-
- - Wolfenstein 3D v1.4 full GT/ID/Activision
-
-
 How to play:
 ------------
 
 To play Wolfenstein 3D with Wolf4SDL, you just have to copy the original data
-files (e.g. *.WL6) into the same directory as the Wolf4SDL executable.
-Please make sure, that you use the correct version of the executable with the
-according data files version as the differences are hardcoded into the binary!
+files (*.WL6) into the same directory as the Wolf4SDL executable. For best
+results, use the "Breathing BJ" vgafiles.zip included in the data directory.
 
 On Windows SDL.dll and SDL_mixer.dll must also be copied into this directory.
 They are also available at http://www.chaos-software.de.vu

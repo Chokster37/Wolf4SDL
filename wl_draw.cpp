@@ -1497,9 +1497,7 @@ void    ThreeDRefresh (void)
 // clear out the traced array
 //
     memset(spotvis,0,maparea);
-#ifdef PLAYDEMOLIKEORIGINAL
-    if (DEMOCOND_SDL)
-#endif
+
     if (!tilemap[player->tilex][player->tiley] ||
          tilemap[player->tilex][player->tiley] & 0x80)
     spotvis[player->tilex][player->tiley] = 1;       // Detect all sprites over player fix

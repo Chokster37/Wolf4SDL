@@ -83,9 +83,7 @@ void SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state)
     GetNewActor ();
     newobj->state = state;
     if (state->tictime)
-        newobj->ticcount = DEMOCHOOSE_ORIG_SDL(
-                US_RndT () % state->tictime,
-                US_RndT () % state->tictime + 1);     // Chris' moonwalk bugfix ;D
+        newobj->ticcount = US_RndT () % state->tictime + 1;     // Chris' moonwalk bugfix ;D
     else
         newobj->ticcount = 0;
 
@@ -165,32 +163,6 @@ void NewState (objtype *ob, statetype *state)
     }                                               \
 }
 
-
-#ifdef PLAYDEMOLIKEORIGINAL
-    #define DOORCHECK                                   \
-            if(DEMOCOND_ORIG)                           \
-                doornum = temp&63;                      \
-            else                                        \
-            {                                           \
-                doornum = (int) temp & 127;             \
-                if (ob->obclass != ghostobj)            \
-                {                                       \
-                    OpenDoor(doornum);                  \
-                    ob->distance = -doornum - 1;        \
-                    return true;                        \
-                }                                       \
-            }
-#else
-    #define DOORCHECK                                   \
-            doornum = (int) temp & 127;                 \
-            if (ob->obclass != ghostobj)                \
-            {                                           \
-                OpenDoor(doornum);                      \
-                ob->distance = -doornum - 1;            \
-                return true;                            \
-            }
-#endif
-
 #define CHECKSIDE(x,y)                                  \
 {                                                       \
     temp=(uintptr_t)actorat[x][y];                      \
@@ -200,7 +172,13 @@ void NewState (objtype *ob, statetype *state)
             return false;                               \
         if (temp<256)                                   \
         {                                               \
-            DOORCHECK                                   \
+            doornum = (int) temp & 127;                 \
+            if (ob->obclass != ghostobj)                \
+            {                                           \
+                OpenDoor(doornum);                      \
+                ob->distance = -doornum - 1;            \
+                return true;                            \
+            }                                           \
         }                                               \
         else if (((objtype *)temp)->flags&FL_SHOOTABLE) \
             return false;                               \
@@ -1181,22 +1159,22 @@ boolean CheckSight (objtype *ob)
         // check diagonal moving guards fix
 
         case northwest:
-            if (DEMOCOND_SDL && deltay > -deltax)
+            if (deltay > -deltax)
                 return false;
             break;
 
         case northeast:
-            if (DEMOCOND_SDL && deltay > deltax)
+            if (deltay > deltax)
                 return false;
             break;
 
         case southwest:
-            if (DEMOCOND_SDL && deltax > deltay)
+            if (deltax > deltay)
                 return false;
             break;
 
         case southeast:
-            if (DEMOCOND_SDL && -deltax > deltay)
+            if (-deltax > deltay)
                 return false;
             break;
     }
