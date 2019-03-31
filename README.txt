@@ -46,14 +46,9 @@ Additional features:
       a whole tile.
 
 
-The following versions of Wolfenstein 3D data files are currently supported
-by the source code (choose the version by commenting/uncommenting lines in
-version.h as described in that file):
+The following versions of Wolfenstein 3D data files are currently supported:
 
- - Wolfenstein 3D v1.1 full Apogee
- - Wolfenstein 3D v1.4 full Apogee
  - Wolfenstein 3D v1.4 full GT/ID/Activision
- - Wolfenstein 3D v1.4 full Imagineer (Japanese)
 
 
 How to play:
@@ -117,9 +112,6 @@ http://sourceforge.net/project/showfiles.php?group_id=94270&package_id=151751
 Just rename the file extension from ".devpack" to ".tar.bz2" and unpack it
 with for example WinRAR. Then add the directories include/SDL and lib to the
 according search paths in your project.
-
-IMPORTANT: Do not forget to take care of version.h!
-   By default it compiles for "Wolfenstein 3D v1.4 full GT/ID/Activision"!
 
 
 Known bugs:

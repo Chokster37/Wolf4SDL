@@ -59,11 +59,6 @@ Victory (void)
 
     VWB_Bar (0, 0, 320, screenHeight / scaleFactor - STATUSLINES + 1, VIEWCOLOR);
 
-#ifdef JAPAN
-    CA_CacheGrChunk (C_ENDRATIOSPIC);
-    VWB_DrawPic (0, 0, C_ENDRATIOSPIC);
-    UNCACHEGRCHUNK (C_ENDRATIOSPIC);
-#else
     Write (18, 2, STR_YOUWIN);
 
     Write (TIMEX, TIMEY - 2, STR_TOTALTIME);
@@ -73,7 +68,6 @@ Victory (void)
     Write (RATIOX + 8, RATIOY, STR_RATKILL);
     Write (RATIOX + 4, RATIOY + 2, STR_RATSECRET);
     Write (RATIOX, RATIOY + 4, STR_RATTREASURE);
-#endif
 
     VWB_DrawPic (8, 4, L_BJWINSPIC);
 
@@ -157,7 +151,6 @@ Victory (void)
 
 //==========================================================================
 
-#ifndef JAPAN
 /*
 ==================
 =
@@ -183,7 +176,6 @@ PG13 (void)
 
     VW_FadeOut ();
 }
-#endif
 
 
 //==========================================================================
@@ -399,16 +391,10 @@ LevelCompleted (void)
     IN_ClearKeysDown ();
     IN_StartAck ();
 
-#ifdef JAPAN
-    CA_CacheGrChunk (C_INTERMISSIONPIC);
-    VWB_DrawPic (0, 0, C_INTERMISSIONPIC);
-    UNCACHEGRCHUNK (C_INTERMISSIONPIC);
-#endif
     VWB_DrawPic (0, 16, L_GUYPIC);
 
     if (mapon < 8)
     {
-#ifndef JAPAN
         Write (14, 2, "floor\ncompleted");
 
         Write (14, 7, STR_BONUS "     0");
@@ -420,7 +406,6 @@ LevelCompleted (void)
         Write (1, 18, STR_RAT2TREASURE);
 
         Write (26, 2, itoa (gamestate.mapon + 1, tempstr, 10));
-#endif
 
         Write (26, 12, parTimes[gamestate.episode * 10 + mapon].timestr);
 
@@ -887,42 +872,4 @@ CheckHighScore (int32_t score, word other)
     }
 
 }
-
-
-#ifndef JAPAN
-////////////////////////////////////////////////////////
-//
-// NON-SHAREWARE NOTICE
-//
-////////////////////////////////////////////////////////
-void
-NonShareware (void)
-{
-    VW_FadeOut ();
-
-    ClearMScreen ();
-    DrawStripes (10);
-
-    CA_CacheGrChunk (STARTFONT + 1);
-    fontnumber = 1;
-
-    SETFONTCOLOR (READHCOLOR, BKGDCOLOR);
-    PrintX = 110;
-    PrintY = 15;
-
-    US_Print ("Attention");
-
-    SETFONTCOLOR (HIGHLIGHT, BKGDCOLOR);
-    WindowX = PrintX = 40;
-    PrintY = 60;
-    US_Print ("This game is NOT shareware.\n");
-    US_Print ("Please do not distribute it.\n");
-    US_Print ("Thanks.\n\n");
-    US_Print ("        Id Software\n");
-
-    VW_UpdateScreen ();
-    VW_FadeIn ();
-    IN_Ack ();
-}
-#endif
 

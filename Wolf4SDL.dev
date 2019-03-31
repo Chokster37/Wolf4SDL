@@ -1,7 +1,7 @@
 [Project]
 FileName=Wolf4SDL.dev
 Name=Wolf4SDL
-UnitCount=35
+UnitCount=34
 Type=0
 Ver=1
 ObjFiles=
@@ -80,17 +80,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit6]
-FileName=gfxv_apo.h
-CompileCpp=1
-Folder=Wolf4SDL
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-
-[Unit7]
 FileName=gfxv_wl6.h
 CompileCpp=1
 Folder=Wolf4SDL
@@ -100,7 +89,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit8]
+[Unit7]
 FileName=id_ca.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -110,7 +99,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit9]
+[Unit8]
 FileName=id_ca.h
 CompileCpp=1
 Folder=Wolf4SDL
@@ -120,7 +109,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit10]
+[Unit9]
 FileName=id_in.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -130,7 +119,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit11]
+[Unit10]
 FileName=id_in.h
 CompileCpp=1
 Folder=Wolf4SDL
@@ -140,7 +129,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit12]
+[Unit11]
 FileName=id_pm.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -150,7 +139,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit13]
+[Unit12]
 FileName=id_sd.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -160,7 +149,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit14]
+[Unit13]
 FileName=id_sd.h
 CompileCpp=1
 Folder=Wolf4SDL
@@ -170,7 +159,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit15]
+[Unit14]
 FileName=id_us.h
 CompileCpp=1
 Folder=Wolf4SDL
@@ -180,7 +169,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit16]
+[Unit15]
 FileName=id_us_1.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -190,7 +179,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit17]
+[Unit16]
 FileName=id_vh.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -200,7 +189,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit18]
+[Unit17]
 FileName=id_vh.h
 CompileCpp=1
 Folder=Wolf4SDL
@@ -210,7 +199,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit19]
+[Unit18]
 FileName=id_vl.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -220,7 +209,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit20]
+[Unit19]
 FileName=id_vl.h
 CompileCpp=1
 Folder=Wolf4SDL
@@ -230,7 +219,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit22]
+[Unit21]
 FileName=wl_act1.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -240,7 +229,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit23]
+[Unit22]
 FileName=wl_act2.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -250,7 +239,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit24]
+[Unit23]
 FileName=wl_agent.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -260,7 +249,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit25]
+[Unit24]
 FileName=wl_def.h
 CompileCpp=1
 Folder=Wolf4SDL
@@ -270,7 +259,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit26]
+[Unit25]
 FileName=wl_draw.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -280,7 +269,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit27]
+[Unit26]
 FileName=wl_game.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -290,7 +279,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit28]
+[Unit27]
 FileName=wl_inter.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -300,7 +289,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit29]
+[Unit28]
 FileName=wl_main.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -310,7 +299,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit30]
+[Unit29]
 FileName=wl_menu.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -320,7 +309,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit31]
+[Unit30]
 FileName=wl_menu.h
 CompileCpp=1
 Folder=Wolf4SDL
@@ -330,7 +319,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit32]
+[Unit31]
 FileName=wl_play.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -340,7 +329,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit33]
+[Unit32]
 FileName=wl_state.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -368,7 +357,7 @@ ProductName=
 ProductVersion=
 AutoIncBuildNr=0
 
-[Unit21]
+[Unit20]
 FileName=signon.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -378,7 +367,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit37]
+[Unit33]
 FileName=sdl_winmain.cpp
 CompileCpp=1
 Folder=Wolf4SDL
@@ -390,16 +379,6 @@ BuildCmd=
 
 [Unit34]
 FileName=version.h
-CompileCpp=1
-Folder=Wolf4SDL
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit35]
-FileName=gfxv_jap.h
 CompileCpp=1
 Folder=Wolf4SDL
 Compile=1

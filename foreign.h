@@ -1,6 +1,3 @@
-#define QUITSUR	    "Are you sure you want\n"\
-		            "to quit this great game?"
-
 #define CURGAME	    "You are currently in\n"\
 		            "a game. Continuing will\n"\
 		            "erase old game. Ok?"
@@ -29,7 +26,6 @@
 
 #define STR_GAME	"Game"
 #define STR_DEMO	"Demo"
-#define STR_LGC		"Load Game called\n\""
 #define STR_EMPTY	"empty"
 
 #define STR_NONE	"None"
@@ -75,15 +71,6 @@
 #define STR_RAT2TREASURE	"treasure ratio    %"
 
 #define STR_DEFEATED	"defeated!"
-
-#define STR_CHEATER1	"You now have 100% Health,"
-#define STR_CHEATER2    "99 Ammo and both Keys!"
-#define STR_CHEATER3	"Note that you have basically"
-#define STR_CHEATER4	"eliminated your chances of"
-#define STR_CHEATER5	"getting a high score!"
-
-#define STR_NOSPACE1	"There is not enough space"
-#define STR_NOSPACE2	"on your disk to Save Game!"
 
 #define STR_SAVECHT1	"Your Save Game file is,"
 #define STR_SAVECHT2	"shall we say, \"corrupted\"."

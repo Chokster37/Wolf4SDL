@@ -26,8 +26,6 @@
 		<Unit filename="mame\fmopl.cpp" />
 		<Unit filename="mame\fmopl.h" />
 		<Unit filename="foreign.h" />
-		<Unit filename="gfxv_apo.h" />
-		<Unit filename="gfxv_jap.h" />
 		<Unit filename="gfxv_wl6.h" />
 		<Unit filename="id_ca.cpp" />
 		<Unit filename="id_ca.h" />

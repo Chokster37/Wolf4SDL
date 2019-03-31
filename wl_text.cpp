@@ -64,7 +64,6 @@ static boolean layoutdone;
 
 //===========================================================================
 
-#ifndef JAPAN
 /*
 =====================
 =
@@ -571,7 +570,6 @@ void CacheLayoutGraphics (void)
 
     Quit ("CacheLayoutGraphics: No ^E to terminate file!");
 }
-#endif
 
 
 /*
@@ -582,58 +580,18 @@ void CacheLayoutGraphics (void)
 =====================
 */
 
-#ifdef JAPAN
-void ShowArticle (int which)
-#else
 void ShowArticle (char *article)
-#endif
 {
-#ifdef JAPAN
-    int snames[10] = {
-        H_HELP1PIC,
-        H_HELP2PIC,
-        H_HELP3PIC,
-        H_HELP4PIC,
-        H_HELP5PIC,
-        H_HELP6PIC,
-        H_HELP7PIC,
-        H_HELP8PIC,
-        H_HELP9PIC,
-        H_HELP10PIC};
-    int enames[14] = {
-        0,0,
-        C_ENDGAME1APIC,
-        C_ENDGAME1BPIC,
-        C_ENDGAME2APIC,
-        C_ENDGAME2BPIC,
-        C_ENDGAME3APIC,
-        C_ENDGAME3BPIC,
-        C_ENDGAME4APIC,
-        C_ENDGAME4BPIC,
-        C_ENDGAME5APIC,
-        C_ENDGAME5BPIC,
-        C_ENDGAME6APIC,
-        C_ENDGAME6BPIC
-    };
-#endif
     unsigned    oldfontnumber;
     boolean     newpage,firstpage;
     ControlInfo ci;
 
-#ifdef JAPAN
-    pagenum = 1;
-    if (!which)
-        numpages = 10;
-    else
-        numpages = 2;
-#else
     text = article;
     oldfontnumber = fontnumber;
     fontnumber = 0;
     CA_CacheGrChunk(STARTFONT);
     VWB_Bar (0,0,320,200,BACKCOLOR);
     CacheLayoutGraphics ();
-#endif
 
     newpage = true;
     firstpage = true;
@@ -643,14 +601,7 @@ void ShowArticle (char *article)
         if (newpage)
         {
             newpage = false;
-#ifdef JAPAN
-            if (!which)
-                CA_CacheScreen(snames[pagenum - 1]);
-            else
-                CA_CacheScreen(enames[which*2 + pagenum - 1]);
-#else
             PageLayout (true);
-#endif
             VW_UpdateScreen ();
             if (firstpage)
             {
@@ -695,12 +646,8 @@ void ShowArticle (char *article)
             case dir_West:
                 if (pagenum>1)
                 {
-#ifndef JAPAN
                     BackPage ();
                     BackPage ();
-#else
-                  pagenum--;
-#endif
                     newpage = true;
                 }
                 TicDelay(20);
@@ -711,9 +658,6 @@ void ShowArticle (char *article)
                 if (pagenum<numpages)
                 {
                     newpage = true;
-#ifdef JAPAN
-                    pagenum++;
-#endif
                 }
                 TicDelay(20);
                 break;
@@ -727,43 +671,7 @@ void ShowArticle (char *article)
 
 //===========================================================================
 
-#ifndef JAPAN
 int     endextern = T_ENDART1;
-int     helpextern = T_HELPART;
-#endif
-
-/*
-=================
-=
-= HelpScreens
-=
-=================
-*/
-void HelpScreens (void)
-{
-    int     artnum;
-    char    *text;
-
-
-#ifdef JAPAN
-    ShowArticle (0);
-    VW_FadeOut();
-    FreeMusic ();
-#else
-
-    artnum = helpextern;
-    CA_CacheGrChunk (artnum);
-    text = (char *)grsegs[artnum];
-
-    ShowArticle (text);
-
-    UNCACHEGRCHUNK(artnum);
-
-    VW_FadeOut();
-
-    FreeMusic ();
-#endif
-}
 
 //
 // END ARTICLES
@@ -775,16 +683,6 @@ void EndText (void)
 
     ClearMemory ();
 
-#ifdef JAPAN
-    ShowArticle(gamestate.episode + 1);
-
-    VW_FadeOut();
-
-    SETFONTCOLOR(0,15);
-    IN_ClearKeysDown();
-
-    FreeMusic ();
-#else
     artnum = endextern+gamestate.episode;
     CA_CacheGrChunk (artnum);
     text = (char *)grsegs[artnum];
@@ -798,5 +696,4 @@ void EndText (void)
     IN_ClearKeysDown();
 
     FreeMusic ();
-#endif
 }

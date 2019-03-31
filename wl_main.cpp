@@ -764,18 +764,15 @@ void FinishSignon (void)
     WindowW = 320;
     PrintY = 190;
 
-    #ifndef JAPAN
     SETFONTCOLOR(14,4);
 
     US_CPrint ("Press a key");
-    #endif
 
     VH_UpdateScreen();
 
     if (!param_nowait)
         IN_Ack ();
 
-    #ifndef JAPAN
     VW_Bar (0,189,300,11,VL_GetPixel(0,0));
 
     PrintY = 190;
@@ -784,7 +781,6 @@ void FinishSignon (void)
     US_CPrint ("Working...");
 
     VH_UpdateScreen();
-    #endif
 
     SETFONTCOLOR(0,15);
 }
@@ -1200,10 +1196,8 @@ void Quit (const char *errorStr, ...)
     if (!error || !*error)
     {
 #ifdef NOTYET
-        #ifndef JAPAN
         CA_CacheGrChunk (ORDERSCREEN);
         screen = grsegs[ORDERSCREEN];
-        #endif
 #endif
         WriteConfig ();
     }
@@ -1234,9 +1228,7 @@ void Quit (const char *errorStr, ...)
     if (!error || !(*error))
     {
 #ifdef NOTYET
-        #ifndef JAPAN
         memcpy((byte *)0xb8000,screen+7,24*160); // 24 for SPEAR/UPLOAD compatibility
-        #endif
         SetTextCursor(0,23);
 #endif
     }
@@ -1265,23 +1257,10 @@ static void DemoLoop()
 // main game cycle
 //
 
-#ifndef DEMOTEST
-
-    #ifndef GOODTIMES
-        #ifndef JAPAN
-            if (!param_nowait)
-                NonShareware();
-        #endif
-    #endif
-
     StartCPMusic(INTROSONG);
 
-#ifndef JAPAN
     if (!param_nowait)
         PG13 ();
-#endif
-
-#endif
 
     while (1)
     {
@@ -1290,8 +1269,6 @@ static void DemoLoop()
 //
 // title page
 //
-#ifndef DEMOTEST
-
             CA_CacheScreen (TITLEPIC);
             VW_UpdateScreen ();
             VW_FadeIn();
@@ -1316,7 +1293,6 @@ static void DemoLoop()
 
             if (IN_UserInput(TickBase*10))
                 break;
-#endif
 //
 // demo
 //
