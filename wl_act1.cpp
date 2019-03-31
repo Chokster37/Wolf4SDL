@@ -42,11 +42,7 @@ statinfo_t statinfo[] =
     {SPR_STAT_12,block},                    // Urn             "
     {SPR_STAT_13,block},                    // Bare table      "
     {SPR_STAT_14,none},                     // Ceiling light   "
-    #ifndef SPEAR
     {SPR_STAT_15},                          // Kitchen stuff   "
-    #else
-    {SPR_STAT_15,block},                    // Gibs!
-    #endif
     //
     // NEW PAGE
     //
@@ -83,34 +79,17 @@ statinfo_t statinfo[] =
     //
     // NEW PAGE
     //
-    #ifndef SPEAR
     {SPR_STAT_40,block},                    // Call Apogee          spr7v
-    #else
-    {SPR_STAT_40},                          // Red light
-    #endif
     //
     // NEW PAGE
     //
     {SPR_STAT_41},                          // junk            "
     {SPR_STAT_42},                          // junk            "
     {SPR_STAT_43},                          // junk            "
-    #ifndef SPEAR
     {SPR_STAT_44},                          // pots            "
-    #else
-    {SPR_STAT_44,block},                    // Gibs!
-    #endif
     {SPR_STAT_45,block},                    // stove           " (SOD:gibs)
     {SPR_STAT_46,block},                    // spears          " (SOD:gibs)
     {SPR_STAT_47},                          // vines           "
-    //
-    // NEW PAGE
-    //
-    #ifdef SPEAR
-    {SPR_STAT_48,block},                    // marble pillar
-    {SPR_STAT_49,bo_25clip},                // bonus 25 clip
-    {SPR_STAT_50,block},                    // truck
-    {SPR_STAT_51,bo_spear},                 // SPEAR OF DESTINY!
-    #endif
 
     {SPR_STAT_26,bo_clip2},                 // Clip            "
     {-1}                                    // terminator
@@ -168,13 +147,11 @@ void SpawnStatic (int tilex, int tiley, int type)
         case    bo_key3:
         case    bo_key4:
         case    bo_clip:
-        case    bo_25clip:
         case    bo_machinegun:
         case    bo_chaingun:
         case    bo_food:
         case    bo_alpo:
         case    bo_gibs:
-        case    bo_spear:
             laststatobj->flags = FL_BONUS;
             laststatobj->itemnumber = statinfo[type].type;
             break;

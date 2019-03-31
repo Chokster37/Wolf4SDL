@@ -22,15 +22,12 @@
 			<Add library="SDL_mixer" />
 			<Add directory="..\SDL-devel\lib" />
 		</Linker>
-		<Unit filename="audiosod.h" />
 		<Unit filename="audiowl6.h" />
-		<Unit filename="f_spear.h" />
 		<Unit filename="mame\fmopl.cpp" />
 		<Unit filename="mame\fmopl.h" />
 		<Unit filename="foreign.h" />
 		<Unit filename="gfxv_apo.h" />
 		<Unit filename="gfxv_jap.h" />
-		<Unit filename="gfxv_sod.h" />
 		<Unit filename="gfxv_wl6.h" />
 		<Unit filename="id_ca.cpp" />
 		<Unit filename="id_ca.h" />

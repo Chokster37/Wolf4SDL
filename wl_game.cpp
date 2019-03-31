@@ -31,12 +31,6 @@ boolean         ingame,fizzlein;
 gametype        gamestate;
 byte            bordercol=VIEWCOLOR;        // color of the Change View/Ingame border
 
-#ifdef SPEAR
-int32_t         spearx,speary;
-unsigned        spearangle;
-boolean         spearflag;
-#endif
-
 //
 // ELEVATOR BACK MAPS - REMEMBER (-1)!!
 //
@@ -287,10 +281,6 @@ static void ScanInfoPlane(void)
                 case 70:
                 case 71:
                 case 72:
-#ifdef SPEAR
-                case 73:                        // TRUCK AND SPEAR!
-                case 74:
-#endif
                     SpawnStatic(x,y,tile-23);
                     break;
 
@@ -493,7 +483,6 @@ static void ScanInfoPlane(void)
 //
 // boss
 //
-#ifndef SPEAR
                 case 214:
                     SpawnBoss (x,y);
                     break;
@@ -515,27 +504,6 @@ static void ScanInfoPlane(void)
                 case 178:
                     SpawnHitler (x,y);
                     break;
-#else
-                case 106:
-                    SpawnSpectre (x,y);
-                    break;
-                case 107:
-                    SpawnAngel (x,y);
-                    break;
-                case 125:
-                    SpawnTrans (x,y);
-                    break;
-                case 142:
-                    SpawnUber (x,y);
-                    break;
-                case 143:
-                    SpawnWill (x,y);
-                    break;
-                case 161:
-                    SpawnDeath (x,y);
-                    break;
-
-#endif
 
 //
 // mutants
@@ -585,7 +553,6 @@ static void ScanInfoPlane(void)
 //
 // ghosts
 //
-#ifndef SPEAR
                 case 224:
                     SpawnGhosts (en_blinky,x,y);
                     break;
@@ -598,7 +565,6 @@ static void ScanInfoPlane(void)
                 case 227:
                     SpawnGhosts (en_inky,x,y);
                     break;
-#endif
             }
         }
     }
@@ -1043,13 +1009,6 @@ restartgame:
         if (!loadedgame)
             SetupGameLevel ();
 
-#ifdef SPEAR
-        if (gamestate.mapon == 20)      // give them the key allways
-        {
-            gamestate.keys |= 1;
-            DrawKeys ();
-        }
-#endif
         DrawLevel ();
 
         ingame = true;
@@ -1068,36 +1027,7 @@ restartgame:
             fizzlein = true;
         }
 
-#ifdef SPEAR
-startplayloop:
-#endif
         PlayLoop ();
-
-#ifdef SPEAR
-        if (spearflag)
-        {
-            SD_StopSound();
-            SD_PlaySound(GETSPEARSND);
-            if (DigiMode != sds_Off)
-            {
-                Delay(150);
-            }
-            else
-                SD_WaitSoundDone();
-
-            ClearMemory ();
-            gamestate.oldscore = gamestate.score;
-            gamestate.mapon = 20;
-            SetupGameLevel ();
-            StartMusic ();
-            player->x = spearx;
-            player->y = speary;
-            player->angle = (short)spearangle;
-            spearflag = false;
-            Thrust (0,0);
-            goto startplayloop;
-        }
-#endif
 
         StopMusic ();
         SD_StopSound ();
@@ -1120,7 +1050,6 @@ startplayloop:
 
                 gamestate.oldscore = gamestate.score;
 
-#ifndef SPEAR
                 //
                 // COMING BACK FROM SECRET LEVEL
                 //
@@ -1132,31 +1061,6 @@ startplayloop:
                     //
                     if (playstate == ex_secretlevel)
                         gamestate.mapon = 9;
-#else
-
-#define FROMSECRET1             3
-#define FROMSECRET2             11
-
-                //
-                // GOING TO SECRET LEVEL
-                //
-                if (playstate == ex_secretlevel)
-                    switch(gamestate.mapon)
-                {
-                    case FROMSECRET1: gamestate.mapon = 18; break;
-                    case FROMSECRET2: gamestate.mapon = 19; break;
-                }
-                else
-                    //
-                    // COMING BACK FROM SECRET LEVEL
-                    //
-                    if (gamestate.mapon == 18 || gamestate.mapon == 19)
-                        switch(gamestate.mapon)
-                    {
-                        case 18: gamestate.mapon = FROMSECRET1+1; break;
-                        case 19: gamestate.mapon = FROMSECRET2+1; break;
-                    }
-#endif
                     else
                         //
                         // GOING TO NEXT LEVEL
@@ -1185,11 +1089,7 @@ startplayloop:
                 return;
 
             case ex_victorious:
-#ifndef SPEAR
                 VW_FadeOut ();
-#else
-                VL_FadeOut (0,255,0,17,17,300);
-#endif
                 ClearMemory ();
 
                 Victory ();

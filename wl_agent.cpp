@@ -263,11 +263,9 @@ void DrawFace (void)
     }
     else
     {
-#ifndef SPEAR
         if (LastAttacker && LastAttacker->obclass == needleobj)
             StatusDrawFace(MUTANTBJPIC);
         else
-#endif
             StatusDrawFace(FACE8APIC);
     }
 }
@@ -394,17 +392,6 @@ void TakeDamage (int points,objtype *attacker)
 
     DrawHealth ();
     DrawFace ();
-
-    //
-    // MAKE BJ'S EYES BUG IF MAJOR DAMAGE!
-    //
-#ifdef SPEAR
-    if (points > 30 && gamestate.health!=0)
-    {
-        StatusDrawFace(BJOUCHPIC);
-        facecount = 0;
-    }
-#endif
 }
 
 /*
@@ -439,12 +426,7 @@ void HealSelf (int points)
 
 void DrawLevel (void)
 {
-#ifdef SPEAR
-    if (gamestate.mapon == 20)
-        LatchNumber (2,16,2,18);
-    else
-#endif
-        LatchNumber (2,16,2,gamestate.mapon+1);
+    LatchNumber (2,16,2,gamestate.mapon+1);
 }
 
 //===========================================================================
@@ -701,17 +683,6 @@ void GetBonus (statobj_t *check)
             SD_PlaySound (GETAMMOSND);
             GiveAmmo (4);
             break;
-
-#ifdef SPEAR
-        case    bo_25clip:
-            if (gamestate.ammo == 99)
-                return;
-
-            SD_PlaySound (GETAMMOBOXSND);
-            GiveAmmo (25);
-            break;
-#endif
-
         case    bo_machinegun:
             SD_PlaySound (GETMACHINESND);
             GiveWeapon (wp_machinegun);
@@ -755,15 +726,6 @@ void GetBonus (statobj_t *check)
             SD_PlaySound (SLURPIESND);
             HealSelf (1);
             break;
-
-#ifdef SPEAR
-        case    bo_spear:
-            spearflag = true;
-            spearx = player->x;
-            speary = player->y;
-            spearangle = player->angle;
-            playstate = ex_completed;
-#endif
     }
 
     StartBonusFlash ();
@@ -915,9 +877,7 @@ void ClipMove (objtype *ob, int32_t xmove, int32_t ymove)
 
 void VictoryTile (void)
 {
-#ifndef SPEAR
     SpawnBJVictory ();
-#endif
 
     gamestate.victoryflag = true;
 }
@@ -953,15 +913,6 @@ void Thrust (int angle, int32_t speed)
 {
     int32_t xmove,ymove;
     unsigned offset;
-
-
-    //
-    // ZERO FUNNY COUNTER IF MOVED!
-    //
-#ifdef SPEAR
-    if (speed)
-        funnyticount = 0;
-#endif
 
     thrustspeed += speed;
     //

@@ -27,22 +27,16 @@
 #define NOBUTTONNAME  "N"
 
 #include "foreign.h"
+#include "audiowl6.h"
 
-#ifndef SPEAR
-    #include "audiowl6.h"
-    #ifdef JAPAN
-        #include "gfxv_jap.h"
-    #else
-        #ifdef GOODTIMES
-            #include "gfxv_wl6.h"
-        #else
-            #include "gfxv_apo.h"
-        #endif
-    #endif
+#ifdef JAPAN
+    #include "gfxv_jap.h"
 #else
-    #include "audiosod.h"
-    #include "gfxv_sod.h"
-    #include "f_spear.h"
+    #ifdef GOODTIMES
+        #include "gfxv_wl6.h"
+    #else
+        #include "gfxv_apo.h"
+    #endif
 #endif
 
 typedef uint8_t byte;
@@ -128,11 +122,7 @@ void Quit(const char *errorStr, ...);
 #define FLASHCOLOR      5
 #define FLASHTICS       4
 
-#ifndef SPEAR
-    #define LRpack      8       // # of levels to store in endgame
-#else
-    #define LRpack      20
-#endif
+#define LRpack          8       // # of levels to store in endgame
 
 #define PLAYERSIZE      MINDIST         // player radius
 #define MINACTORDIST    0x10000l        // minimum dist from player center
@@ -241,10 +231,6 @@ enum
 
     SPR_STAT_40,SPR_STAT_41,SPR_STAT_42,SPR_STAT_43,
     SPR_STAT_44,SPR_STAT_45,SPR_STAT_46,SPR_STAT_47,
-
-#ifdef SPEAR
-    SPR_STAT_48,SPR_STAT_49,SPR_STAT_50,SPR_STAT_51,
-#endif
 
 //
 // guard
@@ -358,7 +344,6 @@ enum
 
     SPR_OFC_SHOOT1,SPR_OFC_SHOOT2,SPR_OFC_SHOOT3,
 
-#ifndef SPEAR
 //
 // ghosts
 //
@@ -412,7 +397,7 @@ enum
     SPR_GIFT_SHOOT1,SPR_GIFT_SHOOT2,
 
     SPR_GIFT_DIE1,SPR_GIFT_DIE2,SPR_GIFT_DIE3,SPR_GIFT_DEAD,
-#endif
+
 //
 // Rocket, smoke and small explosion
 //
@@ -422,20 +407,6 @@ enum
     SPR_SMOKE_1,SPR_SMOKE_2,SPR_SMOKE_3,SPR_SMOKE_4,
     SPR_BOOM_1,SPR_BOOM_2,SPR_BOOM_3,
 
-//
-// Angel of Death's DeathSparks(tm)
-//
-#ifdef SPEAR
-    SPR_HROCKET_1,SPR_HROCKET_2,SPR_HROCKET_3,SPR_HROCKET_4,
-    SPR_HROCKET_5,SPR_HROCKET_6,SPR_HROCKET_7,SPR_HROCKET_8,
-
-    SPR_HSMOKE_1,SPR_HSMOKE_2,SPR_HSMOKE_3,SPR_HSMOKE_4,
-    SPR_HBOOM_1,SPR_HBOOM_2,SPR_HBOOM_3,
-
-    SPR_SPARK1,SPR_SPARK2,SPR_SPARK3,SPR_SPARK4,
-#endif
-
-#ifndef SPEAR
 //
 // gretel
 //
@@ -457,61 +428,6 @@ enum
 //
     SPR_BJ_W1,SPR_BJ_W2,SPR_BJ_W3,SPR_BJ_W4,
     SPR_BJ_JUMP1,SPR_BJ_JUMP2,SPR_BJ_JUMP3,SPR_BJ_JUMP4,
-#else
-//
-// THESE ARE FOR 'SPEAR OF DESTINY'
-//
-
-//
-// Trans Grosse
-//
-    SPR_TRANS_W1,SPR_TRANS_W2,SPR_TRANS_W3,SPR_TRANS_W4,
-    SPR_TRANS_SHOOT1,SPR_TRANS_SHOOT2,SPR_TRANS_SHOOT3,SPR_TRANS_DEAD,
-
-    SPR_TRANS_DIE1,SPR_TRANS_DIE2,SPR_TRANS_DIE3,
-
-//
-// Wilhelm
-//
-    SPR_WILL_W1,SPR_WILL_W2,SPR_WILL_W3,SPR_WILL_W4,
-    SPR_WILL_SHOOT1,SPR_WILL_SHOOT2,SPR_WILL_SHOOT3,SPR_WILL_SHOOT4,
-
-    SPR_WILL_DIE1,SPR_WILL_DIE2,SPR_WILL_DIE3,SPR_WILL_DEAD,
-
-//
-// UberMutant
-//
-    SPR_UBER_W1,SPR_UBER_W2,SPR_UBER_W3,SPR_UBER_W4,
-    SPR_UBER_SHOOT1,SPR_UBER_SHOOT2,SPR_UBER_SHOOT3,SPR_UBER_SHOOT4,
-
-    SPR_UBER_DIE1,SPR_UBER_DIE2,SPR_UBER_DIE3,SPR_UBER_DIE4,
-    SPR_UBER_DEAD,
-
-//
-// Death Knight
-//
-    SPR_DEATH_W1,SPR_DEATH_W2,SPR_DEATH_W3,SPR_DEATH_W4,
-    SPR_DEATH_SHOOT1,SPR_DEATH_SHOOT2,SPR_DEATH_SHOOT3,SPR_DEATH_SHOOT4,
-
-    SPR_DEATH_DIE1,SPR_DEATH_DIE2,SPR_DEATH_DIE3,SPR_DEATH_DIE4,
-    SPR_DEATH_DIE5,SPR_DEATH_DIE6,SPR_DEATH_DEAD,
-
-//
-// Ghost
-//
-    SPR_SPECTRE_W1,SPR_SPECTRE_W2,SPR_SPECTRE_W3,SPR_SPECTRE_W4,
-    SPR_SPECTRE_F1,SPR_SPECTRE_F2,SPR_SPECTRE_F3,SPR_SPECTRE_F4,
-
-//
-// Angel of Death
-//
-    SPR_ANGEL_W1,SPR_ANGEL_W2,SPR_ANGEL_W3,SPR_ANGEL_W4,
-    SPR_ANGEL_SHOOT1,SPR_ANGEL_SHOOT2,SPR_ANGEL_TIRED1,SPR_ANGEL_TIRED2,
-
-    SPR_ANGEL_DIE1,SPR_ANGEL_DIE2,SPR_ANGEL_DIE3,SPR_ANGEL_DIE4,
-    SPR_ANGEL_DIE5,SPR_ANGEL_DIE6,SPR_ANGEL_DIE7,SPR_ANGEL_DEAD,
-
-#endif
 
 //
 // player attack frames
@@ -526,7 +442,7 @@ enum
     SPR_MACHINEGUNATK4,
 
     SPR_CHAINREADY,SPR_CHAINATK1,SPR_CHAINATK2,SPR_CHAINATK3,
-    SPR_CHAINATK4,
+    SPR_CHAINATK4
 
 };
 
@@ -583,16 +499,7 @@ typedef enum {
     gretelobj,
     giftobj,
     fatobj,
-    rocketobj,
-
-    spectreobj,
-    angelobj,
-    transobj,
-    uberobj,
-    willobj,
-    deathobj,
-    hrocketobj,
-    sparkobj
+    rocketobj
 } classtype;
 
 typedef enum {
@@ -614,9 +521,7 @@ typedef enum {
     bo_machinegun,
     bo_chaingun,
     bo_food,
-    bo_fullheal,
-    bo_25clip,
-    bo_spear
+    bo_fullheal
 } wl_stat_t;
 
 typedef enum {
@@ -632,7 +537,7 @@ typedef enum {
 } dirtype;
 
 
-#define NUMENEMIES  22
+#define NUMENEMIES  16
 typedef enum {
     en_guard,
     en_officer,
@@ -649,13 +554,7 @@ typedef enum {
     en_inky,
     en_gretel,
     en_gift,
-    en_fat,
-    en_spectre,
-    en_angel,
-    en_trans,
-    en_uber,
-    en_will,
-    en_death
+    en_fat
 } enemy_t;
 
 typedef void (* statefunc) (void *);
@@ -755,13 +654,6 @@ enum
     bt_nextweapon,
     bt_prevweapon,
     bt_esc,
-    bt_pause,
-    bt_strafeleft,
-    bt_straferight,
-    bt_moveforward,
-    bt_movebackward,
-    bt_turnleft,
-    bt_turnright,
     NUMBUTTONS
 };
 
@@ -817,12 +709,8 @@ typedef enum
     ex_stillplaying,
     ex_completed,
     ex_died,
-    ex_warped,
-    ex_resetgame,
-    ex_loadedgame,
     ex_victorious,
     ex_abort,
-    ex_demodone,
     ex_secretlevel
 } exit_t;
 
@@ -864,7 +752,6 @@ extern  char     configname[13];
 extern  boolean  param_nowait;
 extern  int      param_samplerate;
 extern  int      param_audiobuffer;
-extern  boolean  param_goodtimes;
 extern  boolean  param_ignorenumchunks;
 
 
@@ -896,14 +783,6 @@ void    DrawPlayBorder (void);
 void    DrawPlayScreen (void);
 
 void    PlayDemo (int demonumber);
-
-
-#ifdef SPEAR
-extern  int32_t            spearx,speary;
-extern  unsigned        spearangle;
-extern  boolean         spearflag;
-#endif
-
 
 #define ClearMemory SD_StopDigitized
 
@@ -975,10 +854,6 @@ void    StopMusic(void);
 void    StartMusic(void);
 void    StartDamageFlash (int damage);
 void    StartBonusFlash (void);
-
-#ifdef SPEAR
-extern  int32_t     funnyticount;           // FOR FUNNY BJ FACE
-#endif
 
 extern  objtype     *objfreelist;     // *obj,*player,*lastobj,
 
@@ -1168,14 +1043,6 @@ extern  statetype s_greteldie1;
 extern  statetype s_giftdie1;
 extern  statetype s_fatdie1;
 
-extern  statetype s_spectredie1;
-extern  statetype s_angeldie1;
-extern  statetype s_transdie0;
-extern  statetype s_uberdie0;
-extern  statetype s_willdie1;
-extern  statetype s_deathdie1;
-
-
 extern  statetype s_grdchase1;
 extern  statetype s_dogchase1;
 extern  statetype s_ofcchase1;
@@ -1188,13 +1055,6 @@ extern  statetype s_mechachase1;
 extern  statetype s_gretelchase1;
 extern  statetype s_giftchase1;
 extern  statetype s_fatchase1;
-
-extern  statetype s_spectrechase1;
-extern  statetype s_angelchase1;
-extern  statetype s_transchase1;
-extern  statetype s_uberchase1;
-extern  statetype s_willchase1;
-extern  statetype s_deathchase1;
 
 extern  statetype s_blinkychase1;
 extern  statetype s_hitlerchase1;
@@ -1222,12 +1082,6 @@ void KillActor (objtype *ob);
 void SpawnDeadGuard (int tilex, int tiley);
 void SpawnBoss (int tilex, int tiley);
 void SpawnGretel (int tilex, int tiley);
-void SpawnTrans (int tilex, int tiley);
-void SpawnUber (int tilex, int tiley);
-void SpawnWill (int tilex, int tiley);
-void SpawnDeath (int tilex, int tiley);
-void SpawnAngel (int tilex, int tiley);
-void SpawnSpectre (int tilex, int tiley);
 void SpawnGhosts (int which, int tilex, int tiley);
 void SpawnSchabbs (int tilex, int tiley);
 void SpawnGift (int tilex, int tiley);

@@ -86,7 +86,6 @@ void PlayLoop (void);
 // LIST OF SONGS FOR EACH VERSION
 //
 int songs[] = {
-#ifndef SPEAR
     //
     // Episode One
     //
@@ -176,40 +175,6 @@ int songs[] = {
 
     ULTIMATE_MUS,               // Boss level
     FUNKYOU_MUS                 // Secret level
-#else
-
-    //////////////////////////////////////////////////////////////
-    //
-    // SPEAR OF DESTINY TRACKS
-    //
-    //////////////////////////////////////////////////////////////
-    XTIPTOE_MUS,
-    XFUNKIE_MUS,
-    XDEATH_MUS,
-    XGETYOU_MUS,                // DON'T KNOW
-    ULTIMATE_MUS,               // Trans Grösse
-
-    DUNGEON_MUS,
-    GOINGAFT_MUS,
-    POW_MUS,
-    TWELFTH_MUS,
-    ULTIMATE_MUS,               // Barnacle Wilhelm BOSS
-
-    NAZI_OMI_MUS,
-    GETTHEM_MUS,
-    SUSPENSE_MUS,
-    SEARCHN_MUS,
-    ZEROHOUR_MUS,
-    ULTIMATE_MUS,               // Super Mutant BOSS
-
-    XPUTIT_MUS,
-    ULTIMATE_MUS,               // Death Knight BOSS
-
-    XJAZNAZI_MUS,               // Secret level
-    XFUNKIE_MUS,                // Secret level (DON'T KNOW)
-
-    XEVIL_MUS                   // Angel of Death BOSS
-#endif
 };
 
 
@@ -898,9 +863,6 @@ think:
 =
 ===================
 */
-#ifdef SPEAR
-int32_t funnyticount;
-#endif
 
 void PlayLoop (void)
 {
@@ -908,9 +870,6 @@ void PlayLoop (void)
     lasttimecount = GetTimeCount();
     anglefrac = 0;
     facecount = 0;
-#ifdef SPEAR
-    funnyticount = 0;
-#endif
     memset (buttonstate, 0, sizeof (buttonstate));
     ClearPaletteShifts ();
 
@@ -935,19 +894,6 @@ void PlayLoop (void)
         UpdatePaletteShifts ();
 
         ThreeDRefresh ();
-
-        //
-        // MAKE FUNNY FACE IF BJ DOESN'T MOVE FOR AWHILE
-        //
-#ifdef SPEAR
-        funnyticount += tics;
-        if (funnyticount > 30l * 70)
-        {
-            funnyticount = 0;
-            StatusDrawFace(BJWAITING1PIC + (US_RndT () & 1));
-            facecount = 0;
-        }
-#endif
 
         gamestate.TimeCount += tics;
 

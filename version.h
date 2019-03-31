@@ -5,7 +5,6 @@
 
 /* Defines used for different versions */
 
-//#define SPEAR
 #define GOODTIMES
 #define CARMACIZED
 //#define APOGEE_1_1
@@ -16,8 +15,6 @@
     Wolf3d Full v1.4 Apogee (with ReadThis)   - define CARMACIZED
     Wolf3d Full v1.4 GT/ID/Activision         - define CARMACIZED and GOODTIMES
     Wolf3d Full v1.4 Imagineer (Japanese)     - define CARMACIZED and JAPAN
-    Spear of Destiny Full                     - define CARMACIZED and SPEAR
-                                                (and GOODTIMES for no FormGen quiz)
 */
 
 #endif

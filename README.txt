@@ -13,8 +13,7 @@ Main features:
 
  - Cross-platform:
       Supported operating systems are at least:
-       - Windows 98, Windows ME, Windows 2000, Windows XP, Windows Vista
-         (32 and 64 bit), Windows 7 (32 and 64 bit)
+       - Windows
        - Linux
        - BSD variants
       Only little endian platforms like x86, ARM and SH-4 are supported, yet.
@@ -55,7 +54,6 @@ version.h as described in that file):
  - Wolfenstein 3D v1.4 full Apogee
  - Wolfenstein 3D v1.4 full GT/ID/Activision
  - Wolfenstein 3D v1.4 full Imagineer (Japanese)
- - Spear of Destiny full
 
 
 How to play:
@@ -95,9 +93,6 @@ Wolf4SDL supports the following command line options:
  --configdir <dir>      Directory where config file and save games are stored
                         (Windows default: current directory,
                         others: $HOME/.wolf4sdl)
-
-For Spear of Destiny the following additional options are available:
- --goodtimes            Disable copy protection quiz
 
 
 Compiling from source code:

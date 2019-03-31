@@ -81,7 +81,6 @@ char    configname[13] = "config.";
 boolean param_nowait = false;
 int     param_samplerate = 44100;
 int     param_audiobuffer = 2048 / (44100 / param_samplerate);
-boolean param_goodtimes = false;
 boolean param_ignorenumchunks = false;
 
 /*
@@ -760,7 +759,6 @@ void SignonScreen (void)                        // VGA version
 
 void FinishSignon (void)
 {
-#ifndef SPEAR
     VW_Bar (0,189,300,11,VL_GetPixel(0,0));
     WindowX = 0;
     WindowW = 320;
@@ -789,12 +787,6 @@ void FinishSignon (void)
     #endif
 
     SETFONTCOLOR(0,15);
-#else
-    VH_UpdateScreen();
-
-    if (!param_nowait)
-        VW_WaitVBL(70);
-#endif
 }
 
 //===========================================================================
@@ -810,7 +802,6 @@ void FinishSignon (void)
 static int wolfdigimap[] =
     {
         // These first sounds are in the upload version
-#ifndef SPEAR
         HALTSND,                0,
         DOGBARKSND,             1,
         CLOSEDOORSND,           2,
@@ -865,53 +856,6 @@ static int wolfdigimap[] =
         MEINSND,                44,         // EPISODE 6 BOSS DIE
         ROSESND,                45,         // EPISODE 5 BOSS DIE
 
-#else
-//
-// SPEAR OF DESTINY DIGISOUNDS
-//
-        HALTSND,                0,
-        CLOSEDOORSND,           2,
-        OPENDOORSND,            3,
-        ATKMACHINEGUNSND,       4,
-        ATKPISTOLSND,           5,
-        ATKGATLINGSND,          6,
-        SCHUTZADSND,            7,
-        BOSSFIRESND,            8,
-        SSFIRESND,              9,
-        DEATHSCREAM1SND,        10,
-        DEATHSCREAM2SND,        11,
-        TAKEDAMAGESND,          12,
-        PUSHWALLSND,            13,
-        AHHHGSND,               15,
-        LEBENSND,               16,
-        NAZIFIRESND,            17,
-        SLURPIESND,             18,
-        LEVELDONESND,           22,
-        DEATHSCREAM4SND,        23,         // AIIEEE
-        DEATHSCREAM3SND,        23,         // DOUBLY-MAPPED!!!
-        DEATHSCREAM5SND,        24,         // DEE-DEE
-        DEATHSCREAM6SND,        25,         // FART
-        DEATHSCREAM7SND,        26,         // GASP
-        DEATHSCREAM8SND,        27,         // GUH-BOY!
-        DEATHSCREAM9SND,        28,         // AH GEEZ!
-        GETGATLINGSND,          38,         // Got Gat replacement
-
-        DOGBARKSND,             1,
-        DOGDEATHSND,            14,
-        SPIONSND,               19,
-        NEINSOVASSND,           20,
-        DOGATTACKSND,           21,
-        TRANSSIGHTSND,          29,         // Trans Sight
-        TRANSDEATHSND,          30,         // Trans Death
-        WILHELMSIGHTSND,        31,         // Wilhelm Sight
-        WILHELMDEATHSND,        32,         // Wilhelm Death
-        UBERDEATHSND,           33,         // Uber Death
-        KNIGHTSIGHTSND,         34,         // Death Knight Sight
-        KNIGHTDEATHSND,         35,         // Death Knight Death
-        ANGELSIGHTSND,          36,         // Angel Sight
-        ANGELDEATHSND,          37,         // Angel Death
-        GETSPEARSND,            39,         // Got Spear replacement
-#endif
         LASTSOUND
     };
 
@@ -927,7 +871,6 @@ void InitDigiMap (void)
     }
 }
 
-#ifndef SPEAR
 CP_iteminfo MusicItems={CTL_X,CTL_Y,6,0,32};
 CP_itemtype MusicMenu[]=
     {
@@ -952,21 +895,6 @@ CP_itemtype MusicMenu[]=
         {1,"Ultimate Conquest",0},
         {1,"Wolfpack",0}
     };
-#else
-CP_iteminfo MusicItems={CTL_X,CTL_Y-20,9,0,32};
-CP_itemtype MusicMenu[]=
-    {
-        {1,"Funky Colonel Bill",0},
-        {1,"Death To The Nazis",0},
-        {1,"Tiptoeing Around",0},
-        {1,"Is This THE END?",0},
-        {1,"Evil Incarnate",0},
-        {1,"Jazzin' Them Nazis",0},
-        {1,"Puttin' It To The Enemy",0},
-        {1,"The SS Gonna Get You",0},
-        {1,"Towering Above",0}
-    };
-#endif
 
 void DoJukebox(void)
 {
@@ -974,7 +902,6 @@ void DoJukebox(void)
     unsigned start;
     unsigned songs[]=
         {
-#ifndef SPEAR
             GETTHEM_MUS,
             SEARCHN_MUS,
             POW_MUS,
@@ -995,17 +922,6 @@ void DoJukebox(void)
             ZEROHOUR_MUS,
             ULTIMATE_MUS,
             PACMAN_MUS
-#else
-            XFUNKIE_MUS,             // 0
-            XDEATH_MUS,              // 2
-            XTIPTOE_MUS,             // 4
-            XTHEEND_MUS,             // 7
-            XEVIL_MUS,               // 17
-            XJAZNAZI_MUS,            // 18
-            XPUTIT_MUS,              // 21
-            XGETYOU_MUS,             // 22
-            XTOWER2_MUS              // 23
-#endif
         };
 
     IN_ClearKeysDown();
@@ -1014,18 +930,10 @@ void DoJukebox(void)
 
     MenuFadeOut();
 
-#ifndef SPEAR
     start = ((SDL_GetTicks()/10)%3)*6;
-#else
-    start = 0;
-#endif
 
     CA_CacheGrChunk (STARTFONT+1);
-#ifdef SPEAR
-    CacheLump (BACKDROP_LUMP_START,BACKDROP_LUMP_END);
-#else
     CacheLump (CONTROLS_LUMP_START,CONTROLS_LUMP_END);
-#endif
     CA_LoadAllSounds ();
 
     fontnumber=1;
@@ -1034,11 +942,7 @@ void DoJukebox(void)
     DrawStripes (10);
     SETFONTCOLOR (TEXTCOLOR,BKGDCOLOR);
 
-#ifndef SPEAR
     DrawWindow (CTL_X-2,CTL_Y-6,280,13*7,BKGDCOLOR);
-#else
-    DrawWindow (CTL_X-2,CTL_Y-26,280,13*10,BKGDCOLOR);
-#endif
 
     DrawMenu (&MusicItems,&MusicMenu[start]);
 
@@ -1070,11 +974,7 @@ void DoJukebox(void)
 
     MenuFadeOut();
     IN_ClearKeysDown();
-#ifdef SPEAR
-    UnCacheLump (BACKDROP_LUMP_START,BACKDROP_LUMP_END);
-#else
     UnCacheLump (CONTROLS_LUMP_START,CONTROLS_LUMP_END);
-#endif
 }
 
 /*
@@ -1130,11 +1030,7 @@ static void InitGame()
 
     // TODO: Will any memory checking be needed someday??
 #ifdef NOTYET
-#ifndef SPEAR
     if (mminfo.mainmem < 235000L)
-#else
-    if (mminfo.mainmem < 257000L)
-#endif
     {
         byte *screen;
 
@@ -1372,15 +1268,9 @@ static void DemoLoop()
 #ifndef DEMOTEST
 
     #ifndef GOODTIMES
-        #ifndef SPEAR
-            #ifndef JAPAN
+        #ifndef JAPAN
             if (!param_nowait)
                 NonShareware();
-            #endif
-        #else
-            extern void CopyProtection(void);
-            if(!param_goodtimes)
-                CopyProtection();
         #endif
     #endif
 
@@ -1402,27 +1292,9 @@ static void DemoLoop()
 //
 #ifndef DEMOTEST
 
-#ifdef SPEAR
-            SDL_Color pal[256];
-            CA_CacheGrChunk (TITLEPALETTE);
-            VL_ConvertPalette(grsegs[TITLEPALETTE], pal, 256);
-
-            CA_CacheGrChunk (TITLE1PIC);
-            VWB_DrawPic (0,0,TITLE1PIC);
-            UNCACHEGRCHUNK (TITLE1PIC);
-
-            CA_CacheGrChunk (TITLE2PIC);
-            VWB_DrawPic (0,80,TITLE2PIC);
-            UNCACHEGRCHUNK (TITLE2PIC);
-            VW_UpdateScreen ();
-            VL_FadeIn(0,255,pal,30);
-
-            UNCACHEGRCHUNK (TITLEPALETTE);
-#else
             CA_CacheScreen (TITLEPIC);
             VW_UpdateScreen ();
             VW_FadeIn();
-#endif
             if (IN_UserInput(TickBase*15))
                 break;
             VW_FadeOut();
@@ -1596,8 +1468,6 @@ void CheckParameters(int argc, char *argv[])
                 }
             }
         }
-        else IFARG("--goodtimes")
-            param_goodtimes = true;
         else IFARG("--ignorenumchunks")
             param_ignorenumchunks = true;
         else IFARG("--help")
@@ -1634,9 +1504,6 @@ void CheckParameters(int argc, char *argv[])
             "                        (default: current directory)\n"
 #else
             "                        (default: $HOME/.wolf4sdl)\n"
-#endif
-#ifdef SPEAR
-            " --goodtimes            Disable copy protection quiz\n"
 #endif
             , defaultSampleRate
         );
