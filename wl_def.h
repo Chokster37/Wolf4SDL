@@ -1,9 +1,6 @@
 #ifndef WL_DEF_H
 #define WL_DEF_H
 
-// Defines which version shall be built and configures supported extra features
-#include "version.h"
-
 #include <assert.h>
 #include <fcntl.h>
 #include <math.h>
@@ -642,8 +639,6 @@ enum
     bt_readypistol,
     bt_readymachinegun,
     bt_readychaingun,
-    bt_nextweapon,
-    bt_prevweapon,
     bt_esc,
     NUMBUTTONS
 };
@@ -740,10 +735,8 @@ extern  char     configname[13];
 //
 // Command line parameter variables
 //
-extern  boolean  param_nowait;
 extern  int      param_samplerate;
 extern  int      param_audiobuffer;
-extern  boolean  param_ignorenumchunks;
 
 
 void            NewGame (int difficulty,int episode);
@@ -774,15 +767,6 @@ void    DrawPlayBorder (void);
 void    DrawPlayScreen (void);
 
 void    PlayDemo (int demonumber);
-
-#define ClearMemory SD_StopDigitized
-
-
-// JAB
-#define PlaySoundLocTile(s,tx,ty)       PlaySoundLocGlobal(s,(((int32_t)(tx) << TILESHIFT) + (1L << (TILESHIFT - 1))),(((int32_t)ty << TILESHIFT) + (1L << (TILESHIFT - 1))))
-#define PlaySoundLocActor(s,ob)         PlaySoundLocGlobal(s,(ob)->x,(ob)->y)
-void    PlaySoundLocGlobal(word s,fixed gx,fixed gy);
-void UpdateSoundLoc(void);
 
 
 /*

@@ -18,10 +18,9 @@ Main features:
        - BSD variants
       Only little endian platforms like x86, ARM and SH-4 are supported, yet.
 
- - AdLib sounds and music:
-      This port includes the OPL2 emulator from MAME, so you can not only
-      hear the AdLib sounds but also music without any AdLib-compatible
-      soundcard in near to perfect quality!
+ - AdLib music:
+      This port includes the OPL2 emulator from MAME, so you can hear the
+      music without any AdLib-compatible soundcard in near perfect quality!
 
  - Higher screen resolutions:
       Aside from the original 320x200 resolution, Wolf4SDL currently
@@ -30,6 +29,7 @@ Main features:
       Unlike some other ports, Wolf4SDL does NOT apply any bilinear
       or similar filtering, so the graphics are NOT blurred but
       pixelated just as we love it.
+
 
 Additional features:
 --------------------
@@ -62,7 +62,6 @@ Usage:
 
 Wolf4SDL supports the following command line options:
  --help                 This help page
- --nowait               Skips intro screens
  --windowed             Starts the game in a window
  --res <width> <height> Sets the screen resolution
                         (must be multiple of 320x200)
@@ -77,8 +76,6 @@ Wolf4SDL supports the following command line options:
  --samplerate <rate>    Sets the sound sample rate (given in Hz)
  --audiobuffer <size>   Sets the size of the audio buffer (-> sound latency)
                         (given in bytes)
- --ignorenumchunks      Ignores the number of chunks in VGAHEAD.*
-                        (may be useful for some broken mods)
  --configdir <dir>      Directory where config file and save games are stored
                         (Windows default: current directory,
                         others: $HOME/.wolf4sdl)
@@ -126,7 +123,6 @@ Credits:
 
  - Special thanks to id Software! Without the source code we would still have
    to pelt Wolfenstein 3D with hex editors and disassemblers ;D
- - Special thanks to the DOSBox team for providing a GPL'ed OPL2/3 emulator!
  - Special thanks to the MAME developer team for providing the source code
    of the OPL2 emulator!
  - Many thanks to "Der Tron" for hosting the svn repository, making Wolf4SDL
@@ -139,11 +135,5 @@ Credits:
 Licenses:
 ---------
 
- - The original source code of Wolfenstein 3D:
-     At your choice:
-     - license-id.txt or
-     - license-gpl.txt
- - The OPL2 emulator:
-     At your choice:
-     - license-mame.txt (fmopl.cpp)
-     - license-gpl.txt (dbopl.cpp, USE_GPL define in version.h or set GPL=1 for Makefile)
+ - The original source code of Wolfenstein 3D: license-id.txt
+ - The OPL2 emulator (fmopl.cpp): license-mame.txt

@@ -25,8 +25,6 @@ loaded into the data segment
 #include "wl_def.h"
 #pragma hdrstop
 
-#define THREEBYTEGRSTARTS
-
 /*
 =============================================================================
 
@@ -85,7 +83,7 @@ static const char gheadname[] = "vgahead.";
 static const char gfilename[] = "vgagraph.";
 static const char gdictname[] = "vgadict.";
 static const char mheadname[] = "maphead.";
-static const char mfilename[] = "maptemp.";
+static const char mfilename[] = "gamemaps.";
 static const char aheadname[] = "audiohed.";
 static const char afilename[] = "audiot.";
 
@@ -365,13 +363,6 @@ void CAL_SetupGrFile (void)
     int handle;
     byte *compseg;
 
-#ifdef GRHEADERLINKED
-
-    grhuffman = (huffnode *)&EGAdict;
-    grstarts = (int32_t _seg *)FP_SEG(&EGAhead);
-
-#else
-
 //
 // load ???dict.ext (huffman dictionary for graphics files)
 //
@@ -399,7 +390,7 @@ void CAL_SetupGrFile (void)
 
 	int expectedsize = lengthof(grstarts) - numEpisodesMissing;
 
-    if(!param_ignorenumchunks && headersize / 3 != (long) expectedsize)
+    if(headersize / 3 != (long) expectedsize)
         Quit("Wolf4SDL was not compiled for these data files:\n"
             "%s contains a wrong number of offsets (%i instead of %i)!\n\n"
             "Please check whether you are using the right executable!\n"
@@ -417,7 +408,6 @@ void CAL_SetupGrFile (void)
         *i = (val == 0x00FFFFFF ? -1 : val);
         d += 3;
     }
-#endif
 
 //
 // Open the graphics file, leaving it open until the game is finished
@@ -482,21 +472,12 @@ void CAL_SetupMapFile (void)
 //
 // open the data file
 //
-#ifdef CARMACIZED
-    strcpy(fname, "gamemaps.");
+    strcpy(fname, mfilename);
     strcat(fname, extension);
 
     maphandle = open(fname, O_RDONLY | O_BINARY);
     if (maphandle == -1)
         CA_CannotOpen(fname);
-#else
-    strcpy(fname,mfilename);
-    strcat(fname,extension);
-
-    maphandle = open(fname, O_RDONLY | O_BINARY);
-    if (maphandle == -1)
-        CA_CannotOpen(fname);
-#endif
 
 //
 // load all map header
@@ -578,11 +559,6 @@ void CAL_SetupAudioFile (void)
 
 void CA_Startup (void)
 {
-#ifdef PROFILE
-    unlink ("PROFILE.TXT");
-    profilehandle = open("PROFILE.TXT", O_CREAT | O_WRONLY | O_TEXT);
-#endif
-
     CAL_SetupMapFile ();
     CAL_SetupGrFile ();
     CAL_SetupAudioFile ();
@@ -605,7 +581,7 @@ void CA_Startup (void)
 
 void CA_Shutdown (void)
 {
-    int i,start;
+    int i;
 
     if(maphandle != -1)
         close(maphandle);
@@ -618,20 +594,8 @@ void CA_Shutdown (void)
         UNCACHEGRCHUNK(i);
     free(pictable);
 
-    switch(oldsoundmode)
-    {
-        case sdm_Off:
-            return;
-        case sdm_PC:
-            start = STARTPCSOUNDS;
-            break;
-        case sdm_AdLib:
-            start = STARTADLIBSOUNDS;
-            break;
-    }
-
-    for(i=0; i<NUMSOUNDS; i++,start++)
-        UNCACHEAUDIOCHUNK(start);
+    for(i=0; i<NUMSOUNDS; i++)
+        UNCACHEAUDIOCHUNK(i);
 }
 
 //===========================================================================
@@ -661,46 +625,6 @@ int32_t CA_CacheAudioChunk (int chunk)
     return size;
 }
 
-void CA_CacheAdlibSoundChunk (int chunk)
-{
-    int32_t pos = audiostarts[chunk];
-    int32_t size = audiostarts[chunk+1]-pos;
-
-    if (audiosegs[chunk])
-        return;                        // already in memory
-
-    lseek(audiohandle, pos, SEEK_SET);
-    read(audiohandle, bufferseg, ORIG_ADLIBSOUND_SIZE - 1);   // without data[1]
-
-    AdLibSound *sound = (AdLibSound *) malloc(size + sizeof(AdLibSound) - ORIG_ADLIBSOUND_SIZE);
-    CHECKMALLOCRESULT(sound);
-
-    byte *ptr = (byte *) bufferseg;
-    sound->common.length = READLONGWORD(ptr);
-    sound->common.priority = READWORD(ptr);
-    sound->inst.mChar = *ptr++;
-    sound->inst.cChar = *ptr++;
-    sound->inst.mScale = *ptr++;
-    sound->inst.cScale = *ptr++;
-    sound->inst.mAttack = *ptr++;
-    sound->inst.cAttack = *ptr++;
-    sound->inst.mSus = *ptr++;
-    sound->inst.cSus = *ptr++;
-    sound->inst.mWave = *ptr++;
-    sound->inst.cWave = *ptr++;
-    sound->inst.nConn = *ptr++;
-    sound->inst.voice = *ptr++;
-    sound->inst.mode = *ptr++;
-    sound->inst.unused[0] = *ptr++;
-    sound->inst.unused[1] = *ptr++;
-    sound->inst.unused[2] = *ptr++;
-    sound->block = *ptr++;
-
-    read(audiohandle, sound->data, size - ORIG_ADLIBSOUND_SIZE + 1);  // + 1 because of byte data[1]
-
-    audiosegs[chunk]=(byte *) sound;
-}
-
 //===========================================================================
 
 /*
@@ -708,57 +632,15 @@ void CA_CacheAdlibSoundChunk (int chunk)
 =
 = CA_LoadAllSounds
 =
-= Purges all sounds, then loads all new ones (mode switch)
-=
 ======================
 */
 
 void CA_LoadAllSounds (void)
 {
-    unsigned start,i;
+    unsigned i;
 
-    switch (oldsoundmode)
-    {
-        case sdm_Off:
-            goto cachein;
-        case sdm_PC:
-            start = STARTPCSOUNDS;
-            break;
-        case sdm_AdLib:
-            start = STARTADLIBSOUNDS;
-            break;
-    }
-
-    for (i=0;i<NUMSOUNDS;i++,start++)
-        UNCACHEAUDIOCHUNK(start);
-
-cachein:
-
-    oldsoundmode = SoundMode;
-
-    switch (SoundMode)
-    {
-        case sdm_Off:
-            start = STARTADLIBSOUNDS;   // needed for priorities...
-            break;
-        case sdm_PC:
-            start = STARTPCSOUNDS;
-            break;
-        case sdm_AdLib:
-            start = STARTADLIBSOUNDS;
-            break;
-    }
-
-    if(start == STARTADLIBSOUNDS)
-    {
-        for (i=0;i<NUMSOUNDS;i++,start++)
-            CA_CacheAdlibSoundChunk(start);
-    }
-    else
-    {
-        for (i=0;i<NUMSOUNDS;i++,start++)
-            CA_CacheAudioChunk(start);
-    }
+    for (i=0;i<NUMSOUNDS;i++)
+        CA_CacheAudioChunk(i);
 }
 
 //===========================================================================
@@ -947,10 +829,8 @@ void CA_CacheMap (int mapnum)
     memptr    bigbufferseg;
     unsigned  size;
     word     *source;
-#ifdef CARMACIZED
     word     *buffer2seg;
     int32_t   expanded;
-#endif
 
     mapon = mapnum;
 
@@ -977,7 +857,6 @@ void CA_CacheMap (int mapnum)
         }
 
         read(maphandle,source,compressed);
-#ifdef CARMACIZED
         //
         // unhuffman, then unRLEW
         // The huffman'd chunk has a two byte expanded length first
@@ -991,13 +870,6 @@ void CA_CacheMap (int mapnum)
         CAL_CarmackExpand((byte *) source, buffer2seg,expanded);
         CA_RLEWexpand(buffer2seg+1,dest,size,RLEWtag);
         free(buffer2seg);
-
-#else
-        //
-        // unRLEW, skipping expanded length
-        //
-        CA_RLEWexpand (source+1,dest,size,RLEWtag);
-#endif
 
         if (compressed>BUFFERSIZE)
             free(bigbufferseg);

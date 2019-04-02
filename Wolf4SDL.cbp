@@ -23,8 +23,8 @@
 			<Add directory="..\SDL-devel\lib" />
 		</Linker>
 		<Unit filename="audiowl6.h" />
-		<Unit filename="mame\fmopl.cpp" />
-		<Unit filename="mame\fmopl.h" />
+		<Unit filename="fmopl.cpp" />
+		<Unit filename="fmopl.h" />
 		<Unit filename="foreign.h" />
 		<Unit filename="gfxv_wl6.h" />
 		<Unit filename="id_ca.cpp" />
@@ -42,7 +42,6 @@
 		<Unit filename="id_vl.h" />
 		<Unit filename="sdl_winmain.cpp" />
 		<Unit filename="signon.cpp" />
-		<Unit filename="version.h" />
 		<Unit filename="wl_act1.cpp" />
 		<Unit filename="wl_act2.cpp" />
 		<Unit filename="wl_agent.cpp" />

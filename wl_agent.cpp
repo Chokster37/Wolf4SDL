@@ -104,25 +104,12 @@ void CheckWeaponChange (void)
     if (!gamestate.ammo)            // must use knife with no ammo
         return;
 
-    if(buttonstate[bt_nextweapon] && !buttonheld[bt_nextweapon])
+    for(int i = wp_knife; i <= gamestate.bestweapon; i++)
     {
-        newWeapon = gamestate.weapon + 1;
-        if(newWeapon > gamestate.bestweapon) newWeapon = 0;
-    }
-    else if(buttonstate[bt_prevweapon] && !buttonheld[bt_prevweapon])
-    {
-        newWeapon = gamestate.weapon - 1;
-        if(newWeapon < 0) newWeapon = gamestate.bestweapon;
-    }
-    else
-    {
-        for(int i = wp_knife; i <= gamestate.bestweapon; i++)
+        if (buttonstate[bt_readyknife + i - wp_knife])
         {
-            if (buttonstate[bt_readyknife + i - wp_knife])
-            {
-                newWeapon = i;
-                break;
-            }
+            newWeapon = i;
+            break;
         }
     }
 

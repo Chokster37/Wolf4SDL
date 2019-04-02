@@ -16,6 +16,9 @@
 
 #define ACTORSIZE       0x4000
 
+#define REFRESHCORNER   // To fix the "see-through gap in wall corner" problem
+
+
 /*
 =============================================================================
 

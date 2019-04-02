@@ -351,7 +351,7 @@ void CheckKeys (void)
     if (scan == sc_Escape || buttonstate[bt_esc])
     {
         StopMusic ();
-        ClearMemory ();
+        SD_StopSound ();
         VW_FadeOut ();
 
         US_ControlPanel (buttonstate[bt_esc] ? sc_Escape : scan);
@@ -897,7 +897,6 @@ void PlayLoop (void)
 
         gamestate.TimeCount += tics;
 
-        UpdateSoundLoc ();      // JAB
         if (screenfaded)
             VW_FadeIn ();
 

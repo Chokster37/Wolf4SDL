@@ -396,7 +396,8 @@ void OpenDoor (int door)
 
 void CloseDoor (int door)
 {
-    int     tilex,tiley,area;
+    int     tilex,tiley;
+    unsigned area;
     objtype *check;
 
     //
@@ -450,9 +451,9 @@ void CloseDoor (int door)
     //
     area = *(mapsegs[0] + (doorobjlist[door].tiley<<mapshift)
         +doorobjlist[door].tilex)-AREATILE;
-    if (areabyplayer[area])
+    if (area >= NUMAREAS || areabyplayer[area])
     {
-        PlaySoundLocTile(CLOSEDOORSND,doorobjlist[door].tilex,doorobjlist[door].tiley); // JAB
+        SD_PlaySound(CLOSEDOORSND); // JAB
     }
 
     doorobjlist[door].action = dr_closing;
@@ -567,8 +568,11 @@ void DoorOpening (int door)
                 ConnectAreas ();
 
             if (areabyplayer[area1])
-                PlaySoundLocTile(OPENDOORSND,doorobjlist[door].tilex,doorobjlist[door].tiley);  // JAB
+                SD_PlaySound(OPENDOORSND);  // JAB
         }
+        else
+            SD_PlaySound(OPENDOORSND);
+
     }
 
     //

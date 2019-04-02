@@ -52,16 +52,16 @@ CP_itemtype MainMenu[] = {
 CP_itemtype SndMenu[] = {
     {1, STR_NONE, 0},
     {1, STR_PC, 0},
+    {0, "", 0},
+    {0, "", 0},
+    {1, STR_NONE, 0},
     {1, STR_ALSB, 0},
     {0, "", 0},
     {0, "", 0},
-    {1, STR_NONE, 0},
-    {0, STR_DISNEY, 0},
-    {1, STR_SB, 0},
     {0, "", 0},
     {0, "", 0},
-    {1, STR_NONE, 0},
-    {1, STR_ALSB, 0}
+    {0, "", 0},
+    {0, "", 0}
 };
 
 CP_itemtype NewEmenu[] = {
@@ -549,45 +549,6 @@ CP_Sound (int)
                 {
                     SD_WaitSoundDone ();
                     SD_SetSoundMode (sdm_PC);
-                    CA_LoadAllSounds ();
-                    SD_SetDigiDevice (sds_Off);
-                    DrawSoundMenu ();
-                    ShootSnd ();
-                }
-                break;
-            case 2:
-                if (SoundMode != sdm_AdLib)
-                {
-                    SD_WaitSoundDone ();
-                    SD_SetSoundMode (sdm_AdLib);
-                    CA_LoadAllSounds ();
-                    DrawSoundMenu ();
-                    ShootSnd ();
-                }
-                break;
-
-                //
-                // DIGITIZED SOUND
-                //
-            case 5:
-                if (DigiMode != sds_Off)
-                {
-                    SD_SetDigiDevice (sds_Off);
-                    DrawSoundMenu ();
-                }
-                break;
-            case 6:
-/*                if (DigiMode != sds_SoundSource)
-                {
-                    SD_SetDigiDevice (sds_SoundSource);
-                    DrawSoundMenu ();
-                    ShootSnd ();
-                }*/
-                break;
-            case 7:
-                if (DigiMode != sds_SoundBlaster)
-                {
-                    SD_SetDigiDevice (sds_SoundBlaster);
                     DrawSoundMenu ();
                     ShootSnd ();
                 }
@@ -596,7 +557,7 @@ CP_Sound (int)
                 //
                 // MUSIC
                 //
-            case 10:
+            case 4:
                 if (MusicMode != smm_Off)
                 {
                     SD_SetMusicMode (smm_Off);
@@ -604,7 +565,7 @@ CP_Sound (int)
                     ShootSnd ();
                 }
                 break;
-            case 11:
+            case 5:
                 if (MusicMode != smm_AdLib)
                 {
                     SD_SetMusicMode (smm_AdLib);
@@ -641,28 +602,10 @@ DrawSoundMenu (void)
 
     DrawWindow (SM_X - 8, SM_Y1 - 3, SM_W, SM_H1, BKGDCOLOR);
     DrawWindow (SM_X - 8, SM_Y2 - 3, SM_W, SM_H2, BKGDCOLOR);
-    DrawWindow (SM_X - 8, SM_Y3 - 3, SM_W, SM_H3, BKGDCOLOR);
-
-    //
-    // IF NO ADLIB, NON-CHOOSENESS!
-    //
-    if (!AdLibPresent && !SoundBlasterPresent)
-    {
-        SndMenu[2].active = SndMenu[10].active = SndMenu[11].active = 0;
-    }
-
-    if (!SoundBlasterPresent || SoundMode == sdm_PC)
-	        SndMenu[7].active = 0;
-	    else
-	    	SndMenu[7].active = 1;
-
-    if (!SoundBlasterPresent)
-        SndMenu[5].active = 0;
 
     DrawMenu (&SndItems, &SndMenu[0]);
     VWB_DrawPic (100, SM_Y1 - 20, C_FXTITLEPIC);
-    VWB_DrawPic (100, SM_Y2 - 20, C_DIGITITLEPIC);
-    VWB_DrawPic (100, SM_Y3 - 20, C_MUSICTITLEPIC);
+    VWB_DrawPic (100, SM_Y2 - 20, C_MUSICTITLEPIC);
 
     for (i = 0; i < SndItems.amount; i++)
         if (SndMenu[i].string[0])
@@ -684,35 +627,15 @@ DrawSoundMenu (void)
                     if (SoundMode == sdm_PC)
                         on = 1;
                     break;
-                case 2:
-                    if (SoundMode == sdm_AdLib)
-                        on = 1;
-                    break;
-
-                    //
-                    // DIGITIZED SOUND
-                    //
-                case 5:
-                    if (DigiMode == sds_Off)
-                        on = 1;
-                    break;
-                case 6:
-//                    if (DigiMode == sds_SoundSource)
-//                        on = 1;
-                    break;
-                case 7:
-                    if (DigiMode == sds_SoundBlaster)
-                        on = 1;
-                    break;
 
                     //
                     // MUSIC
                     //
-                case 10:
+                case 4:
                     if (MusicMode == smm_Off)
                         on = 1;
                     break;
-                case 11:
+                case 5:
                     if (MusicMode == smm_AdLib)
                         on = 1;
                     break;
@@ -993,7 +916,6 @@ CP_SaveGame (int)
 ////////////////////////////////////////////////////////////////////
 enum
 { FIRE, STRAFE, RUN, OPEN };
-char mbarray[4][3] = { "b0", "b1", "b2", "b3" };
 int8_t order[4] = { RUN, OPEN, FIRE, STRAFE };
 
 
@@ -1537,71 +1459,22 @@ IntroScreen (void)
 {
 
 #define MAINCOLOR       0x6c
-#define EMSCOLOR        0x6c    // 0x4f
-#define XMSCOLOR        0x6c    // 0x7f
+#define EMSCOLOR        0x4f
+#define XMSCOLOR        0x7f
 
 #define FILLCOLOR       14
 
-//      long memory;
-//      long emshere,xmshere;
     int i;
-/*      int ems[10]={100,200,300,400,500,600,700,800,900,1000},
-                xms[10]={100,200,300,400,500,600,700,800,900,1000};
-        int main[10]={32,64,96,128,160,192,224,256,288,320};*/
-
 
     //
     // DRAW MAIN MEMORY
     //
-#ifdef ABCAUS
-    memory = (1023l + mminfo.nearheap + mminfo.farheap) / 1024l;
-    for (i = 0; i < 10; i++)
-        if (memory >= main[i])
-            VWB_Bar (49, 163 - 8 * i, 6, 5, MAINCOLOR - i);
-
-    //
-    // DRAW EMS MEMORY
-    //
-    if (EMSPresent)
-    {
-        emshere = 4l * EMSPagesAvail;
-        for (i = 0; i < 10; i++)
-            if (emshere >= ems[i])
-                VWB_Bar (89, 163 - 8 * i, 6, 5, EMSCOLOR - i);
-    }
-
-    //
-    // DRAW XMS MEMORY
-    //
-    if (XMSPresent)
-    {
-        xmshere = 4l * XMSPagesAvail;
-        for (i = 0; i < 10; i++)
-            if (xmshere >= xms[i])
-                VWB_Bar (129, 163 - 8 * i, 6, 5, XMSCOLOR - i);
-    }
-#else
     for (i = 0; i < 10; i++)
         VWB_Bar (49, 163 - 8 * i, 6, 5, MAINCOLOR - i);
     for (i = 0; i < 10; i++)
         VWB_Bar (89, 163 - 8 * i, 6, 5, EMSCOLOR - i);
     for (i = 0; i < 10; i++)
         VWB_Bar (129, 163 - 8 * i, 6, 5, XMSCOLOR - i);
-#endif
-
-
-    //
-    // FILL BOXES
-    //
-
-    if (AdLibPresent && !SoundBlasterPresent)
-        VWB_Bar (164, 128, 12, 2, FILLCOLOR);
-
-    if (SoundBlasterPresent)
-        VWB_Bar (164, 151, 12, 2, FILLCOLOR);
-
-//    if (SoundSourcePresent)
-//        VWB_Bar (164, 174, 12, 2, FILLCOLOR);
 }
 
 
@@ -1694,9 +1567,7 @@ SetupControlPanel (void)
     if(screenHeight % 200 != 0)
         VL_ClearScreen(0);
 
-    if (!ingame)
-        CA_LoadAllSounds ();
-    else
+    if (ingame)
         MainMenu[savegame].active = 1;
 }
 

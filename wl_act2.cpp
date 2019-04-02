@@ -275,7 +275,7 @@ void T_Projectile (objtype *ob)
     {
         if (ob->obclass == rocketobj)
         {
-            PlaySoundLocActor(MISSILEHITSND,ob);
+            SD_PlaySound(MISSILEHITSND);
             ob->state = &s_boom1;
         }
         else
@@ -999,7 +999,7 @@ void A_DeathScream (objtype *ob)
             case officerobj:
             case ssobj:
             case dogobj:
-                PlaySoundLocActor(DEATHSCREAM6SND,ob);
+                SD_PlaySound(DEATHSCREAM6SND);
                 return;
         }
     }
@@ -1007,12 +1007,12 @@ void A_DeathScream (objtype *ob)
     switch (ob->obclass)
     {
         case mutantobj:
-            PlaySoundLocActor(AHHHGSND,ob);
+            SD_PlaySound(AHHHGSND);
             break;
 
         case guardobj:
         {
-            int sounds[9]={ DEATHSCREAM1SND,
+            soundnames sounds[9]={ DEATHSCREAM1SND,
                 DEATHSCREAM2SND,
                 DEATHSCREAM3SND,
                 DEATHSCREAM4SND,
@@ -1022,17 +1022,17 @@ void A_DeathScream (objtype *ob)
                 DEATHSCREAM9SND
             };
 
-            PlaySoundLocActor(sounds[US_RndT()%8],ob);
+            SD_PlaySound(sounds[US_RndT()%8]);
             break;
         }
         case officerobj:
-            PlaySoundLocActor(NEINSOVASSND,ob);
+            SD_PlaySound(NEINSOVASSND);
             break;
         case ssobj:
-            PlaySoundLocActor(LEBENSND,ob); // JAB
+            SD_PlaySound(LEBENSND); // JAB
             break;
         case dogobj:
-            PlaySoundLocActor(DOGDEATHSND,ob);      // JAB
+            SD_PlaySound(DOGDEATHSND);      // JAB
             break;
         case bossobj:
             SD_PlaySound(MUTTISND);                         // JAB
@@ -1299,10 +1299,7 @@ statetype s_fatshoot6           = {false,SPR_FAT_SHOOT4,10,NULL,(statefunc)T_Sho
 
 void SpawnSchabbs (int tilex, int tiley)
 {
-    if (DigiMode != sds_Off)
-        s_schabbdie2.tictime = 140;
-    else
-        s_schabbdie2.tictime = 5;
+    s_schabbdie2.tictime = 5;
 
     SpawnNewObj (tilex,tiley,&s_schabbstand);
     newobj->speed = SPDPATROL;
@@ -1326,10 +1323,7 @@ void SpawnSchabbs (int tilex, int tiley)
 
 void SpawnGift (int tilex, int tiley)
 {
-    if (DigiMode != sds_Off)
-        s_giftdie2.tictime = 140;
-    else
-        s_giftdie2.tictime = 5;
+    s_giftdie2.tictime = 5;
 
     SpawnNewObj (tilex,tiley,&s_giftstand);
     newobj->speed = SPDPATROL;
@@ -1353,10 +1347,7 @@ void SpawnGift (int tilex, int tiley)
 
 void SpawnFat (int tilex, int tiley)
 {
-    if (DigiMode != sds_Off)
-        s_fatdie2.tictime = 140;
-    else
-        s_fatdie2.tictime = 5;
+    s_fatdie2.tictime = 5;
 
     SpawnNewObj (tilex,tiley,&s_fatstand);
     newobj->speed = SPDPATROL;
@@ -1407,7 +1398,7 @@ void T_SchabbThrow (objtype *ob)
     newobj->flags = FL_NEVERMARK;
     newobj->active = ac_yes;
 
-    PlaySoundLocActor (SCHABBSTHROWSND,newobj);
+    SD_PlaySound (SCHABBSTHROWSND);
 }
 
 /*
@@ -1446,7 +1437,7 @@ void T_GiftThrow (objtype *ob)
     newobj->flags = FL_NEVERMARK;
     newobj->active = ac_yes;
 
-    PlaySoundLocActor (MISSILEFIRESND,newobj);
+    SD_PlaySound (MISSILEFIRESND);
 }
 
 
@@ -1907,10 +1898,7 @@ statetype s_hitlershoot6        = {false,SPR_HITLER_SHOOT2,10,NULL,(statefunc)T_
 
 void SpawnFakeHitler (int tilex, int tiley)
 {
-    if (DigiMode != sds_Off)
-        s_hitlerdie2.tictime = 140;
-    else
-        s_hitlerdie2.tictime = 5;
+    s_hitlerdie2.tictime = 5;
 
     SpawnNewObj (tilex,tiley,&s_fakestand);
     newobj->speed = SPDPATROL;
@@ -1934,11 +1922,7 @@ void SpawnFakeHitler (int tilex, int tiley)
 
 void SpawnHitler (int tilex, int tiley)
 {
-    if (DigiMode != sds_Off)
-        s_hitlerdie2.tictime = 140;
-    else
-        s_hitlerdie2.tictime = 5;
-
+    s_hitlerdie2.tictime = 5;
 
     SpawnNewObj (tilex,tiley,&s_mechastand);
     newobj->speed = SPDPATROL;
@@ -1989,7 +1973,7 @@ void A_HitlerMorph (objtype *ob)
 void A_MechaSound (objtype *ob)
 {
     if (ob->areanumber >= NUMAREAS || areabyplayer[ob->areanumber])
-        PlaySoundLocActor (MECHSTEPSND,ob);
+        SD_PlaySound (MECHSTEPSND);
 }
 
 void A_Slurpie (objtype *)
@@ -2039,7 +2023,7 @@ void T_FakeFire (objtype *ob)
     newobj->flags = FL_NEVERMARK;
     newobj->active = ac_yes;
 
-    PlaySoundLocActor (FLAMETHROWERSND,newobj);
+    SD_PlaySound (FLAMETHROWERSND);
 }
 
 
@@ -2564,25 +2548,25 @@ void T_Shoot (objtype *ob)
     switch(ob->obclass)
     {
         case ssobj:
-            PlaySoundLocActor(SSFIRESND,ob);
+            SD_PlaySound(SSFIRESND);
             break;
         case giftobj:
         case fatobj:
-            PlaySoundLocActor(MISSILEFIRESND,ob);
+            SD_PlaySound(MISSILEFIRESND);
             break;
         case mechahitlerobj:
         case realhitlerobj:
         case bossobj:
-            PlaySoundLocActor(BOSSFIRESND,ob);
+            SD_PlaySound(BOSSFIRESND);
             break;
         case schabbobj:
-            PlaySoundLocActor(SCHABBSTHROWSND,ob);
+            SD_PlaySound(SCHABBSTHROWSND);
             break;
         case fakeobj:
-            PlaySoundLocActor(FLAMETHROWERSND,ob);
+            SD_PlaySound(FLAMETHROWERSND);
             break;
         default:
-            PlaySoundLocActor(NAZIFIRESND,ob);
+            SD_PlaySound(NAZIFIRESND);
     }
 }
 
@@ -2599,7 +2583,7 @@ void T_Bite (objtype *ob)
 {
     int32_t    dx,dy;
 
-    PlaySoundLocActor(DOGATTACKSND,ob);     // JAB
+    SD_PlaySound(DOGATTACKSND);     // JAB
 
     dx = player->x - ob->x;
     if (dx<0)
@@ -2758,7 +2742,7 @@ void T_BJJump (objtype *ob)
 
 void T_BJYell (objtype *ob)
 {
-    PlaySoundLocActor(YEAHSND,ob);  // JAB
+    SD_PlaySound(YEAHSND);  // JAB
 }
 
 

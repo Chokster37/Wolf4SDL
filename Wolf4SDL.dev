@@ -1,7 +1,7 @@
 [Project]
 FileName=Wolf4SDL.dev
 Name=Wolf4SDL
-UnitCount=34
+UnitCount=33
 Type=0
 Ver=1
 ObjFiles=
@@ -42,7 +42,7 @@ BuildCmd=
 [Unit2]
 FileName=fmopl.cpp
 CompileCpp=1
-Folder=Wolf4SDL\mame
+Folder=Wolf4SDL
 Compile=1
 Link=1
 Priority=1000
@@ -52,7 +52,7 @@ BuildCmd=
 [Unit3]
 FileName=fmopl.h
 CompileCpp=1
-Folder=Wolf4SDL\mame
+Folder=Wolf4SDL
 Compile=1
 Link=1
 Priority=1000
@@ -369,16 +369,6 @@ BuildCmd=
 
 [Unit33]
 FileName=sdl_winmain.cpp
-CompileCpp=1
-Folder=Wolf4SDL
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit34]
-FileName=version.h
 CompileCpp=1
 Folder=Wolf4SDL
 Compile=1

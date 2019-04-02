@@ -78,10 +78,8 @@ char    configname[13] = "config.";
 //
 // Command line parameter variables
 //
-boolean param_nowait = false;
 int     param_samplerate = 44100;
 int     param_audiobuffer = 2048 / (44100 / param_samplerate);
-boolean param_ignorenumchunks = false;
 
 /*
 =============================================================================
@@ -104,7 +102,6 @@ void ReadConfig(void)
 {
     SDMode  sd;
     SMMode  sm;
-    SDSMode sds;
 
     char configpath[300];
 
@@ -121,7 +118,7 @@ void ReadConfig(void)
         //
         word tmp;
         read(file,&tmp,sizeof(tmp));
-        if(tmp!=0xfefb)
+        if(tmp!=0xfefc)
         {
             close(file);
             goto noconfig;
@@ -130,23 +127,12 @@ void ReadConfig(void)
 
         read(file,&sd,sizeof(sd));
         read(file,&sm,sizeof(sm));
-        read(file,&sds,sizeof(sds));
 
         read(file,dirscan,sizeof(dirscan));
         read(file,buttonscan,sizeof(buttonscan));
         read(file,&viewsize,sizeof(viewsize));
 
         close(file);
-
-        if ((sd == sdm_AdLib || sm == smm_AdLib) && !AdLibPresent
-                && !SoundBlasterPresent)
-        {
-            sd = sdm_PC;
-            sm = smm_Off;
-        }
-
-        if ((sds == sds_SoundBlaster && !SoundBlasterPresent))
-            sds = sds_Off;
 
         // make sure values are correct
         if(viewsize<4) viewsize=4;
@@ -161,28 +147,14 @@ void ReadConfig(void)
         // no config file, so select by hardware
         //
 noconfig:
-        if (SoundBlasterPresent || AdLibPresent)
-        {
-            sd = sdm_AdLib;
-            sm = smm_AdLib;
-        }
-        else
-        {
-            sd = sdm_PC;
-            sm = smm_Off;
-        }
-
-        if (SoundBlasterPresent)
-            sds = sds_SoundBlaster;
-        else
-            sds = sds_Off;
+        sd = sdm_PC;
+        sm = smm_AdLib;
 
         viewsize = 19;                          // start with a good size
     }
 
     SD_SetMusicMode (sm);
     SD_SetSoundMode (sd);
-    SD_SetDigiDevice (sds);
 }
 
 /*
@@ -205,13 +177,12 @@ void WriteConfig(void)
     const int file = open(configpath, O_CREAT | O_WRONLY | O_BINARY, 0644);
     if (file != -1)
     {
-        word tmp=0xfefb;
+        word tmp=0xfefc;
         write(file,&tmp,sizeof(tmp));
         write(file,Scores,sizeof(HighScore) * MaxScores);
 
         write(file,&SoundMode,sizeof(SoundMode));
         write(file,&MusicMode,sizeof(MusicMode));
-        write(file,&DigiMode,sizeof(DigiMode));
 
         write(file,dirscan,sizeof(dirscan));
         write(file,buttonscan,sizeof(buttonscan));
@@ -770,8 +741,7 @@ void FinishSignon (void)
 
     VH_UpdateScreen();
 
-    if (!param_nowait)
-        IN_Ack ();
+    IN_Ack ();
 
     VW_Bar (0,189,300,11,VL_GetPixel(0,0));
 
@@ -787,191 +757,6 @@ void FinishSignon (void)
 
 //===========================================================================
 
-/*
-=====================
-=
-= InitDigiMap
-=
-=====================
-*/
-
-static int wolfdigimap[] =
-    {
-        // These first sounds are in the upload version
-        HALTSND,                0,
-        DOGBARKSND,             1,
-        CLOSEDOORSND,           2,
-        OPENDOORSND,            3,
-        ATKMACHINEGUNSND,       4,
-        ATKPISTOLSND,           5,
-        ATKGATLINGSND,          6,
-        SCHUTZADSND,            7,
-        GUTENTAGSND,            8,
-        MUTTISND,               9,
-        BOSSFIRESND,            10,
-        SSFIRESND,              11,
-        DEATHSCREAM1SND,        12,
-        DEATHSCREAM2SND,        13,
-        DEATHSCREAM3SND,        13,
-        TAKEDAMAGESND,          14,
-        PUSHWALLSND,            15,
-
-        LEBENSND,               20,
-        NAZIFIRESND,            21,
-        SLURPIESND,             22,
-
-        YEAHSND,                32,
-
-        // These are in all other episodes
-        DOGDEATHSND,            16,
-        AHHHGSND,               17,
-        DIESND,                 18,
-        EVASND,                 19,
-
-        TOT_HUNDSND,            23,
-        MEINGOTTSND,            24,
-        SCHABBSHASND,           25,
-        HITLERHASND,            26,
-        SPIONSND,               27,
-        NEINSOVASSND,           28,
-        DOGATTACKSND,           29,
-        LEVELDONESND,           30,
-        MECHSTEPSND,            31,
-
-        SCHEISTSND,             33,
-        DEATHSCREAM4SND,        34,         // AIIEEE
-        DEATHSCREAM5SND,        35,         // DEE-DEE
-        DONNERSND,              36,         // EPISODE 4 BOSS DIE
-        EINESND,                37,         // EPISODE 4 BOSS SIGHTING
-        ERLAUBENSND,            38,         // EPISODE 6 BOSS SIGHTING
-        DEATHSCREAM6SND,        39,         // FART
-        DEATHSCREAM7SND,        40,         // GASP
-        DEATHSCREAM8SND,        41,         // GUH-BOY!
-        DEATHSCREAM9SND,        42,         // AH GEEZ!
-        KEINSND,                43,         // EPISODE 5 BOSS SIGHTING
-        MEINSND,                44,         // EPISODE 6 BOSS DIE
-        ROSESND,                45,         // EPISODE 5 BOSS DIE
-
-        LASTSOUND
-    };
-
-
-void InitDigiMap (void)
-{
-    int *map;
-
-    for (map = wolfdigimap; *map != LASTSOUND; map += 2)
-    {
-        DigiMap[map[0]] = map[1];
-        SD_PrepareSound(map[1]);
-    }
-}
-
-CP_iteminfo MusicItems={CTL_X,CTL_Y,6,0,32};
-CP_itemtype MusicMenu[]=
-    {
-        {1,"Get Them!",0},
-        {1,"Searching",0},
-        {1,"P.O.W.",0},
-        {1,"Suspense",0},
-        {1,"War March",0},
-        {1,"Around The Corner!",0},
-
-        {1,"Nazi Anthem",0},
-        {1,"Lurking...",0},
-        {1,"Going After Hitler",0},
-        {1,"Pounding Headache",0},
-        {1,"Into the Dungeons",0},
-        {1,"Ultimate Conquest",0},
-
-        {1,"Kill the S.O.B.",0},
-        {1,"The Nazi Rap",0},
-        {1,"Twelfth Hour",0},
-        {1,"Zero Hour",0},
-        {1,"Ultimate Conquest",0},
-        {1,"Wolfpack",0}
-    };
-
-void DoJukebox(void)
-{
-    int which,lastsong=-1;
-    unsigned start;
-    unsigned songs[]=
-        {
-            GETTHEM_MUS,
-            SEARCHN_MUS,
-            POW_MUS,
-            SUSPENSE_MUS,
-            WARMARCH_MUS,
-            CORNER_MUS,
-
-            NAZI_OMI_MUS,
-            PREGNANT_MUS,
-            GOINGAFT_MUS,
-            HEADACHE_MUS,
-            DUNGEON_MUS,
-            ULTIMATE_MUS,
-
-            INTROCW3_MUS,
-            NAZI_RAP_MUS,
-            TWELFTH_MUS,
-            ZEROHOUR_MUS,
-            ULTIMATE_MUS,
-            PACMAN_MUS
-        };
-
-    IN_ClearKeysDown();
-    if (!AdLibPresent && !SoundBlasterPresent)
-        return;
-
-    MenuFadeOut();
-
-    start = ((SDL_GetTicks()/10)%3)*6;
-
-    CA_CacheGrChunk (STARTFONT+1);
-    CacheLump (CONTROLS_LUMP_START,CONTROLS_LUMP_END);
-    CA_LoadAllSounds ();
-
-    fontnumber=1;
-    ClearMScreen ();
-    VWB_DrawPic(112,184,C_MOUSELBACKPIC);
-    DrawStripes (10);
-    SETFONTCOLOR (TEXTCOLOR,BKGDCOLOR);
-
-    DrawWindow (CTL_X-2,CTL_Y-6,280,13*7,BKGDCOLOR);
-
-    DrawMenu (&MusicItems,&MusicMenu[start]);
-
-    SETFONTCOLOR (READHCOLOR,BKGDCOLOR);
-    PrintY=15;
-    WindowX = 0;
-    WindowY = 320;
-    US_CPrint ("Robert's Jukebox");
-
-    SETFONTCOLOR (TEXTCOLOR,BKGDCOLOR);
-    VW_UpdateScreen();
-    MenuFadeIn();
-
-    do
-    {
-        which = HandleMenu(&MusicItems,&MusicMenu[start],NULL);
-        if (which>=0)
-        {
-            if (lastsong >= 0)
-                MusicMenu[start+lastsong].active = 1;
-
-            StartCPMusic(songs[start + which]);
-            MusicMenu[start+which].active = 2;
-            DrawMenu (&MusicItems,&MusicMenu[start]);
-            VW_UpdateScreen();
-            lastsong = which;
-        }
-    } while(which>=0);
-
-    MenuFadeOut();
-    IN_ClearKeysDown();
-    UnCacheLump (CONTROLS_LUMP_START,CONTROLS_LUMP_END);
-}
 
 /*
 ==========================
@@ -985,8 +770,6 @@ void DoJukebox(void)
 
 static void InitGame()
 {
-    boolean didjukebox=false;
-
     // initialize SDL
 #if defined _WIN32
     putenv("SDL_VIDEODRIVER=directx");
@@ -1024,42 +807,14 @@ static void InitGame()
     CA_Startup ();
     US_Startup ();
 
-    // TODO: Will any memory checking be needed someday??
-#ifdef NOTYET
-    if (mminfo.mainmem < 235000L)
-    {
-        byte *screen;
-
-        CA_CacheGrChunk (ERRORSCREEN);
-        screen = grsegs[ERRORSCREEN];
-        ShutdownId();
-/*        memcpy((byte *)0xb8000,screen+7+7*160,17*160);
-        gotoxy (1,23);*/
-        exit(1);
-    }
-#endif
-
-
 //
 // build some tables
 //
-    InitDigiMap ();
-
     ReadConfig ();
 
     SetupSaveGames();
 
-//
-// HOLDING DOWN 'M' KEY?
-//
-	IN_ProcessEvents();
-
-    if (Keyboard[sc_M])
-    {
-        DoJukebox();
-        didjukebox=true;
-    }
-    else
+    CA_LoadAllSounds ();
 
 //
 // draw intro screen stuff
@@ -1083,13 +838,7 @@ static void InitGame()
 // initialize variables
 //
     InitRedShifts ();
-    if(!didjukebox)
-        FinishSignon();
-
-#ifdef NOTYET
-    vdisp = (byte *) (0xa0000+PAGE1START);
-    vbuf = (byte *) (0xa0000+PAGE2START);
-#endif
+    FinishSignon();
 }
 
 //===========================================================================
@@ -1163,9 +912,6 @@ void NewViewSize (int width)
 
 void Quit (const char *errorStr, ...)
 {
-#ifdef NOTYET
-    byte *screen;
-#endif
     char error[256];
     if(errorStr != NULL)
     {
@@ -1180,57 +926,20 @@ void Quit (const char *errorStr, ...)
     {
         ShutdownId();
         if (error && *error)
-        {
-#ifdef NOTYET
-            SetTextCursor(0,0);
-#endif
             puts(error);
-#ifdef NOTYET
-            SetTextCursor(0,2);
-#endif
-            VW_WaitVBL(100);
-        }
+
         exit(1);
     }
 
     if (!error || !*error)
-    {
-#ifdef NOTYET
-        CA_CacheGrChunk (ORDERSCREEN);
-        screen = grsegs[ORDERSCREEN];
-#endif
         WriteConfig ();
-    }
-#ifdef NOTYET
-    else
-    {
-        CA_CacheGrChunk (ERRORSCREEN);
-        screen = grsegs[ERRORSCREEN];
-    }
-#endif
 
     ShutdownId ();
 
     if (error && *error)
     {
-#ifdef NOTYET
-        memcpy((byte *)0xb8000,screen+7,7*160);
-        SetTextCursor(9,3);
-#endif
         puts(error);
-#ifdef NOTYET
-        SetTextCursor(0,7);
-#endif
-        VW_WaitVBL(200);
         exit(1);
-    }
-    else
-    if (!error || !(*error))
-    {
-#ifdef NOTYET
-        memcpy((byte *)0xb8000,screen+7,24*160); // 24 for SPEAR/UPLOAD compatibility
-        SetTextCursor(0,23);
-#endif
     }
 
     exit(0);
@@ -1259,12 +968,11 @@ static void DemoLoop()
 
     StartCPMusic(INTROSONG);
 
-    if (!param_nowait)
-        PG13 ();
+    PG13 ();
 
     while (1)
     {
-        while (!param_nowait)
+        while (1)
         {
 //
 // title page
@@ -1313,11 +1021,8 @@ static void DemoLoop()
         if (startgame || loadedgame)
         {
             GameLoop ();
-            if(!param_nowait)
-            {
-                VW_FadeOut();
-                StartCPMusic(INTROSONG);
-            }
+            VW_FadeOut();
+            StartCPMusic(INTROSONG);
         }
     }
 }
@@ -1337,9 +1042,7 @@ void CheckParameters(int argc, char *argv[])
     {
         char *arg = argv[i];
 
-        IFARG("--nowait")
-            param_nowait = true;
-        else IFARG("--windowed")
+        IFARG("--windowed")
             fullscreen = false;
         else IFARG("--res")
         {
@@ -1444,8 +1147,6 @@ void CheckParameters(int argc, char *argv[])
                 }
             }
         }
-        else IFARG("--ignorenumchunks")
-            param_ignorenumchunks = true;
         else IFARG("--help")
             showHelp = true;
         else hasError = true;
@@ -1460,7 +1161,6 @@ void CheckParameters(int argc, char *argv[])
             "Usage: Wolf4SDL [options]\n"
             "Options:\n"
             " --help                 This help page\n"
-            " --nowait               Skips intro screens\n"
             " --windowed             Starts the game in a window\n"
             " --res <width> <height> Sets the screen resolution\n"
             "                        (must be multiple of 320x200)\n"
@@ -1473,8 +1173,6 @@ void CheckParameters(int argc, char *argv[])
             " --samplerate <rate>    Sets the sound sample rate (given in Hz, default: %i)\n"
             " --audiobuffer <size>   Sets the size of the audio buffer (-> sound latency)\n"
             "                        (given in bytes, default: 2048 / (44100 / samplerate))\n"
-            " --ignorenumchunks      Ignores the number of chunks in VGAHEAD.*\n"
-            "                        (may be useful for some broken mods)\n"
             " --configdir <dir>      Directory where config file and save games are stored\n"
 #if defined(_WIN32)
             "                        (default: current directory)\n"

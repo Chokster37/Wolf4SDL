@@ -26,10 +26,6 @@ CFLAGS += -Wreturn-type
 CFLAGS += -Wwrite-strings
 CFLAGS += -Wcast-align
 
-ifdef GPL
-    CFLAGS += -DUSE_GPL
-endif
-
 
 CCFLAGS += $(CFLAGS)
 CCFLAGS += -std=gnu99
@@ -46,11 +42,7 @@ LDFLAGS += -static-libgcc
 endif
 
 SRCS :=
-ifndef GPL
-    SRCS += mame/fmopl.cpp
-else
-    SRCS += dosbox/dbopl.cpp
-endif
+SRCS += fmopl.cpp
 SRCS += id_ca.cpp
 SRCS += id_in.cpp
 SRCS += id_pm.cpp
