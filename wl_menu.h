@@ -25,9 +25,9 @@
 #define CENTERY         ((int) screenHeight / 2)
 
 #define MENU_X  76
-#define MENU_Y  55
+#define MENU_Y  68
 #define MENU_W  178
-#define MENU_H  13*9+6
+#define MENU_H  13*7+6
 
 #define SM_X    48
 #define SM_W    250
@@ -92,7 +92,6 @@ void US_ControlPanel(ScanCode);
 void EnableEndGameMenuItem();
 
 void SetupControlPanel(void);
-void SetupSaveGames();
 void CleanupControlPanel(void);
 
 void DrawMenu(CP_iteminfo *item_i,CP_itemtype *items);
@@ -112,8 +111,6 @@ int  Confirm(const char *string);
 void Message(const char *string);
 void CheckPause(void);
 void ShootSnd(void);
-void CheckSecretMissions(void);
-void BossKey(void);
 
 void DrawGun(CP_iteminfo *item_i,CP_itemtype *items,int x,int *y,int which,int basey,void (*routine)(int w));
 void DrawHalfStep(int x,int y);
@@ -128,33 +125,24 @@ void EnterCtrlData(int index,CustomCtrls *cust,void (*DrawRtn)(int),void (*Print
 
 void DrawMainMenu(void);
 void DrawSoundMenu(void);
-void DrawLoadSaveScreen(int loadsave);
 void DrawNewEpisode(void);
 void DrawNewGame(void);
 void DrawChangeView(int view);
-void DrawCtlScreen(void);
 void DrawCustomScreen(void);
-void DrawLSAction(int which);
 void DrawCustKeybd(int hilight);
 void DrawCustKeys(int hilight);
 void PrintCustKeybd(int i);
 void PrintCustKeys(int i);
 
-void PrintLSEntry(int w,int color);
-void TrackWhichGame(int w);
 void DrawNewGameDiff(int w);
 void FixupCustom(int w);
 
 int CP_NewGame(int);
 int CP_Sound(int);
-int  CP_LoadGame(int);
-int  CP_SaveGame(int);
 int CP_ChangeView(int);
-int CP_ExitOptions(int);
 int CP_Quit(int);
 int CP_ViewScores(int);
-int  CP_EndGame(int);
-int  CP_CheckQuick(ScanCode scancode);
+int CP_EndGame(int);
 int CP_CustomControls(int);
 
 void CheckForEpisodes(void);
@@ -169,8 +157,6 @@ enum menuitems
         newgame,
         soundmenu,
         control,
-        loadgame,
-        savegame,
         changeview,
         viewscores,
         backtodemo,
@@ -181,8 +167,8 @@ enum menuitems
 // WL_INTER
 //
 typedef struct {
-                int kill,secret,treasure;
-                int32_t time;
+                byte kill,secret,treasure;
+                word time;
                 } LRstruct;
 
 extern LRstruct LevelRatios[];

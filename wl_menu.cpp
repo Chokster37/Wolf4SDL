@@ -41,8 +41,6 @@ CP_itemtype MainMenu[] = {
     {1, STR_NG, CP_NewGame},
     {1, STR_SD, CP_Sound},
     {1, STR_CL, CP_CustomControls},
-    {1, STR_LG, CP_LoadGame},
-    {0, STR_SG, CP_SaveGame},
     {1, STR_CV, CP_ChangeView},
     {1, STR_VS, CP_ViewScores},
     {1, STR_BD, 0},
@@ -86,19 +84,6 @@ CP_itemtype NewMenu[] = {
     {1, STR_DEATH, 0}
 };
 
-CP_itemtype LSMenu[] = {
-    {1, "", 0},
-    {1, "", 0},
-    {1, "", 0},
-    {1, "", 0},
-    {1, "", 0},
-    {1, "", 0},
-    {1, "", 0},
-    {1, "", 0},
-    {1, "", 0},
-    {1, "", 0}
-};
-
 CP_itemtype CusMenu[] = {
     {0, "", 0},
     {0, "", 0},
@@ -114,7 +99,6 @@ CP_itemtype CusMenu[] = {
 // CP_iteminfo struct format: short x, y, amount, curpos, indent;
 CP_iteminfo MainItems = { MENU_X, MENU_Y, lengthof(MainMenu), STARTITEM, 24 },
             SndItems  = { SM_X, SM_Y1, lengthof(SndMenu), 0, 52 },
-            LSItems   = { LSM_X, LSM_Y, lengthof(LSMenu), 0, 24 },
             CusItems  = { 8, CST_Y + 13 * 2, lengthof(CusMenu), -1, 0},
             NewEitems = { NE_X, NE_Y, lengthof(NewEmenu), 0, 88 },
             NewItems  = { NM_X, NM_Y, lengthof(NewMenu), 2, 24 };
@@ -136,11 +120,8 @@ int color_norml[] = {
 int EpisodeSelect[6] = { 1 };
 
 
-static int SaveGamesAvail[10];
 static int StartGame;
 static int SoundStatus = 1;
-static char SaveGameNames[10][32];
-static char SaveName[13] = "savegam?.";
 
 
 ////////////////////////////////////////////////////////////////////
@@ -241,7 +222,12 @@ US_ControlPanel (ScanCode scancode)
             case backtodemo:
                 StartGame = 1;
                 if (!ingame)
-                    StartCPMusic (INTROSONG);
+                {
+                    if (levelrestore)
+                        SetupLevelRestore (true);
+                    else				    
+                        StartCPMusic (INTROSONG);
+                }
                 VL_FadeOut (0, 255, 0, 0, 0, 10);
                 break;
 
@@ -272,7 +258,7 @@ US_ControlPanel (ScanCode scancode)
     //
     // CHANGE MAINMENU ITEM
     //
-    if (startgame || loadedgame)
+    if (startgame)
         EnableEndGameMenuItem();
 
     // RETURN/START GAME EXECUTION
@@ -302,7 +288,7 @@ DrawMainMenu (void)
     //
     // CHANGE "GAME" AND "DEMO"
     //
-    if (ingame)
+    if (ingame || levelrestore)
     {
         strcpy (&MainMenu[backtodemo].string[8], STR_GAME);
         MainMenu[backtodemo].active = 2;
@@ -335,7 +321,7 @@ CP_EndGame (int)
     playstate = ex_died;
     killerobj = NULL;
 
-    MainMenu[savegame].active = 0;
+    UpdateLevelRestore (false);
     MainMenu[viewscores].routine = CP_ViewScores;
     strcpy (MainMenu[viewscores].string, STR_VS);
 
@@ -419,7 +405,7 @@ CP_NewGame (int)
     //
     // ALREADY IN A GAME?
     //
-    if (ingame)
+    if (ingame || levelrestore)
         if (!Confirm (CURGAME))
         {
             MenuFadeOut ();
@@ -437,6 +423,7 @@ CP_NewGame (int)
     }
 
     ShootSnd ();
+    UpdateLevelRestore (false);
     NewGame (which, episode);
     StartGame = 1;
     MenuFadeOut ();
@@ -649,263 +636,6 @@ DrawSoundMenu (void)
 
     DrawMenuGun (&SndItems);
     VW_UpdateScreen ();
-}
-
-
-//
-// DRAW LOAD/SAVE IN PROGRESS
-//
-void
-DrawLSAction (int which)
-{
-#define LSA_X   96
-#define LSA_Y   80
-#define LSA_W   130
-#define LSA_H   42
-
-    DrawWindow (LSA_X, LSA_Y, LSA_W, LSA_H, TEXTCOLOR);
-    DrawOutline (LSA_X, LSA_Y, LSA_W, LSA_H, 0, HIGHLIGHT);
-    VWB_DrawPic (LSA_X + 8, LSA_Y + 5, C_DISKLOADING1PIC);
-
-    fontnumber = 1;
-    SETFONTCOLOR (0, TEXTCOLOR);
-    PrintX = LSA_X + 46;
-    PrintY = LSA_Y + 13;
-
-    if (!which)
-        US_Print (STR_LOADING "...");
-    else
-        US_Print (STR_SAVING "...");
-
-    VW_UpdateScreen ();
-}
-
-
-////////////////////////////////////////////////////////////////////
-//
-// LOAD SAVED GAMES
-//
-////////////////////////////////////////////////////////////////////
-int
-CP_LoadGame (int)
-{
-    FILE *file;
-    int which, exit = 0;
-    char name[13];
-    char loadpath[300];
-
-    strcpy (name, SaveName);
-
-    DrawLoadSaveScreen (0);
-
-    do
-    {
-        which = HandleMenu (&LSItems, &LSMenu[0], TrackWhichGame);
-        if (which >= 0 && SaveGamesAvail[which])
-        {
-            ShootSnd ();
-            name[7] = which + '0';
-
-            if(configdir[0])
-                snprintf(loadpath, sizeof(loadpath), "%s/%s", configdir, name);
-            else
-                strcpy(loadpath, name);
-
-            file = fopen (loadpath, "rb");
-            fseek (file, 32, SEEK_SET);
-
-            DrawLSAction (0);
-            loadedgame = true;
-
-            LoadTheGame (file, LSA_X + 8, LSA_Y + 5);
-            fclose (file);
-
-            StartGame = 1;
-            ShootSnd ();
-
-            exit = 1;
-            break;
-        }
-
-    }
-    while (which >= 0);
-
-    MenuFadeOut ();
-
-    return exit;
-}
-
-
-///////////////////////////////////
-//
-// HIGHLIGHT CURRENT SELECTED ENTRY
-//
-void
-TrackWhichGame (int w)
-{
-    static int lastgameon = 0;
-
-    PrintLSEntry (lastgameon, TEXTCOLOR);
-    PrintLSEntry (w, HIGHLIGHT);
-
-    lastgameon = w;
-}
-
-
-////////////////////////////
-//
-// DRAW THE LOAD/SAVE SCREEN
-//
-void
-DrawLoadSaveScreen (int loadsave)
-{
-#define DISKX   100
-#define DISKY   0
-
-    int i;
-
-
-    ClearMScreen ();
-    fontnumber = 1;
-    VWB_DrawPic (112, 184, C_MOUSELBACKPIC);
-    DrawWindow (LSM_X - 10, LSM_Y - 5, LSM_W, LSM_H, BKGDCOLOR);
-    DrawStripes (10);
-
-    if (!loadsave)
-        VWB_DrawPic (60, 0, C_LOADGAMEPIC);
-    else
-        VWB_DrawPic (60, 0, C_SAVEGAMEPIC);
-
-    for (i = 0; i < 10; i++)
-        PrintLSEntry (i, TEXTCOLOR);
-
-    DrawMenu (&LSItems, &LSMenu[0]);
-    VW_UpdateScreen ();
-    MenuFadeIn ();
-    WaitKeyUp ();
-}
-
-
-///////////////////////////////////////////
-//
-// PRINT LOAD/SAVE GAME ENTRY W/BOX OUTLINE
-//
-void
-PrintLSEntry (int w, int color)
-{
-    SETFONTCOLOR (color, BKGDCOLOR);
-    DrawOutline (LSM_X + LSItems.indent, LSM_Y + w * 13, LSM_W - LSItems.indent - 15, 11, color,
-                 color);
-    PrintX = LSM_X + LSItems.indent + 2;
-    PrintY = LSM_Y + w * 13 + 1;
-    fontnumber = 0;
-
-    if (SaveGamesAvail[w])
-        US_Print (SaveGameNames[w]);
-    else
-        US_Print ("      - " STR_EMPTY " -");
-
-    fontnumber = 1;
-}
-
-
-////////////////////////////////////////////////////////////////////
-//
-// SAVE CURRENT GAME
-//
-////////////////////////////////////////////////////////////////////
-int
-CP_SaveGame (int)
-{
-    int which, exit = 0;
-    FILE *file;
-    char name[13];
-    char savepath[300];
-    char input[32];
-
-    strcpy (name, SaveName);
-
-    DrawLoadSaveScreen (1);
-
-    do
-    {
-        which = HandleMenu (&LSItems, &LSMenu[0], TrackWhichGame);
-        if (which >= 0)
-        {
-            //
-            // OVERWRITE EXISTING SAVEGAME?
-            //
-            if (SaveGamesAvail[which])
-            {
-                if (!Confirm (GAMESVD))
-                {
-                    DrawLoadSaveScreen (1);
-                    continue;
-                }
-                else
-                {
-                    DrawLoadSaveScreen (1);
-                    PrintLSEntry (which, HIGHLIGHT);
-                    VW_UpdateScreen ();
-                }
-            }
-
-            ShootSnd ();
-
-            strcpy (input, &SaveGameNames[which][0]);
-            name[7] = which + '0';
-
-            fontnumber = 0;
-            if (!SaveGamesAvail[which])
-                VWB_Bar (LSM_X + LSItems.indent + 1, LSM_Y + which * 13 + 1,
-                         LSM_W - LSItems.indent - 16, 10, BKGDCOLOR);
-            VW_UpdateScreen ();
-
-            if (US_LineInput
-                (LSM_X + LSItems.indent + 2, LSM_Y + which * 13 + 1, input, input, true, 31,
-                 LSM_W - LSItems.indent - 30))
-            {
-                SaveGamesAvail[which] = 1;
-                strcpy (&SaveGameNames[which][0], input);
-
-                if(configdir[0])
-                    snprintf(savepath, sizeof(savepath), "%s/%s", configdir, name);
-                else
-                    strcpy(savepath, name);
-
-                unlink (savepath);
-                file = fopen (savepath, "wb");
-                fwrite (input, 32, 1, file);
-                fseek (file, 32, SEEK_SET);
-
-                DrawLSAction (1);
-                SaveTheGame (file, LSA_X + 8, LSA_Y + 5);
-
-                fclose (file);
-
-                ShootSnd ();
-                exit = 1;
-            }
-            else
-            {
-                VWB_Bar (LSM_X + LSItems.indent + 1, LSM_Y + which * 13 + 1,
-                         LSM_W - LSItems.indent - 16, 10, BKGDCOLOR);
-                PrintLSEntry (which, HIGHLIGHT);
-                VW_UpdateScreen ();
-                SD_PlaySound (ESCPRESSEDSND);
-                continue;
-            }
-
-            fontnumber = 1;
-            break;
-        }
-
-    }
-    while (which >= 0);
-
-    MenuFadeOut ();
-
-    return exit;
 }
 
 
@@ -1379,8 +1109,6 @@ CP_ChangeView (int)
         {
             SD_PlaySound (ESCPRESSEDSND);
             MenuFadeOut ();
-            if(screenHeight % 200 != 0)
-                VL_ClearScreen(0);
             return 0;
         }
     }
@@ -1395,8 +1123,6 @@ CP_ChangeView (int)
 
     ShootSnd ();
     MenuFadeOut ();
-    if(screenHeight % 200 != 0)
-        VL_ClearScreen(0);
 
     return 0;
 }
@@ -1461,8 +1187,6 @@ IntroScreen (void)
 #define MAINCOLOR       0x6c
 #define EMSCOLOR        0x4f
 #define XMSCOLOR        0x7f
-
-#define FILLCOLOR       14
 
     int i;
 
@@ -1564,45 +1288,8 @@ SetupControlPanel (void)
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
     fontnumber = 1;
     WindowH = 200;
-    if(screenHeight % 200 != 0)
-        VL_ClearScreen(0);
-
-    if (ingame)
-        MainMenu[savegame].active = 1;
 }
 
-////////////////////////////////////////////////////////////////////
-//
-// SEE WHICH SAVE GAME FILES ARE AVAILABLE & READ STRING IN
-//
-////////////////////////////////////////////////////////////////////
-void SetupSaveGames()
-{
-    char name[13];
-    char savepath[300];
-
-    strcpy(name, SaveName);
-    for(int i = 0; i < 10; i++)
-    {
-            name[7] = '0' + i;
-
-            if(configdir[0])
-                snprintf(savepath, sizeof(savepath), "%s/%s", configdir, name);
-            else
-                strcpy(savepath, name);
-
-            const int handle = open(savepath, O_RDONLY | O_BINARY);
-            if(handle >= 0)
-            {
-                char temp[32];
-
-                SaveGamesAvail[i] = 1;
-                read(handle, temp, 32);
-                close(handle);
-                strcpy(&SaveGameNames[i][0], temp);
-            }
-    }
-}
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -2299,5 +1986,5 @@ CheckForEpisodes (void)
     strcpy (graphext, extension);
     strcpy (audioext, extension);
     strcat (configname, extension);
-    strcat (SaveName, extension);
+    strcat (savename, extension);
 }

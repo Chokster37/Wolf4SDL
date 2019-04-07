@@ -139,8 +139,6 @@ Victory (void)
     IN_Ack ();
 
     VW_FadeOut ();
-    if(screenHeight % 200 != 0)
-        VL_ClearScreen(0);
 
     UNCACHEGRCHUNK (C_TIMECODEPIC);
     UnCacheLump (LEVELEND_LUMP_START, LEVELEND_LUMP_END);
@@ -412,12 +410,12 @@ LevelCompleted (void)
         //
         // PRINT TIME
         //
-        sec = gamestate.TimeCount / 70;
+        sec = TimeCount / 70;
 
         if (sec > 99 * 60)      // 99 minutes max
             sec = 99 * 60;
 
-        if (gamestate.TimeCount < parTimes[gamestate.episode * 10 + mapon].time * 4200)
+        if (TimeCount < parTimes[gamestate.episode * 10 + mapon].time * 4200)
             timeleft = (int32_t) ((parTimes[gamestate.episode * 10 + mapon].time * 4200) / 70 - sec);
 
         min = sec / 60;
@@ -442,12 +440,12 @@ LevelCompleted (void)
         // FIGURE RATIOS OUT BEFOREHAND
         //
         kr = sr = tr = 0;
-        if (gamestate.killtotal)
-            kr = (gamestate.killcount * 100) / gamestate.killtotal;
-        if (gamestate.secrettotal)
-            sr = (gamestate.secretcount * 100) / gamestate.secrettotal;
-        if (gamestate.treasuretotal)
-            tr = (gamestate.treasurecount * 100) / gamestate.treasuretotal;
+        if (killtotal)
+            kr = (killcount * 100) / killtotal;
+        if (secrettotal)
+            sr = (secretcount * 100) / secrettotal;
+        if (treasuretotal)
+            tr = (treasurecount * 100) / treasuretotal;
 
 
         //

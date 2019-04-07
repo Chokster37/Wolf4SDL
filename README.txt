@@ -34,10 +34,8 @@ Main features:
 Additional features:
 --------------------
 
- - (Nearly) unlimited sound and song lengths:
-      Mod developers are not restricted to 64kB for digitized sounds and
-      IMF songs anymore, so longer songs and digitized sounds with better
-      quality are possible.
+ - (Nearly) unlimited song lengths:
+      Mod developers are not restricted to 64kB for IMF songs anymore.
 
  - Freely movable pushwalls:
       Moving pushwalls can be viewed from all sides, allowing mod developers

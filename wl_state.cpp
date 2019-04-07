@@ -836,22 +836,22 @@ void KillActor (objtype *ob)
 
         case giftobj:
             GivePoints (5000);
-            gamestate.killx = player->x;
-            gamestate.killy = player->y;
+            killx = player->x;
+            killy = player->y;
             NewState (ob,&s_giftdie1);
             break;
 
         case fatobj:
             GivePoints (5000);
-            gamestate.killx = player->x;
-            gamestate.killy = player->y;
+            killx = player->x;
+            killy = player->y;
             NewState (ob,&s_fatdie1);
             break;
 
         case schabbobj:
             GivePoints (5000);
-            gamestate.killx = player->x;
-            gamestate.killy = player->y;
+            killx = player->x;
+            killy = player->y;
             NewState (ob,&s_schabbdie1);
             break;
         case fakeobj:
@@ -865,13 +865,13 @@ void KillActor (objtype *ob)
             break;
         case realhitlerobj:
             GivePoints (5000);
-            gamestate.killx = player->x;
-            gamestate.killy = player->y;
+            killx = player->x;
+            killy = player->y;
             NewState (ob,&s_hitlerdie1);
             break;
     }
 
-    gamestate.killcount++;
+    killcount++;
     ob->flags &= ~FL_SHOOTABLE;
     actorat[ob->tilex][ob->tiley] = NULL;
     ob->flags |= FL_NONMARK;

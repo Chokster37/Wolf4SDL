@@ -671,22 +671,13 @@ enum
 typedef struct
 {
     short       difficulty;
-    short       mapon;
+    short       mapon,episode;
     int32_t     oldscore,score,nextextra;
     short       lives;
     short       health;
     short       ammo;
     short       keys;
     weapontype  bestweapon,weapon,chosenweapon;
-
-    short       faceframe;
-    short       attackframe,attackcount,weaponframe;
-
-    short       episode,secretcount,treasurecount,killcount,
-                secrettotal,treasuretotal,killtotal;
-    int32_t     TimeCount;
-    int32_t     killx,killy;
-    boolean     victoryflag;            // set during victory animations
 } gametype;
 
 
@@ -712,7 +703,6 @@ extern int mapon;
 =============================================================================
 */
 
-extern  boolean  loadedgame;
 extern  fixed    focallength;
 extern  int      viewscreenx, viewscreeny;
 extern  int      viewwidth;
@@ -731,6 +721,9 @@ extern  boolean  startgame;
 extern  char     str[80];
 extern  char     configdir[256];
 extern  char     configname[13];
+extern  char     savename[13];
+extern  word     configver;
+extern  boolean  levelrestore;
 
 //
 // Command line parameter variables
@@ -743,8 +736,8 @@ void            NewGame (int difficulty,int episode);
 void            CalcProjection (int32_t focal);
 void            NewViewSize (int width);
 boolean         SetViewSize (unsigned width, unsigned height);
-boolean         LoadTheGame(FILE *file,int x,int y);
-boolean         SaveTheGame(FILE *file,int x,int y);
+void            SetupLevelRestore(boolean import);
+void            UpdateLevelRestore(boolean valid);
 void            ShowViewSize (int width);
 void            ShutdownId (void);
 
@@ -760,6 +753,14 @@ void            ShutdownId (void);
 extern  gametype        gamestate;
 extern  byte            bordercol;
 extern  SDL_Surface     *latchpics[NUMLATCHPICS];
+
+extern    short       faceframe;
+extern    short       attackframe,attackcount,weaponframe;
+extern    short       killcount,secretcount,treasurecount,
+                       killtotal,secrettotal,treasuretotal;
+extern    int32_t     TimeCount;
+extern    int32_t     killx,killy;
+extern    boolean     victoryflag;            // set during victory animations
 
 void    SetupGameLevel (void);
 void    GameLoop (void);
@@ -896,12 +897,10 @@ typedef struct
 
 =============================================================================
 */
-#define TURNTICS        10
 #define SPDPATROL       512
 #define SPDDOG          1500
 
 
-void    InitHitRect (objtype *ob, unsigned radius);
 void    SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state);
 void    NewState (objtype *ob, statetype *state);
 
@@ -1075,7 +1074,6 @@ void SpawnBJVictory (void);
 =============================================================================
 */
 
-extern  void    HelpScreens(void);
 extern  void    EndText(void);
 
 

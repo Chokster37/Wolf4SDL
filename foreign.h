@@ -2,10 +2,6 @@
 		            "a game. Continuing will\n"\
 		            "erase old game. Ok?"
 
-#define GAMESVD	    "There's already a game\n"\
-		            "saved at this position.\n"\
-		            "      Overwrite?"
-
 #define ENDGAMESTR	"Are you sure you want\n"\
 					"to end the game you\n"\
 					"are playing? (Y or N):"
@@ -13,26 +9,18 @@
 #define STR_NG	"New Game"
 #define	STR_SD	"Sound"
 #define	STR_CL	"Control"
-#define	STR_LG	"Load Game"
-#define	STR_SG	"Save Game"
 #define	STR_CV	"Change View"
 #define	STR_VS	"View Scores"
 #define STR_EG	"End Game"
 #define	STR_BD	"Back to Demo"
 #define STR_QT	"Quit"
 
-#define STR_LOADING	"Loading"
-#define STR_SAVING	"Saving"
-
 #define STR_GAME	"Game"
 #define STR_DEMO	"Demo"
-#define STR_EMPTY	"empty"
 
 #define STR_NONE	"None"
 #define	STR_PC		"PC Speaker"
 #define	STR_ALSB	"AdLib/Sound Blaster"
-#define	STR_DISNEY	"Disney Sound Source"
-#define	STR_SB		"Sound Blaster"
 
 #define	STR_DADDY	"Can I play, Daddy?"
 #define	STR_HURTME	"Don't hurt me."
@@ -71,11 +59,6 @@
 #define STR_RAT2TREASURE	"treasure ratio    %"
 
 #define STR_DEFEATED	"defeated!"
-
-#define STR_SAVECHT1	"Your Save Game file is,"
-#define STR_SAVECHT2	"shall we say, \"corrupted\"."
-#define STR_SAVECHT3	"But I'll let you go on and"
-#define STR_SAVECHT4	"play anyway...."
 
 #define	STR_SEEAGAIN	"Let's see that again!"
 

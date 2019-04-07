@@ -971,7 +971,7 @@ void DrawPlayerWeapon (void)
 {
     int shapenum;
 
-    if (gamestate.victoryflag)
+    if (victoryflag)
     {
         if (player->state == &s_deathcam && (GetTimeCount()&32) )
             SimpleScaleShape(viewwidth/2,SPR_DEATHCAM,viewheight+1);
@@ -980,7 +980,7 @@ void DrawPlayerWeapon (void)
 
     if (gamestate.weapon != -1)
     {
-        shapenum = weaponscale[gamestate.weapon]+gamestate.weaponframe;
+        shapenum = weaponscale[gamestate.weapon]+weaponframe;
         SimpleScaleShape(viewwidth/2,shapenum,viewheight+1);
     }
 

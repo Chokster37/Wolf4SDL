@@ -14,7 +14,6 @@
 //
 //	Globals:
 //		ingame - Flag set by game indicating if a game is in progress
-//		loadedgame - Flag set if a game was loaded
 //		PrintX, PrintY - Where the User Mgr will print (global coords)
 //		WindowX,WindowY,WindowW,WindowH - The dimensions of the current
 //			window

@@ -12,7 +12,6 @@ TEXT FORMATTING COMMANDS
 ^E[enter]               End of layout (all pages)
 ^G<y>,<x>,<pic>[enter]  Draw a graphic and push margins
 ^P[enter]               start new page, must be the first chars in a layout
-^L<x>,<y>[ENTER]        Locate to a specific spot, x in pixels, y in lines
 
 =============================================================================
 */
@@ -59,7 +58,6 @@ static unsigned rowon;
 static int     picx;
 static int     picy;
 static int     picnum;
-static int     picdelay;
 static boolean layoutdone;
 
 //===========================================================================
@@ -136,48 +134,6 @@ void ParsePicCommand (void)
 }
 
 
-void ParseTimedCommand (void)
-{
-    picy=ParseNumber();
-    picx=ParseNumber();
-    picnum=ParseNumber();
-    picdelay=ParseNumber();
-    RipToEOL ();
-}
-
-
-/*
-=====================
-=
-= TimedPicCommand
-=
-= Call with text pointing just after a ^P
-= Upon exit text points to the start of next line
-=
-=====================
-*/
-
-void TimedPicCommand (void)
-{
-    ParseTimedCommand ();
-
-    //
-    // update the screen, and wait for time delay
-    //
-    VW_UpdateScreen ();
-
-    //
-    // wait for time
-    //
-    Delay(picdelay);
-
-    //
-    // draw pic
-    //
-    VWB_DrawPic (picx&~7,picy,picnum);
-}
-
-
 /*
 =====================
 =
@@ -193,17 +149,6 @@ void HandleCommand (void)
 
     switch (toupper(*++text))
     {
-        case 'B':
-            picy=ParseNumber();
-            picx=ParseNumber();
-            picwidth=ParseNumber();
-            picheight=ParseNumber();
-            VWB_Bar(picx,picy,picwidth,picheight,BACKCOLOR);
-            RipToEOL();
-            break;
-        case ';':               // comment
-            RipToEOL();
-            break;
         case 'P':               // ^P is start of next page, ^E is end of file
         case 'E':
             layoutdone = true;
@@ -224,24 +169,6 @@ void HandleCommand (void)
             else if (i>='A' && i<='F')
                 fontcolor += i-'A'+10;
             text++;
-            break;
-
-        case '>':
-            px = 160;
-            text++;
-            break;
-
-        case 'L':
-            py=ParseNumber();
-            rowon = (py-TOPMARGIN)/FONTHEIGHT;
-            py = TOPMARGIN+rowon*FONTHEIGHT;
-            px=ParseNumber();
-            while (*text++ != '\n')         // scan to end of line
-                ;
-            break;
-
-        case 'T':               // ^Tyyy,xxx,ppp,ttt waits ttt tics, then draws pic
-            TimedPicCommand ();
             break;
 
         case 'G':               // ^Gyyy,xxx,ppp draws graphic
@@ -555,11 +482,6 @@ void CacheLayoutGraphics (void)
             if (ch == 'G')          // draw graphic command, so mark graphics
             {
                 ParsePicCommand ();
-                CA_CacheGrChunk (picnum);
-            }
-            if (ch == 'T')          // timed draw graphic command, so mark graphics
-            {
-                ParseTimedCommand ();
                 CA_CacheGrChunk (picnum);
             }
         }

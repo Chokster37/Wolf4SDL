@@ -25,8 +25,7 @@ typedef	struct
 
 #define	MaxString	128	// Maximum input string size
 
-extern	boolean		ingame,		// Set by game code if a game is in progress
-					loadedgame;	// Set if the current game was loaded
+extern	boolean		ingame;		// Set by game code if a game is in progress
 extern	word		PrintX,PrintY;	// Current printing location in the window
 extern	word		WindowX,WindowY,// Current location of window
 					WindowW,WindowH;// Current size of window

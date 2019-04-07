@@ -199,7 +199,7 @@ void ControlMovement (objtype *ob)
         Thrust (angle,controly*BACKMOVESCALE);          // move backwards
     }
 
-    if (gamestate.victoryflag)              // watching the BJ actor
+    if (victoryflag)              // watching the BJ actor
         return;
 }
 
@@ -246,7 +246,7 @@ void DrawFace (void)
         StatusDrawFace(GOTGATLINGPIC);
     else if (gamestate.health)
     {
-        StatusDrawFace(FACE1APIC+3*((100-gamestate.health)/16)+gamestate.faceframe);
+        StatusDrawFace(FACE1APIC+3*((100-gamestate.health)/16)+faceframe);
     }
     else
     {
@@ -277,9 +277,9 @@ void UpdateFace (void)
     facecount += tics;
     if (facecount > US_RndT())
     {
-        gamestate.faceframe = (US_RndT()>>6);
-        if (gamestate.faceframe==3)
-            gamestate.faceframe = 1;
+        faceframe = (US_RndT()>>6);
+        if (faceframe==3)
+            faceframe = 1;
 
         facecount = 0;
         DrawFace ();
@@ -351,7 +351,7 @@ void TakeDamage (int points,objtype *attacker)
 {
     LastAttacker = attacker;
 
-    if (gamestate.victoryflag)
+    if (victoryflag)
         return;
     if (gamestate.difficulty==gd_baby)
         points>>=2;
@@ -556,7 +556,7 @@ void GiveAmmo (int ammo)
 {
     if (!gamestate.ammo)                            // knife was out
     {
-        if (!gamestate.attackframe)
+        if (!attackframe)
         {
             gamestate.weapon = gamestate.chosenweapon;
             DrawWeapon ();
@@ -628,22 +628,22 @@ void GetBonus (statobj_t *check)
         case    bo_cross:
             SD_PlaySound (BONUS1SND);
             GivePoints (100);
-            gamestate.treasurecount++;
+            treasurecount++;
             break;
         case    bo_chalice:
             SD_PlaySound (BONUS2SND);
             GivePoints (500);
-            gamestate.treasurecount++;
+            treasurecount++;
             break;
         case    bo_bible:
             SD_PlaySound (BONUS3SND);
             GivePoints (1000);
-            gamestate.treasurecount++;
+            treasurecount++;
             break;
         case    bo_crown:
             SD_PlaySound (BONUS4SND);
             GivePoints (5000);
-            gamestate.treasurecount++;
+            treasurecount++;
             break;
 
         case    bo_clip:
@@ -676,7 +676,7 @@ void GetBonus (statobj_t *check)
             HealSelf (99);
             GiveAmmo (25);
             GiveExtraMan ();
-            gamestate.treasurecount++;
+            treasurecount++;
             break;
 
         case    bo_food:
@@ -855,7 +855,7 @@ void VictoryTile (void)
 {
     SpawnBJVictory ();
 
-    gamestate.victoryflag = true;
+    victoryflag = true;
 }
 
 /*
@@ -915,15 +915,13 @@ void Cmd_Fire (void)
 {
     buttonheld[bt_attack] = true;
 
-    gamestate.weaponframe = 0;
+    weaponframe = 0;
 
     player->state = &s_attack;
 
-    gamestate.attackframe = 0;
-    gamestate.attackcount =
-        attackinfo[gamestate.weapon][gamestate.attackframe].tics;
-    gamestate.weaponframe =
-        attackinfo[gamestate.weapon][gamestate.attackframe].frame;
+    attackframe = 0;
+    attackcount = attackinfo[gamestate.weapon][attackframe].tics;
+    weaponframe = attackinfo[gamestate.weapon][attackframe].frame;
 }
 
 //===========================================================================
@@ -1219,7 +1217,7 @@ void    T_Attack (objtype *ob)
 
     UpdateFace ();
 
-    if (gamestate.victoryflag)              // watching the BJ actor
+    if (victoryflag)              // watching the BJ actor
     {
         VictorySpin ();
         return;
@@ -1232,7 +1230,7 @@ void    T_Attack (objtype *ob)
         buttonstate[bt_attack] = false;
 
     ControlMovement (ob);
-    if (gamestate.victoryflag)              // watching the BJ actor
+    if (victoryflag)              // watching the BJ actor
         return;
 
     plux = (word) (player->x >> UNSIGNEDSHIFT);                     // scale to fit in unsigned
@@ -1243,10 +1241,10 @@ void    T_Attack (objtype *ob)
     //
     // change frame and fire
     //
-    gamestate.attackcount -= (short) tics;
-    while (gamestate.attackcount <= 0)
+    attackcount -= (short) tics;
+    while (attackcount <= 0)
     {
-        cur = &attackinfo[gamestate.weapon][gamestate.attackframe];
+        cur = &attackinfo[gamestate.weapon][attackframe];
         switch (cur->attack)
         {
             case -1:
@@ -1264,18 +1262,18 @@ void    T_Attack (objtype *ob)
                         DrawWeapon ();
                     }
                 }
-                gamestate.attackframe = gamestate.weaponframe = 0;
+                attackframe = weaponframe = 0;
                 return;
 
             case 4:
                 if (!gamestate.ammo)
                     break;
                 if (buttonstate[bt_attack])
-                    gamestate.attackframe -= 2;
+                    attackframe -= 2;
             case 1:
                 if (!gamestate.ammo)
                 {       // can only happen with chain gun
-                    gamestate.attackframe++;
+                    attackframe++;
                     break;
                 }
                 GunAttack (ob);
@@ -1289,14 +1287,13 @@ void    T_Attack (objtype *ob)
 
             case 3:
                 if (gamestate.ammo && buttonstate[bt_attack])
-                    gamestate.attackframe -= 2;
+                    attackframe -= 2;
                 break;
         }
 
-        gamestate.attackcount += cur->tics;
-        gamestate.attackframe++;
-        gamestate.weaponframe =
-            attackinfo[gamestate.weapon][gamestate.attackframe].frame;
+        attackcount += cur->tics;
+        attackframe++;
+        weaponframe = attackinfo[gamestate.weapon][attackframe].frame;
     }
 }
 
@@ -1314,7 +1311,7 @@ void    T_Attack (objtype *ob)
 
 void    T_Player (objtype *ob)
 {
-    if (gamestate.victoryflag)              // watching the BJ actor
+    if (victoryflag)              // watching the BJ actor
     {
         VictorySpin ();
         return;
@@ -1330,7 +1327,7 @@ void    T_Player (objtype *ob)
         Cmd_Fire ();
 
     ControlMovement (ob);
-    if (gamestate.victoryflag)              // watching the BJ actor
+    if (victoryflag)              // watching the BJ actor
         return;
 
     plux = (word) (player->x >> UNSIGNEDSHIFT);                     // scale to fit in unsigned

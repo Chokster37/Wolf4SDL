@@ -360,10 +360,8 @@ void CheckKeys (void)
         IN_ClearKeysDown ();
         VW_FadeOut();
         DrawPlayScreen ();
-        if (!startgame && !loadedgame)
+        if (!startgame)
             StartMusic ();
-        if (loadedgame)
-            playstate = ex_abort;
         lasttimecount = GetTimeCount();
         return;
     }
@@ -895,7 +893,7 @@ void PlayLoop (void)
 
         ThreeDRefresh ();
 
-        gamestate.TimeCount += tics;
+        TimeCount += tics;
 
         if (screenfaded)
             VW_FadeIn ();

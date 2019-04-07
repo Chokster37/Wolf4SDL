@@ -27,6 +27,14 @@ boolean         ingame,fizzlein;
 gametype        gamestate;
 byte            bordercol=VIEWCOLOR;        // color of the Change View/Ingame border
 
+short       faceframe;
+short       attackframe,attackcount,weaponframe;
+short       killcount,secretcount,treasurecount,
+            killtotal,secrettotal,treasuretotal;
+int32_t     TimeCount;
+int32_t     killx,killy;
+boolean     victoryflag;            // set during victory animations
+
 //
 // ELEVATOR BACK MAPS - REMEMBER (-1)!!
 //
@@ -142,8 +150,7 @@ static void ScanInfoPlane(void)
 // P wall
 //
                 case 98:
-                    if (!loadedgame)
-                        gamestate.secrettotal++;
+                    secrettotal++;
                     break;
 
 //
@@ -441,19 +448,16 @@ void SetupGameLevel (void)
     word tile;
 
 
-    if (!loadedgame)
-    {
-        gamestate.TimeCount
-            = gamestate.secrettotal
-            = gamestate.killtotal
-            = gamestate.treasuretotal
-            = gamestate.secretcount
-            = gamestate.killcount
-            = gamestate.treasurecount
+    TimeCount
+            = secrettotal
+            = killtotal
+            = treasuretotal
+            = secretcount
+            = killcount
+            = treasurecount
             = pwallstate = pwallpos = 0;
         LastAttacker = NULL;
         killerobj = NULL;
-    }
 
     if (demoplayback)
         US_InitRndT (false);
@@ -808,8 +812,7 @@ void Died (void)
         gamestate.ammo = STARTAMMO;
         gamestate.keys = 0;
         pwallstate = pwallpos = 0;
-        gamestate.attackframe = gamestate.attackcount =
-            gamestate.weaponframe = 0;
+        attackframe = attackcount = weaponframe = 0;
 
         DrawKeys ();
         DrawWeapon ();
@@ -841,25 +844,18 @@ restartgame:
     died = false;
     do
     {
-        if (!loadedgame)
-            gamestate.score = gamestate.oldscore;
+        gamestate.score = gamestate.oldscore;
 
         if(!died)
             DrawScore();
 
         startgame = false;
-        if (!loadedgame)
-            SetupGameLevel ();
+        SetupGameLevel ();
 
         DrawLevel ();
 
         ingame = true;
-        if(loadedgame)
-        {
-            StartMusic();
-            loadedgame = false;
-        }
-        else StartMusic ();
+        StartMusic ();
 
         if (!died)
             PreloadGraphics ();             // TODO: Let this do something useful!
@@ -875,7 +871,7 @@ restartgame:
         SD_StopSound ();
         ingame = false;
 
-        if (startgame || loadedgame)
+        if (startgame)
             goto restartgame;
 
         switch (playstate)
@@ -906,6 +902,8 @@ restartgame:
                         // GOING TO NEXT LEVEL
                         //
                         gamestate.mapon++;
+
+                UpdateLevelRestore (true);
                 break;
 
             case ex_died:
@@ -916,8 +914,7 @@ restartgame:
                     break;                          // more lives left
 
                 VW_FadeOut ();
-                if(screenHeight % 200 != 0)
-                    VL_ClearScreen(0);
+                UpdateLevelRestore (false);
 
                 CheckHighScore (gamestate.score,gamestate.mapon+1);
                 strcpy(MainMenu[viewscores].string,STR_VS);
@@ -928,6 +925,7 @@ restartgame:
                 VW_FadeOut ();
                
                 Victory ();
+                UpdateLevelRestore (false);
 
                 CheckHighScore (gamestate.score,gamestate.mapon+1);
                 strcpy(MainMenu[viewscores].string,STR_VS);

@@ -70,10 +70,12 @@ int32_t  heightnumerator;
 void    Quit (const char *error,...);
 
 boolean startgame;
-boolean loadedgame;
 
 char    configdir[256] = "";
 char    configname[13] = "config.";
+char    savename[13] = "savegame.";
+word    configver = 0xfefc;
+boolean levelrestore;
 
 //
 // Command line parameter variables
@@ -118,7 +120,7 @@ void ReadConfig(void)
         //
         word tmp;
         read(file,&tmp,sizeof(tmp));
-        if(tmp!=0xfefc)
+        if(tmp!=configver)
         {
             close(file);
             goto noconfig;
@@ -177,7 +179,7 @@ void WriteConfig(void)
     const int file = open(configpath, O_CREAT | O_WRONLY | O_BINARY, 0644);
     if (file != -1)
     {
-        word tmp=0xfefc;
+        word tmp=configver;
         write(file,&tmp,sizeof(tmp));
         write(file,Scores,sizeof(HighScore) * MaxScores);
 
@@ -216,21 +218,14 @@ void NewGame (int difficulty,int episode)
     gamestate.lives = 3;
     gamestate.nextextra = EXTRAPOINTS;
     gamestate.episode=episode;
+    
+    faceframe = attackframe =
+    attackcount = weaponframe = victoryflag = 0;
 
     startgame = true;
 }
 
 //===========================================================================
-
-void DiskFlopAnim(int x,int y)
-{
-    static int8_t which=0;
-    if (!x && !y)
-        return;
-    VWB_DrawPic(x,y,C_DISKLOADING1PIC+which);
-//  VW_UpdateScreen();
-    which^=1;
-}
 
 
 int32_t DoChecksum(byte *source,unsigned size,int32_t checksum)
@@ -244,309 +239,120 @@ int32_t DoChecksum(byte *source,unsigned size,int32_t checksum)
 }
 
 
-/*
-==================
-=
-= SaveTheGame
-=
-==================
-*/
-
-extern statetype s_grdstand;
-extern statetype s_player;
-
-boolean SaveTheGame(FILE *file,int x,int y)
-{
-//    struct diskfree_t dfree;
-//    int32_t avail,size,checksum;
-    int checksum;
-    objtype *ob;
-    objtype nullobj;
-    statobj_t nullstat;
-
-/*    if (_dos_getdiskfree(0,&dfree))
-        Quit("Error in _dos_getdiskfree call");
-
-    avail = (int32_t)dfree.avail_clusters *
-                  dfree.bytes_per_sector *
-                  dfree.sectors_per_cluster;
-
-    size = 0;
-    for (ob = player; ob ; ob=ob->next)
-        size += sizeof(*ob);
-    size += sizeof(nullobj);
-
-    size += sizeof(gamestate) +
-            sizeof(LRstruct)*LRpack +
-            sizeof(tilemap) +
-            sizeof(actorat) +
-            sizeof(laststatobj) +
-            sizeof(statobjlist) +
-            sizeof(doorposition) +
-            sizeof(pwallstate) +
-            sizeof(pwalltile) +
-            sizeof(pwallx) +
-            sizeof(pwally) +
-            sizeof(pwalldir) +
-            sizeof(pwallpos);
-
-    if (avail < size)
-    {
-        Message(STR_NOSPACE1"\n"STR_NOSPACE2);
-        return false;
-    }*/
-
-    checksum = 0;
-
-    DiskFlopAnim(x,y);
-    fwrite(&gamestate,sizeof(gamestate),1,file);
-    checksum = DoChecksum((byte *)&gamestate,sizeof(gamestate),checksum);
-
-    DiskFlopAnim(x,y);
-    fwrite(&LevelRatios[0],sizeof(LRstruct)*LRpack,1,file);
-    checksum = DoChecksum((byte *)&LevelRatios[0],sizeof(LRstruct)*LRpack,checksum);
-
-    DiskFlopAnim(x,y);
-    fwrite(tilemap,sizeof(tilemap),1,file);
-    checksum = DoChecksum((byte *)tilemap,sizeof(tilemap),checksum);
-    DiskFlopAnim(x,y);
-
-    int i;
-    for(i=0;i<MAPSIZE;i++)
-    {
-        for(int j=0;j<MAPSIZE;j++)
-        {
-            word actnum;
-            objtype *objptr=actorat[i][j];
-            if(ISPOINTER(objptr))
-                actnum=0x8000 | (word)(objptr-objlist);
-            else
-                actnum=(word)(uintptr_t)objptr;
-            fwrite(&actnum,sizeof(actnum),1,file);
-            checksum = DoChecksum((byte *)&actnum,sizeof(actnum),checksum);
-        }
-    }
-
-    fwrite (areaconnect,sizeof(areaconnect),1,file);
-    fwrite (areabyplayer,sizeof(areabyplayer),1,file);
-
-    // player object needs special treatment as it's in WL_AGENT.CPP and not in
-    // WL_ACT2.CPP which could cause problems for the relative addressing
-
-    ob = player;
-    DiskFlopAnim(x,y);
-    memcpy(&nullobj,ob,sizeof(nullobj));
-    nullobj.state=(statetype *) ((uintptr_t)nullobj.state-(uintptr_t)&s_player);
-    fwrite(&nullobj,sizeof(nullobj),1,file);
-    ob = ob->next;
-
-    DiskFlopAnim(x,y);
-    for (; ob ; ob=ob->next)
-    {
-        memcpy(&nullobj,ob,sizeof(nullobj));
-        nullobj.state=(statetype *) ((uintptr_t)nullobj.state-(uintptr_t)&s_grdstand);
-        fwrite(&nullobj,sizeof(nullobj),1,file);
-    }
-    nullobj.active = ac_badobject;          // end of file marker
-    DiskFlopAnim(x,y);
-    fwrite(&nullobj,sizeof(nullobj),1,file);
-
-    DiskFlopAnim(x,y);
-    word laststatobjnum=(word) (laststatobj-statobjlist);
-    fwrite(&laststatobjnum,sizeof(laststatobjnum),1,file);
-    checksum = DoChecksum((byte *)&laststatobjnum,sizeof(laststatobjnum),checksum);
-
-    DiskFlopAnim(x,y);
-    for(i=0;i<MAXSTATS;i++)
-    {
-        memcpy(&nullstat,statobjlist+i,sizeof(nullstat));
-        nullstat.visspot=(byte *) ((uintptr_t) nullstat.visspot-(uintptr_t)spotvis);
-        fwrite(&nullstat,sizeof(nullstat),1,file);
-        checksum = DoChecksum((byte *)&nullstat,sizeof(nullstat),checksum);
-    }
-
-    DiskFlopAnim(x,y);
-    fwrite (doorposition,sizeof(doorposition),1,file);
-    checksum = DoChecksum((byte *)doorposition,sizeof(doorposition),checksum);
-    DiskFlopAnim(x,y);
-    fwrite (doorobjlist,sizeof(doorobjlist),1,file);
-    checksum = DoChecksum((byte *)doorobjlist,sizeof(doorobjlist),checksum);
-
-    DiskFlopAnim(x,y);
-    fwrite (&pwallstate,sizeof(pwallstate),1,file);
-    checksum = DoChecksum((byte *)&pwallstate,sizeof(pwallstate),checksum);
-    fwrite (&pwalltile,sizeof(pwalltile),1,file);
-    checksum = DoChecksum((byte *)&pwalltile,sizeof(pwalltile),checksum);
-    fwrite (&pwallx,sizeof(pwallx),1,file);
-    checksum = DoChecksum((byte *)&pwallx,sizeof(pwallx),checksum);
-    fwrite (&pwally,sizeof(pwally),1,file);
-    checksum = DoChecksum((byte *)&pwally,sizeof(pwally),checksum);
-    fwrite (&pwalldir,sizeof(pwalldir),1,file);
-    checksum = DoChecksum((byte *)&pwalldir,sizeof(pwalldir),checksum);
-    fwrite (&pwallpos,sizeof(pwallpos),1,file);
-    checksum = DoChecksum((byte *)&pwallpos,sizeof(pwallpos),checksum);
-
-    //
-    // WRITE OUT CHECKSUM
-    //
-    fwrite (&checksum,sizeof(checksum),1,file);
-
-    return(true);
-}
-
 //===========================================================================
 
 /*
-==================
+======================
 =
-= LoadTheGame
+= SetupLevelRestore
 =
-==================
+======================
 */
 
-boolean LoadTheGame(FILE *file,int x,int y)
+void SetupLevelRestore(boolean import)
 {
-    int32_t checksum,oldchecksum;
-    objtype nullobj;
-    statobj_t nullstat;
+    word tmp;
+    FILE *file;
+    char loadpath[300];
+    int32_t checksum=0,oldchecksum;
 
-    checksum = 0;
+    levelrestore = false;
 
-    DiskFlopAnim(x,y);
-    fread (&gamestate,sizeof(gamestate),1,file);
-    checksum = DoChecksum((byte *)&gamestate,sizeof(gamestate),checksum);
+    if(configdir[0])
+        snprintf(loadpath, sizeof(loadpath), "%s/%s", configdir, savename);
+    else
+        strcpy(loadpath, savename);
 
-    DiskFlopAnim(x,y);
-    fread (&LevelRatios[0],sizeof(LRstruct)*LRpack,1,file);
-    checksum = DoChecksum((byte *)&LevelRatios[0],sizeof(LRstruct)*LRpack,checksum);
-
-    DiskFlopAnim(x,y);
-    SetupGameLevel ();
-
-    DiskFlopAnim(x,y);
-    fread (tilemap,sizeof(tilemap),1,file);
-    checksum = DoChecksum((byte *)tilemap,sizeof(tilemap),checksum);
-
-    DiskFlopAnim(x,y);
-
-    int actnum=0, i;
-    for(i=0;i<MAPSIZE;i++)
+    //
+    // enable the menu option if valid
+    //
+    if (!import)
     {
-        for(int j=0;j<MAPSIZE;j++)
+        const int handle = open(loadpath, O_RDONLY | O_BINARY);
+
+        if(handle >= 0)
         {
-            fread (&actnum,sizeof(word),1,file);
-            checksum = DoChecksum((byte *) &actnum,sizeof(word),checksum);
-            if(actnum&0x8000)
-                actorat[i][j]=objlist+(actnum&0x7fff);
-            else
-                actorat[i][j]=(objtype *)(uintptr_t) actnum;
+            read(handle, &tmp, sizeof(tmp));
+            if (tmp == configver)
+                levelrestore = true;
+            close(handle);
         }
+        return;
     }
 
-    fread (areaconnect,sizeof(areaconnect),1,file);
-    fread (areabyplayer,sizeof(areabyplayer),1,file);
+    //
+    // actually load in the data
+    //
+    file = fopen (loadpath, "rb");
 
-    InitActorList ();
-    DiskFlopAnim(x,y);
-    fread (player,sizeof(*player),1,file);
-    player->state=(statetype *) ((uintptr_t)player->state+(uintptr_t)&s_player);
-
-    while (1)
+    fread (&tmp,sizeof(tmp),1,file);
+    if(tmp==configver)
     {
-        fread (&nullobj,sizeof(nullobj),1,file);
-        if (nullobj.active == ac_badobject)
-            break;
-        GetNewActor ();
-        nullobj.state=(statetype *) ((uintptr_t)nullobj.state+(uintptr_t)&s_grdstand);
-        // don't copy over the links
-        memcpy (newobj,&nullobj,sizeof(nullobj)-8);
+        checksum = DoChecksum((byte *)&tmp,sizeof(tmp),checksum);
+
+        fread (&gamestate,sizeof(gamestate),1,file);
+        checksum = DoChecksum((byte *)&gamestate,sizeof(gamestate),checksum);
+
+        fread (&LevelRatios[0],sizeof(LRstruct)*LRpack,1,file);
+        checksum = DoChecksum((byte *)&LevelRatios[0],sizeof(LRstruct)*LRpack,checksum);
+
+        fread (&oldchecksum,sizeof(oldchecksum),1,file);
+
+        if (oldchecksum == checksum)
+        {
+	    	SetupGameLevel ();
+	    	startgame = true;
+            levelrestore = true;
+	    }
     }
-
-    DiskFlopAnim(x,y);
-    word laststatobjnum;
-    fread (&laststatobjnum,sizeof(laststatobjnum),1,file);
-    laststatobj=statobjlist+laststatobjnum;
-    checksum = DoChecksum((byte *)&laststatobjnum,sizeof(laststatobjnum),checksum);
-
-    DiskFlopAnim(x,y);
-    for(i=0;i<MAXSTATS;i++)
-    {
-        fread(&nullstat,sizeof(nullstat),1,file);
-        checksum = DoChecksum((byte *)&nullstat,sizeof(nullstat),checksum);
-        nullstat.visspot=(byte *) ((uintptr_t)nullstat.visspot+(uintptr_t)spotvis);
-        memcpy(statobjlist+i,&nullstat,sizeof(nullstat));
-    }
-
-    DiskFlopAnim(x,y);
-    fread (doorposition,sizeof(doorposition),1,file);
-    checksum = DoChecksum((byte *)doorposition,sizeof(doorposition),checksum);
-    DiskFlopAnim(x,y);
-    fread (doorobjlist,sizeof(doorobjlist),1,file);
-    checksum = DoChecksum((byte *)doorobjlist,sizeof(doorobjlist),checksum);
-
-    DiskFlopAnim(x,y);
-    fread (&pwallstate,sizeof(pwallstate),1,file);
-    checksum = DoChecksum((byte *)&pwallstate,sizeof(pwallstate),checksum);
-    fread (&pwalltile,sizeof(pwalltile),1,file);
-    checksum = DoChecksum((byte *)&pwalltile,sizeof(pwalltile),checksum);
-    fread (&pwallx,sizeof(pwallx),1,file);
-    checksum = DoChecksum((byte *)&pwallx,sizeof(pwallx),checksum);
-    fread (&pwally,sizeof(pwally),1,file);
-    checksum = DoChecksum((byte *)&pwally,sizeof(pwally),checksum);
-    fread (&pwalldir,sizeof(pwalldir),1,file);
-    checksum = DoChecksum((byte *)&pwalldir,sizeof(pwalldir),checksum);
-    fread (&pwallpos,sizeof(pwallpos),1,file);
-    checksum = DoChecksum((byte *)&pwallpos,sizeof(pwallpos),checksum);
-
-    if (gamestate.secretcount)      // assign valid floorcodes under moved pushwalls
-    {
-        word *map, *obj; word tile, sprite;
-        map = mapsegs[0]; obj = mapsegs[1];
-        for (y=0;y<mapheight;y++)
-            for (x=0;x<mapwidth;x++)
-            {
-                tile = *map++; sprite = *obj++;
-                if (sprite == PUSHABLETILE && !tilemap[x][y]
-                    && (tile < AREATILE || tile >= (AREATILE+NUMAREAS)))
-                {
-                    if (*map >= AREATILE)
-                        tile = *map;
-                    if (*(map-1-mapwidth) >= AREATILE)
-                        tile = *(map-1-mapwidth);
-                    if (*(map-1+mapwidth) >= AREATILE)
-                        tile = *(map-1+mapwidth);
-                    if ( *(map-2) >= AREATILE)
-                        tile = *(map-2);
-
-                    *(map-1) = tile; *(obj-1) = 0;
-                }
-            }
-    }
-
-    Thrust(0,0);    // set player->areanumber to the floortile you're standing on
-
-    fread (&oldchecksum,sizeof(oldchecksum),1,file);
-
-    if (oldchecksum != checksum)
-    {
-        Message(STR_SAVECHT1"\n"
-                STR_SAVECHT2"\n"
-                STR_SAVECHT3"\n"
-                STR_SAVECHT4);
-
-        IN_ClearKeysDown();
-        IN_Ack();
-
-        gamestate.oldscore = gamestate.score = 0;
-        gamestate.lives = 1;
-        gamestate.weapon =
-            gamestate.chosenweapon =
-            gamestate.bestweapon = wp_pistol;
-        gamestate.ammo = 8;
-    }
-
-    return true;
+    fclose (file);
 }
+
+
+/*
+======================
+=
+= UpdateLevelRestore
+=
+======================
+*/
+
+void UpdateLevelRestore(boolean valid)
+{
+    FILE *file;
+    char savepath[300];
+    int32_t checksum=0;
+
+    if(configdir[0])
+        snprintf(savepath, sizeof(savepath), "%s/%s", configdir, savename);
+    else
+        strcpy(savepath, savename);
+
+    unlink (savepath);
+    file = fopen (savepath, "wb");
+
+    //
+    // if true update the data, if false kill it
+    //
+    if (valid)
+    {            
+        fwrite(&configver,sizeof(configver),1,file);
+        checksum = DoChecksum((byte *)&configver,sizeof(configver),checksum);
+
+        fwrite(&gamestate,sizeof(gamestate),1,file);
+        checksum = DoChecksum((byte *)&gamestate,sizeof(gamestate),checksum);
+
+        fwrite(&LevelRatios[0],sizeof(LRstruct)*LRpack,1,file);
+        checksum = DoChecksum((byte *)&LevelRatios[0],sizeof(LRstruct)*LRpack,checksum);
+
+        fwrite (&checksum,sizeof(checksum),1,file);
+    }
+    else
+        levelrestore = false;
+
+    fclose (file);
+}
+
 
 //===========================================================================
 
@@ -812,7 +618,7 @@ static void InitGame()
 //
     ReadConfig ();
 
-    SetupSaveGames();
+    SetupLevelRestore (false);
 
     CA_LoadAllSounds ();
 
@@ -1009,8 +815,6 @@ static void DemoLoop()
             if (playstate == ex_abort)
                 break;
             VW_FadeOut();
-            if(screenHeight % 200 != 0)
-                VL_ClearScreen(0);
             StartCPMusic(INTROSONG);
         }
 
@@ -1018,7 +822,7 @@ static void DemoLoop()
 
         US_ControlPanel (0);
 
-        if (startgame || loadedgame)
+        if (startgame)
         {
             GameLoop ();
             VW_FadeOut();

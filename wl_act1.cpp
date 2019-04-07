@@ -138,8 +138,7 @@ void SpawnStatic (int tilex, int tiley, int type)
         case    bo_bible:
         case    bo_crown:
         case    bo_fullheal:
-            if (!loadedgame)
-                gamestate.treasuretotal++;
+            treasuretotal++;
 
         case    bo_firstaid:
         case    bo_key1:
@@ -679,7 +678,7 @@ void MoveDoors (void)
 {
     int door;
 
-    if (gamestate.victoryflag)              // don't move door during victory sequence
+    if (victoryflag)              // don't move door during victory sequence
         return;
 
     for (door = 0; door < doornum; door++)
@@ -745,7 +744,7 @@ void PushWall (int checkx, int checky, int dir)
     }
     actorat[checkx+dx][checky+dy] = (objtype *)(uintptr_t) oldtile;
 
-    gamestate.secretcount++;
+    secretcount++;
     pwallx = checkx;
     pwally = checky;
     pwalldir = dir;

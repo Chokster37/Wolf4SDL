@@ -53,10 +53,6 @@ void inline VL_Bar      (int x, int y, int width, int height, int color)
     VL_BarScaledCoord(scaleFactor*x, scaleFactor*y,
         scaleFactor*width, scaleFactor*height, color);
 }
-void inline VL_ClearScreen(int color)
-{
-    SDL_FillRect(curSurface, NULL, color);
-}
 
 void VL_MungePic                (byte *source, unsigned width, unsigned height);
 void VL_MemToLatch              (byte *source, int width, int height,
