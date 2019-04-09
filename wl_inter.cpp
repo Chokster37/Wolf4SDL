@@ -695,12 +695,6 @@ PreloadUpdate (unsigned current, unsigned total)
 
     }
     VW_UpdateScreen ();
-//      if (LastScan == sc_Escape)
-//      {
-//              IN_ClearKeysDown();
-//              return(true);
-//      }
-//      else
     return (false);
 }
 
@@ -722,7 +716,6 @@ PreloadGraphics (void)
     VW_UpdateScreen ();
     VW_FadeIn ();
 
-//      PM_Preload (PreloadUpdate);
     PreloadUpdate (10, 10);
     IN_UserInput (70);
     VW_FadeOut ();
@@ -765,14 +758,14 @@ DrawHighScores (void)
 
     VWB_DrawPic (4 * 8, 68, C_NAMEPIC);
     VWB_DrawPic (20 * 8, 68, C_LEVELPIC);
-    VWB_DrawPic (28 * 8, 68, C_SCOREPIC);
+    VWB_DrawPic (31 * 8, 68, C_SCOREPIC);
     fontnumber = 0;
 
     SETFONTCOLOR (15, 0x29);
 
     for (i = 0, s = Scores; i < MaxScores; i++, s++)
     {
-        PrintY = 76 + (16 * i);
+        PrintY = 82 + (17 * i);
 
         //
         // name
@@ -789,7 +782,7 @@ DrawHighScores (void)
         USL_MeasureString (buffer, &w, &h);
         PrintX = (22 * 8) - w;
 
-        PrintX -= 6;
+        PrintX -= 8;
         itoa (s->episode + 1, buffer1, 10);
         US_Print ("E");
         US_Print (buffer1);
@@ -804,7 +797,7 @@ DrawHighScores (void)
         for (str = buffer; *str; str++)
             *str = *str + (129 - '0');  // Used fixed-width numbers (129...)
         USL_MeasureString (buffer, &w, &h);
-        PrintX = (34 * 8) - 8 - w;
+        PrintX = (36 * 8) - 8 - w;
         US_Print (buffer);
     }
 
@@ -826,25 +819,19 @@ void
 CheckHighScore (int32_t score, word other)
 {
     word i, j;
-    int n;
+    int n = -1;
     HighScore myscore;
 
     strcpy (myscore.name, "");
     myscore.score = score;
-    myscore.episode = gamestate.episode;
+    myscore.episode = i = gamestate.episode;
     myscore.completed = other;
 
-    for (i = 0, n = -1; i < MaxScores; i++)
+    if ((myscore.score > Scores[i].score)
+        || ((myscore.score == Scores[i].score) && (myscore.completed > Scores[i].completed)))
     {
-        if ((myscore.score > Scores[i].score)
-            || ((myscore.score == Scores[i].score) && (myscore.completed > Scores[i].completed)))
-        {
-            for (j = MaxScores; --j > i;)
-                Scores[j] = Scores[j - 1];
-            Scores[i] = myscore;
-            n = i;
-            break;
-        }
+        Scores[i] = myscore;
+        n = i;
     }
 
     StartCPMusic (ROSTER_MUS);
@@ -857,7 +844,7 @@ CheckHighScore (int32_t score, word other)
         //
         // got a high score
         //
-        PrintY = 76 + (16 * n);
+        PrintY = 82 + (17 * n);
         PrintX = 4 * 8;
         backcolor = BORDCOLOR;
         fontcolor = 15;

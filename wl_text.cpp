@@ -603,6 +603,8 @@ void EndText (void)
     int     artnum;
     char    *text;
 
+    ClearMemory ();
+
     artnum = endextern+gamestate.episode;
     CA_CacheGrChunk (artnum);
     text = (char *)grsegs[artnum];

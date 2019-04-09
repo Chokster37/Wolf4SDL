@@ -351,7 +351,7 @@ void CheckKeys (void)
     if (scan == sc_Escape || buttonstate[bt_esc])
     {
         StopMusic ();
-        SD_StopSound ();
+        ClearMemory ();
         VW_FadeOut ();
 
         US_ControlPanel (buttonstate[bt_esc] ? sc_Escape : scan);

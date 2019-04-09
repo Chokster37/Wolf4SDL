@@ -52,6 +52,12 @@ static  longword                sqHackTime;
 static  const int               oplChip = 0;
 
 
+static void SDL_SoundFinished(void)
+{
+	SoundNumber   = (soundnames)0;
+	SoundPriority = 0;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //      SDL_PCPlaySound() - Plays the specified sound on the PC speaker
@@ -63,6 +69,28 @@ SDL_PCPlaySound(PCSound *sound)
         pcLastSample = (byte)-1;
         pcLengthLeft = sound->common.length;
         pcSound = sound->data;
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+//      SDL_PCStopSound() - Stops the current sound playing on the PC Speaker
+//
+///////////////////////////////////////////////////////////////////////////
+static void
+SDL_PCStopSound(void)
+{
+        pcSound = 0;
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+//      SDL_ShutPC() - Turns off the pc speaker
+//
+///////////////////////////////////////////////////////////////////////////
+static void
+SDL_ShutPC(void)
+{
+        pcSound = 0;
 }
 
 // Adapted from Chocolate Doom (chocolate-doom/pcsound/pcsound_sdl.c)
@@ -177,6 +205,34 @@ static void SDL_PCMixCallback(void *udata, Uint8 *stream, int len)
     }
 }
 
+////////////////////////////////////////////////////////////////////////////
+//
+//      SDL_ShutDevice() - turns off whatever device was being used for sound fx
+//
+////////////////////////////////////////////////////////////////////////////
+static void
+SDL_ShutDevice(void)
+{
+    switch (SoundMode)
+    {
+        case sdm_PC:
+            SDL_ShutPC();
+            break;
+    }
+    SoundMode = sdm_Off;
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+//      SDL_StartDevice() - turns on whatever device is to be used for sound fx
+//
+///////////////////////////////////////////////////////////////////////////
+static void
+SDL_StartDevice(void)
+{
+    SoundNumber = (soundnames) 0;
+    SoundPriority = 0;
+}
 
 //      Public routines
 
@@ -188,11 +244,35 @@ static void SDL_PCMixCallback(void *udata, Uint8 *stream, int len)
 boolean
 SD_SetSoundMode(SDMode mode)
 {
+    boolean result = false;
+    word    tableoffset;
+
     SD_StopSound();
 
-    SoundMode = mode;
+    switch (mode)
+    {
+        case sdm_Off:
+            tableoffset = STARTADLIBSOUNDS;
+            result = true;
+            break;
+        case sdm_PC:
+            tableoffset = STARTPCSOUNDS;
+            result = true;
+            break;
+        default:
+            Quit("SD_SetSoundMode: Invalid sound mode %i", mode);
+            return false;
+    }
+    SoundTable = &audiosegs[tableoffset];
 
-    return true;
+    if (result && (mode != SoundMode))
+    {
+        SDL_ShutDevice();
+        SoundMode = mode;
+        SDL_StartDevice();
+    }
+
+    return(result);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -203,7 +283,11 @@ SD_SetSoundMode(SDMode mode)
 boolean
 SD_SetMusicMode(SMMode mode)
 {
-	SD_MusicOff();
+    boolean result = false;
+
+    SD_FadeOutMusic();
+    while (SD_MusicPlaying())
+        SDL_Delay(5);
 
     MusicMode = mode;
 
@@ -301,7 +385,6 @@ SD_Startup(void)
 	
     // Add PC speaker sound mixer
     Mix_SetPostMix(SDL_PCMixCallback, NULL);
-    SoundTable = &audiosegs[STARTPCSOUNDS];
 
     SD_SetSoundMode(sdm_Off);
     SD_SetMusicMode(smm_Off);
@@ -332,28 +415,39 @@ SD_Shutdown(void)
 //      SD_PlaySound() - plays the specified sound on the appropriate hardware
 //
 ///////////////////////////////////////////////////////////////////////////
-void
+
+boolean
 SD_PlaySound(soundnames sound)
 {
     SoundCommon     *s;
 
     if (sound == -1 || SoundMode == sdm_Off)
-        return;
+        return 0;
 
     s = (SoundCommon *) SoundTable[sound];
 
-    if (!s)
-        Quit("SD_PlaySound() - Uncached sound");
+    if ((SoundMode != sdm_Off) && !s)
+            Quit("SD_PlaySound() - Uncached sound");
+
+    if (SoundMode == sdm_Off)
+        return 0;
 
     if (!s->length)
         Quit("SD_PlaySound() - Zero length sound");
-
     if (s->priority < SoundPriority)
-        return;
+        return 0;
 
-    SDL_PCPlaySound((PCSound *)s);
+    switch (SoundMode)
+    {
+        case sdm_PC:
+            SDL_PCPlaySound((PCSound *)s);
+            break;
+    }
+
     SoundNumber = sound;
     SoundPriority = s->priority;
+
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -365,10 +459,19 @@ SD_PlaySound(soundnames sound)
 word
 SD_SoundPlaying(void)
 {
-    if (SoundMode == sdm_PC && pcSound)
-        return true;
-		
-    return false;
+    boolean result = false;
+
+    switch (SoundMode)
+    {
+        case sdm_PC:
+            result = pcSound? true : false;
+            break;
+    }
+
+    if (result)
+        return(SoundNumber);
+    else
+        return(false);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -379,9 +482,14 @@ SD_SoundPlaying(void)
 void
 SD_StopSound(void)
 {
-    pcSound = 0;
-    SoundNumber   = (soundnames)0;
-    SoundPriority = 0;
+    switch (SoundMode)
+    {
+        case sdm_PC:
+            SDL_PCStopSound();
+            break;
+    }
+
+    SDL_SoundFinished();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -418,11 +526,13 @@ SD_MusicOff(void)
     word    i;
 
     sqActive = false;
-    if (MusicMode == smm_AdLib)
+    switch (MusicMode)
     {
-        alOut(alEffects, 0);
-        for (i = 0;i < sqMaxTracks;i++)
-            alOut(alFreqH + i + 1, 0);
+        case smm_AdLib:
+            alOut(alEffects, 0);
+            for (i = 0;i < sqMaxTracks;i++)
+                alOut(alFreqH + i + 1, 0);
+            break;
     }
 }
 
@@ -449,3 +559,44 @@ SD_StartMusic(int chunk)
     }
 }
 
+///////////////////////////////////////////////////////////////////////////
+//
+//      SD_FadeOutMusic() - starts fading out the music. Call SD_MusicPlaying()
+//              to see if the fadeout is complete
+//
+///////////////////////////////////////////////////////////////////////////
+void
+SD_FadeOutMusic(void)
+{
+    switch (MusicMode)
+    {
+        case smm_AdLib:
+            // DEBUG - quick hack to turn the music off
+            SD_MusicOff();
+            break;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+//      SD_MusicPlaying() - returns true if music is currently playing, false if
+//              not
+//
+///////////////////////////////////////////////////////////////////////////
+boolean
+SD_MusicPlaying(void)
+{
+    boolean result;
+
+    switch (MusicMode)
+    {
+        case smm_AdLib:
+            result = sqActive;
+            break;
+        default:
+            result = false;
+            break;
+    }
+
+    return(result);
+}

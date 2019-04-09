@@ -678,7 +678,7 @@ void PlayDemo (int demonumber)
     demoplayback = false;
 
     StopMusic ();
-    SD_StopSound ();
+    ClearMemory ();
 }
 
 //==========================================================================
@@ -801,6 +801,7 @@ void Died (void)
 
     IN_UserInput(100);
     SD_WaitSoundDone ();
+    ClearMemory();
 
     gamestate.lives--;
 
@@ -838,6 +839,7 @@ void GameLoop (void)
     boolean died;
 
 restartgame:
+    ClearMemory ();
     SETFONTCOLOR(0,15);
     VW_FadeOut();
     DrawPlayScreen ();
@@ -846,8 +848,7 @@ restartgame:
     {
         gamestate.score = gamestate.oldscore;
 
-        if(!died)
-            DrawScore();
+        DrawScore();
 
         startgame = false;
         SetupGameLevel ();
@@ -881,6 +882,8 @@ restartgame:
                 gamestate.keys = 0;
                 DrawKeys ();
                 VW_FadeOut ();
+
+                ClearMemory ();
 
                 LevelCompleted ();              // do the intermission
 
@@ -916,6 +919,8 @@ restartgame:
                 VW_FadeOut ();
                 UpdateLevelRestore (false);
 
+                ClearMemory ();
+
                 CheckHighScore (gamestate.score,gamestate.mapon+1);
                 strcpy(MainMenu[viewscores].string,STR_VS);
                 MainMenu[viewscores].routine = CP_ViewScores;
@@ -923,7 +928,9 @@ restartgame:
 
             case ex_victorious:
                 VW_FadeOut ();
-               
+
+                ClearMemory ();
+
                 Victory ();
                 UpdateLevelRestore (false);
 
@@ -933,6 +940,7 @@ restartgame:
                 return;
 
             default:
+                ClearMemory ();
                 break;
         }
     } while (1);

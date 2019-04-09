@@ -78,14 +78,16 @@ inline void Delay(int wolfticks)
 extern  void    SD_Startup(void),
                 SD_Shutdown(void);
 
-extern  void    SD_PlaySound(soundnames sound);
+extern  boolean SD_PlaySound(soundnames sound);
 extern  void    SD_StopSound(void),
                 SD_WaitSoundDone(void);
 
 extern  void    SD_StartMusic(int chunk);
-extern  void    SD_MusicOn(void);
+extern  void    SD_MusicOn(void),
+                SD_FadeOutMusic(void);
 extern  void    SD_MusicOff(void);
 
+extern  boolean SD_MusicPlaying(void);
 extern  boolean SD_SetSoundMode(SDMode mode);
 extern  boolean SD_SetMusicMode(SMMode mode);
 extern  word    SD_SoundPlaying(void);

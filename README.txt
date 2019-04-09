@@ -52,7 +52,6 @@ files (*.WL6) into the same directory as the Wolf4SDL executable. For best
 results, use the "Breathing BJ" vgafiles.zip included in the data directory.
 
 On Windows SDL.dll and SDL_mixer.dll must also be copied into this directory.
-They are also available at http://www.chaos-software.de.vu
 
 
 Usage:

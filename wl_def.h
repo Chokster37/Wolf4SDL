@@ -769,6 +769,8 @@ void    DrawPlayScreen (void);
 
 void    PlayDemo (int demonumber);
 
+#define ClearMemory SD_StopSound
+
 
 /*
 =============================================================================

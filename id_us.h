@@ -14,8 +14,8 @@
 
 //#define	HELPTEXTLINKED
 
-#define	MaxHighName	57
-#define	MaxScores	7
+#define	MaxHighName	37
+#define	MaxScores	6
 typedef	struct
 {
     char	name[MaxHighName + 1];

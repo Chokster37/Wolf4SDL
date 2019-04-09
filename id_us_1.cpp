@@ -41,13 +41,12 @@ static	boolean		US_Started;
 
 		HighScore	Scores[MaxScores] =
 					{
-						{"id software-'92",10000,1},
-						{"Adrian Carmack",10000,1},
-						{"John Carmack",10000,1},
-						{"Kevin Cloud",10000,1},
-						{"Tom Hall",10000,1},
-						{"John Romero",10000,1},
-						{"Jay Wilbur",10000,1},
+						{"John Romero",10000,1,0},
+						{"Chris Chokan",1401200,9,1},
+						{"John Carmack",10000,1,2},
+						{"Tom Hall",10000,1,3},
+						{"Eugenius",1079900,9,4},
+						{"ack",1529200,9,5}
 					};
 
 int rndindex = 0;

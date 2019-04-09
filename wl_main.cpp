@@ -74,7 +74,7 @@ boolean startgame;
 char    configdir[256] = "";
 char    configname[13] = "config.";
 char    savename[13] = "savegame.";
-word    configver = 0xfefc;
+word    configver = 0xfefd;
 boolean levelrestore;
 
 //
@@ -300,10 +300,10 @@ void SetupLevelRestore(boolean import)
 
         if (oldchecksum == checksum)
         {
-	    	SetupGameLevel ();
-	    	startgame = true;
+            SetupGameLevel ();
+            startgame = true;
             levelrestore = true;
-	    }
+        }
     }
     fclose (file);
 }
