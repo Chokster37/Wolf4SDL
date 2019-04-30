@@ -7,9 +7,7 @@
 					"are playing? (Y or N):"
 
 #define STR_NG	"New Game"
-#define	STR_SD	"Sound"
 #define	STR_CL	"Control"
-#define	STR_CV	"Change View"
 #define	STR_VS	"View Scores"
 #define STR_EG	"End Game"
 #define	STR_BD	"Back to Demo"
@@ -36,11 +34,8 @@
 #define	STR_RIGHT	"Right"
 #define	STR_FRWD	"Frwd"
 #define	STR_BKWD	"Bkwrd"
-#define	STR_THINK	"Thinking"
 
-#define STR_SIZE1	"Use arrows to size"
-#define STR_SIZE2	"ENTER to accept"
-#define STR_SIZE3	"ESC to cancel"
+#define STR_SIZE	"Screen Size"
 
 #define STR_YOUWIN	"you win!"
 

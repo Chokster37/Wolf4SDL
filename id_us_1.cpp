@@ -41,11 +41,11 @@ static	boolean		US_Started;
 
 		HighScore	Scores[MaxScores] =
 					{
-						{"John Romero",10000,1,0},
+						{"Adrian Carmack",10000,1,0},
 						{"Chris Chokan",1401200,9,1},
 						{"John Carmack",10000,1,2},
 						{"Tom Hall",10000,1,3},
-						{"Eugenius",1079900,9,4},
+						{"John Romero",10000,1,4},
 						{"ack",1529200,9,5}
 					};
 

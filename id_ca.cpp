@@ -66,8 +66,6 @@ byte    *grsegs[NUMCHUNKS];
 
 word    RLEWtag;
 
-int     numEpisodesMissing = 0;
-
 /*
 =============================================================================
 
@@ -388,7 +386,7 @@ void CAL_SetupGrFile (void)
     long headersize = lseek(handle, 0, SEEK_END);
     lseek(handle, 0, SEEK_SET);
 
-	int expectedsize = lengthof(grstarts) - numEpisodesMissing;
+	int expectedsize = lengthof(grstarts);
 
     if(headersize / 3 != (long) expectedsize)
         Quit("Wolf4SDL was not compiled for these data files:\n"

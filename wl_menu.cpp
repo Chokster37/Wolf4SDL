@@ -17,31 +17,14 @@
 #include "wl_def.h"
 #pragma hdrstop
 
-extern int numEpisodesMissing;
-
 //
 // PRIVATE PROTOTYPES
 //
 #define STARTITEM       newgame
 
-// ENDSTRx constants are defined in foreign.h
-char endStrings[9][80] = {
-    ENDSTR1,
-    ENDSTR2,
-    ENDSTR3,
-    ENDSTR4,
-    ENDSTR5,
-    ENDSTR6,
-    ENDSTR7,
-    ENDSTR8,
-    ENDSTR9
-};
-
 CP_itemtype MainMenu[] = {
     {1, STR_NG, CP_NewGame},
-    {1, STR_SD, CP_Sound},
-    {1, STR_CL, CP_CustomControls},
-    {1, STR_CV, CP_ChangeView},
+    {1, STR_CL, CP_Control},
     {1, STR_VS, CP_ViewScores},
     {1, STR_BD, 0},
     {1, STR_QT, 0}
@@ -53,27 +36,21 @@ CP_itemtype SndMenu[] = {
     {0, "", 0},
     {0, "", 0},
     {1, STR_NONE, 0},
-    {1, STR_ALSB, 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0}
+    {1, STR_ALSB, 0}
 };
 
 CP_itemtype NewEmenu[] = {
     {1, "Episode 1\n" "Escape from Wolfenstein", 0},
     {0, "", 0},
-    {3, "Episode 2\n" "Operation: Eisenfaust", 0},
+    {1, "Episode 2\n" "Operation: Eisenfaust", 0},
     {0, "", 0},
-    {3, "Episode 3\n" "Die, Fuhrer, Die!", 0},
+    {1, "Episode 3\n" "Die, Fuhrer, Die!", 0},
     {0, "", 0},
-    {3, "Episode 4\n" "A Dark Secret", 0},
+    {1, "Episode 4\n" "A Dark Secret", 0},
     {0, "", 0},
-    {3, "Episode 5\n" "Trail of the Madman", 0},
+    {1, "Episode 5\n" "Trail of the Madman", 0},
     {0, "", 0},
-    {3, "Episode 6\n" "Confrontation", 0}
+    {1, "Episode 6\n" "Confrontation", 0}
 };
 
 
@@ -99,7 +76,7 @@ CP_itemtype CusMenu[] = {
 // CP_iteminfo struct format: short x, y, amount, curpos, indent;
 CP_iteminfo MainItems = { MENU_X, MENU_Y, lengthof(MainMenu), STARTITEM, 24 },
             SndItems  = { SM_X, SM_Y1, lengthof(SndMenu), 0, 52 },
-            CusItems  = { 8, CST_Y + 13 * 2, lengthof(CusMenu), -1, 0},
+            CusItems  = { CST_X, CST_Y + 13 * 2, lengthof(CusMenu), -1, 0},
             NewEitems = { NE_X, NE_Y, lengthof(NewEmenu), 0, 88 },
             NewItems  = { NM_X, NM_Y, lengthof(NewMenu), 2, 24 };
 
@@ -117,8 +94,18 @@ int color_norml[] = {
     0x6b
 };
 
-int EpisodeSelect[6] = { 1 };
-
+// ENDSTRx constants are defined in foreign.h
+char endStrings[9][80] = {
+    ENDSTR1,
+    ENDSTR2,
+    ENDSTR3,
+    ENDSTR4,
+    ENDSTR5,
+    ENDSTR6,
+    ENDSTR7,
+    ENDSTR8,
+    ENDSTR9
+};
 
 static int StartGame;
 static int SoundStatus = 1;
@@ -378,22 +365,8 @@ CP_NewGame (int)
                 return 0;
 
             default:
-                if (!EpisodeSelect[which / 2])
-                {
-                    SD_PlaySound (NOWAYSND);
-                    Message ("Please select \"Read This!\"\n"
-                             "from the Options menu to\n"
-                             "find out how to order this\n" "episode from Apogee.");
-                    IN_ClearKeysDown ();
-                    IN_Ack ();
-                    DrawNewEpisode ();
-                    which = 0;
-                }
-                else
-                {
-                    episode = which / 2;
-                    which = 1;
-                }
+                episode = which / 2;
+                which = 1;
                 break;
         }
 
@@ -500,24 +473,40 @@ DrawNewGameDiff (int w)
 
 ////////////////////////////////////////////////////////////////////
 //
-// HANDLE SOUND MENU
+// CUSTOMIZE CONTROLS
 //
 ////////////////////////////////////////////////////////////////////
-int
-CP_Sound (int)
-{
-    int which;
+enum
+{ FIRE, STRAFE, RUN, OPEN };
+int8_t order[4] = { RUN, OPEN, FIRE, STRAFE };
 
-    DrawSoundMenu ();
+void
+DrawViewsizeBar (void)
+{
+    VWB_Bar (32, 123, 256, 10, TEXTCOLOR);
+    DrawOutline (32, 123, 256, 10, 0, HIGHLIGHT);
+    DrawOutline (32 + 16 * (viewsize-4), 123, 16, 10, 0, READCOLOR);
+    VWB_Bar (33 + 16 * (viewsize-4), 124, 15, 9, READHCOLOR);
+}
+
+
+int
+CP_Control (int)
+{
+    int which, exit=0;
+    ControlInfo ci;
+
+    DrawControlScreen ();
     MenuFadeIn ();
     WaitKeyUp ();
 
+    //
+    // HANDLE SOUND SECTION
+    //
     do
     {
         which = HandleMenu (&SndItems, &SndMenu[0], NULL);
-        //
-        // HANDLE MENU CHOICES
-        //
+
         switch (which)
         {
                 //
@@ -528,7 +517,7 @@ CP_Sound (int)
                 {
                     SD_WaitSoundDone ();
                     SD_SetSoundMode (sdm_Off);
-                    DrawSoundMenu ();
+                    DrawControlScreen ();
                 }
                 break;
             case 1:
@@ -536,7 +525,7 @@ CP_Sound (int)
                 {
                     SD_WaitSoundDone ();
                     SD_SetSoundMode (sdm_PC);
-                    DrawSoundMenu ();
+                    DrawControlScreen ();
                     ShootSnd ();
                 }
                 break;
@@ -548,7 +537,7 @@ CP_Sound (int)
                 if (MusicMode != smm_Off)
                 {
                     SD_SetMusicMode (smm_Off);
-                    DrawSoundMenu ();
+                    DrawControlScreen ();
                     ShootSnd ();
                 }
                 break;
@@ -556,7 +545,7 @@ CP_Sound (int)
                 if (MusicMode != smm_AdLib)
                 {
                     SD_SetMusicMode (smm_AdLib);
-                    DrawSoundMenu ();
+                    DrawControlScreen ();
                     ShootSnd ();
                     StartCPMusic (MENUSONG);
                 }
@@ -565,96 +554,9 @@ CP_Sound (int)
     }
     while (which >= 0);
 
-    MenuFadeOut ();
-
-    return 0;
-}
-
-
-//////////////////////
-//
-// DRAW THE SOUND MENU
-//
-void
-DrawSoundMenu (void)
-{
-    int i, on;
-
-
     //
-    // DRAW SOUND MENU
+    // HANDLE KEYBOARD SECTION
     //
-    ClearMScreen ();
-    VWB_DrawPic (112, 184, C_MOUSELBACKPIC);
-
-    DrawWindow (SM_X - 8, SM_Y1 - 3, SM_W, SM_H1, BKGDCOLOR);
-    DrawWindow (SM_X - 8, SM_Y2 - 3, SM_W, SM_H2, BKGDCOLOR);
-
-    DrawMenu (&SndItems, &SndMenu[0]);
-    VWB_DrawPic (100, SM_Y1 - 20, C_FXTITLEPIC);
-    VWB_DrawPic (100, SM_Y2 - 20, C_MUSICTITLEPIC);
-
-    for (i = 0; i < SndItems.amount; i++)
-        if (SndMenu[i].string[0])
-        {
-            //
-            // DRAW SELECTED/NOT SELECTED GRAPHIC BUTTONS
-            //
-            on = 0;
-            switch (i)
-            {
-                    //
-                    // SOUND EFFECTS
-                    //
-                case 0:
-                    if (SoundMode == sdm_Off)
-                        on = 1;
-                    break;
-                case 1:
-                    if (SoundMode == sdm_PC)
-                        on = 1;
-                    break;
-
-                    //
-                    // MUSIC
-                    //
-                case 4:
-                    if (MusicMode == smm_Off)
-                        on = 1;
-                    break;
-                case 5:
-                    if (MusicMode == smm_AdLib)
-                        on = 1;
-                    break;
-            }
-
-            if (on)
-                VWB_DrawPic (SM_X + 24, SM_Y1 + i * 13 + 2, C_SELECTEDPIC);
-            else
-                VWB_DrawPic (SM_X + 24, SM_Y1 + i * 13 + 2, C_NOTSELECTEDPIC);
-        }
-
-    DrawMenuGun (&SndItems);
-    VW_UpdateScreen ();
-}
-
-
-////////////////////////////////////////////////////////////////////
-//
-// CUSTOMIZE CONTROLS
-//
-////////////////////////////////////////////////////////////////////
-enum
-{ FIRE, STRAFE, RUN, OPEN };
-int8_t order[4] = { RUN, OPEN, FIRE, STRAFE };
-
-
-int
-CP_CustomControls (int)
-{
-    int which;
-
-    DrawCustomScreen ();
     do
     {
         which = HandleMenu (&CusItems, &CusMenu[0], FixupCustom);
@@ -670,6 +572,49 @@ CP_CustomControls (int)
         }
     }
     while (which >= 0);
+
+    //
+    // HANDLE SCREEN SIZE SECTION
+    //
+    do
+    {
+        SDL_Delay(5);
+        ReadAnyControl (&ci);
+        
+        switch (ci.dir)
+        {
+            case dir_North:
+            case dir_West:
+                if (viewsize > 4)
+                {
+                    viewsize--;
+                    DrawViewsizeBar ();
+                    VW_UpdateScreen ();
+                    SD_PlaySound (MOVEGUN1SND);
+                    TicDelay(20);
+                }
+                break;
+
+            case dir_South:
+            case dir_East:
+                if (viewsize < 19)
+                {
+                    viewsize++;
+                    DrawViewsizeBar();
+                    VW_UpdateScreen ();
+                    SD_PlaySound (MOVEGUN1SND);
+                    TicDelay(20);
+                }
+                break;
+        }
+
+        if (ci.button0 || Keyboard[sc_Space] || Keyboard[sc_Enter])
+            exit = 1;
+        else if (ci.button1 || Keyboard[sc_Escape])
+            exit = 2;            
+    }
+    while (!exit);
+    NewViewSize(viewsize);
 
     MenuFadeOut ();
 
@@ -937,25 +882,84 @@ FixupCustom (int w)
 
 ////////////////////////
 //
-// DRAW CUSTOMIZE SCREEN
+// DRAW CONTROL SCREEN
 //
 void
-DrawCustomScreen (void)
+DrawControlScreen (void)
 {
-    int i;
+    int i, on;
 
     ClearMScreen ();
     WindowX = 0;
     WindowW = 320;
     VWB_DrawPic (112, 184, C_MOUSELBACKPIC);
-    DrawStripes (10);
-    VWB_DrawPic (80, 0, C_CUSTOMIZEPIC);
-    DrawStripes (60);
-    VWB_DrawPic (80, 50, C_CONTROLPIC);
 
 
     //
-    // KEYBOARD
+    // SOUND SECTION
+    //
+    DrawWindow (SM_X - 8, SM_Y1 - 3, SM_W, SM_H1, BKGDCOLOR);
+    DrawWindow (SM_X - 8, SM_Y2 - 3, SM_W, SM_H2, BKGDCOLOR);
+
+    DrawMenu (&SndItems, &SndMenu[0]);
+    VWB_DrawPic (100, SM_Y1 - 20, C_FXTITLEPIC);
+    VWB_DrawPic (100, SM_Y2 - 20, C_MUSICTITLEPIC);
+
+    for (i = 0; i < SndItems.amount; i++)
+        if (SndMenu[i].string[0])
+        {
+            //
+            // DRAW SELECTED/NOT SELECTED GRAPHIC BUTTONS
+            //
+            on = 0;
+            switch (i)
+            {
+                    //
+                    // SOUND EFFECTS
+                    //
+                case 0:
+                    if (SoundMode == sdm_Off)
+                        on = 1;
+                    break;
+                case 1:
+                    if (SoundMode == sdm_PC)
+                        on = 1;
+                    break;
+
+                    //
+                    // MUSIC
+                    //
+                case 4:
+                    if (MusicMode == smm_Off)
+                        on = 1;
+                    break;
+                case 5:
+                    if (MusicMode == smm_AdLib)
+                        on = 1;
+                    break;
+            }
+
+            if (on)
+                VWB_DrawPic (SM_X + 24, SM_Y1 + i * 13 + 2, C_SELECTEDPIC);
+            else
+                VWB_DrawPic (SM_X + 24, SM_Y1 + i * 13 + 2, C_NOTSELECTEDPIC);
+        }
+
+    DrawMenuGun (&SndItems);
+
+
+    //
+    // CHANGEVIEW SECTION
+    //
+    WindowX = 0;
+    PrintY = 108;
+    SETFONTCOLOR (READCOLOR, BKGDCOLOR);
+    US_CPrint (STR_SIZE);
+    DrawViewsizeBar ();
+
+
+    //
+    // KEYBOARD SECTION
     //
     PrintY = CST_Y + 13 * 7;
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
@@ -971,10 +975,6 @@ DrawCustomScreen (void)
     DrawCustKeybd (0);
     US_Print ("\n");
 
-
-    //
-    // KEYBOARD MOVE KEYS
-    //
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
     PrintX = CST_START;
     US_Print (STR_LEFT);
@@ -1048,108 +1048,6 @@ DrawCustKeys (int hilight)
     PrintY = CST_Y + 13 * 10;
     for (i = 0; i < 4; i++)
         PrintCustKeys (i);
-}
-
-
-////////////////////////////////////////////////////////////////////
-//
-// CHANGE SCREEN VIEWING SIZE
-//
-////////////////////////////////////////////////////////////////////
-int
-CP_ChangeView (int)
-{
-    int exit = 0, oldview, newview;
-    ControlInfo ci;
-
-    WindowX = WindowY = 0;
-    WindowW = 320;
-    WindowH = 200;
-    newview = oldview = viewsize;
-    DrawChangeView (oldview);
-    MenuFadeIn ();
-
-    do
-    {
-        CheckPause ();
-        SDL_Delay(5);
-        ReadAnyControl (&ci);
-        switch (ci.dir)
-        {
-            case dir_South:
-            case dir_West:
-                newview--;
-                if (newview < 4)
-                    newview = 4;
-                if(newview >= 19) DrawChangeView(newview);
-                else ShowViewSize (newview);
-                VW_UpdateScreen ();
-                SD_PlaySound (HITWALLSND);
-                TicDelay (10);
-                break;
-
-            case dir_North:
-            case dir_East:
-                newview++;
-                if (newview >= 19)
-                {
-                    newview = 19;
-                    DrawChangeView(newview);
-                }
-                else ShowViewSize (newview);
-                VW_UpdateScreen ();
-                SD_PlaySound (HITWALLSND);
-                TicDelay (10);
-                break;
-        }
-
-        if (ci.button0 || Keyboard[sc_Enter])
-            exit = 1;
-        else if (ci.button1 || Keyboard[sc_Escape])
-        {
-            SD_PlaySound (ESCPRESSEDSND);
-            MenuFadeOut ();
-            return 0;
-        }
-    }
-    while (!exit);
-
-    if (oldview != newview)
-    {
-        SD_PlaySound (SHOOTSND);
-        Message (STR_THINK "...");
-        NewViewSize (newview);
-    }
-
-    ShootSnd ();
-    MenuFadeOut ();
-
-    return 0;
-}
-
-
-/////////////////////////////
-//
-// DRAW THE CHANGEVIEW SCREEN
-//
-void
-DrawChangeView (int view)
-{
-    int rescaledHeight = screenHeight / scaleFactor;
-    VWB_Bar (0, rescaledHeight - 40, 320, 40, bordercol);
-
-    ShowViewSize (view);
-
-    PrintY = (screenHeight / scaleFactor) - 39;
-    WindowX = 0;
-    WindowY = 320;                                  // TODO: Check this!
-    SETFONTCOLOR (HIGHLIGHT, BKGDCOLOR);
-
-    US_CPrint (STR_SIZE1 "\n");
-    US_CPrint (STR_SIZE2 "\n");
-    US_CPrint (STR_SIZE3);
-
-    VW_UpdateScreen ();
 }
 
 
@@ -1314,7 +1212,6 @@ int
 HandleMenu (CP_iteminfo * item_i, CP_itemtype * items, void (*routine) (int w))
 {
     char key;
-    static int redrawitem = 1, lastitem = -1;
     int i, x, y, basey, exit, which, shape;
     int32_t lastBlinkTime, timer;
     ControlInfo ci;
@@ -1327,12 +1224,10 @@ HandleMenu (CP_iteminfo * item_i, CP_itemtype * items, void (*routine) (int w))
 
     VWB_DrawPic (x, y, C_CURSOR1PIC);
     SetTextColor (items + which, 1);
-    if (redrawitem)
-    {
-        PrintX = item_i->x + item_i->indent;
-        PrintY = item_i->y + which * 13;
-        US_Print ((items + which)->string);
-    }
+    PrintX = item_i->x + item_i->indent;
+    PrintY = item_i->y + which * 13;
+    US_Print ((items + which)->string);
+
     //
     // CALL CUSTOM ROUTINE IF IT IS NEEDED
     //
@@ -1504,16 +1399,10 @@ HandleMenu (CP_iteminfo * item_i, CP_itemtype * items, void (*routine) (int w))
     //
     // ERASE EVERYTHING
     //
-    if (lastitem != which)
-    {
-        VWB_Bar (x - 1, y, 25, 16, BKGDCOLOR);
-        PrintX = item_i->x + item_i->indent;
-        PrintY = item_i->y + which * 13;
-        US_Print ((items + which)->string);
-        redrawitem = 1;
-    }
-    else
-        redrawitem = 0;
+    VWB_Bar (x - 1, y, 25, 16, BKGDCOLOR);
+    PrintX = item_i->x + item_i->indent;
+    PrintY = item_i->y + which * 13;
+    US_Print ((items + which)->string);
 
     if (routine)
         routine (which);
@@ -1521,7 +1410,6 @@ HandleMenu (CP_iteminfo * item_i, CP_itemtype * items, void (*routine) (int w))
 
     item_i->curpos = which;
 
-    lastitem = which;
     switch (exit)
     {
         case 1:
@@ -1961,27 +1849,9 @@ CheckForEpisodes (void)
     }
 
     if(!stat("vswap.wl6", &statbuf))
-    {
         strcpy (extension, "wl6");
-        NewEmenu[2].active =
-            NewEmenu[4].active =
-            NewEmenu[6].active =
-            NewEmenu[8].active =
-            NewEmenu[10].active =
-            EpisodeSelect[1] =
-            EpisodeSelect[2] = EpisodeSelect[3] = EpisodeSelect[4] = EpisodeSelect[5] = 1;
-    }
     else
-    {
-        if(!stat("vswap.wl3", &statbuf))
-        {
-            strcpy (extension, "wl3");
-            numEpisodesMissing = 3;
-            NewEmenu[2].active = NewEmenu[4].active = EpisodeSelect[1] = EpisodeSelect[2] = 1;
-        }
-        else
-            Quit ("NO WOLFENSTEIN 3-D DATA FILES to be found!");
-    }
+        Quit ("NO WOLFENSTEIN 3-D DATA FILES to be found!");
 
     strcpy (graphext, extension);
     strcpy (audioext, extension);

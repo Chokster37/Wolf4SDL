@@ -738,7 +738,6 @@ void            NewViewSize (int width);
 boolean         SetViewSize (unsigned width, unsigned height);
 void            SetupLevelRestore(boolean import);
 void            UpdateLevelRestore(boolean valid);
-void            ShowViewSize (int width);
 void            ShutdownId (void);
 
 

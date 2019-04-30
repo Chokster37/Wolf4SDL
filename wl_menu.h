@@ -25,9 +25,9 @@
 #define CENTERY         ((int) screenHeight / 2)
 
 #define MENU_X  76
-#define MENU_Y  68
+#define MENU_Y  81
 #define MENU_W  178
-#define MENU_H  13*7+6
+#define MENU_H  13*5+6
 
 #define SM_X    48
 #define SM_W    250
@@ -36,16 +36,6 @@
 #define SM_H1   3*13-7
 #define SM_Y2   SM_Y1+4*13
 #define SM_H2   3*13-7
-
-#define CTL_X   24
-#define CTL_Y   86
-#define CTL_W   284
-#define CTL_H   60
-
-#define LSM_X   85
-#define LSM_Y   55
-#define LSM_W   175
-#define LSM_H   10*13+10
 
 #define NM_X    50
 #define NM_Y    100
@@ -57,7 +47,7 @@
 #define NE_W    320-NE_X*2
 #define NE_H    200-NE_Y*2
 
-#define CST_X           20
+#define CST_X           8
 #define CST_Y           48
 #define CST_START       60
 #define CST_SPC 60
@@ -124,11 +114,9 @@ void DefineKeyMove(void);
 void EnterCtrlData(int index,CustomCtrls *cust,void (*DrawRtn)(int),void (*PrintRtn)(int),int type);
 
 void DrawMainMenu(void);
-void DrawSoundMenu(void);
 void DrawNewEpisode(void);
 void DrawNewGame(void);
-void DrawChangeView(int view);
-void DrawCustomScreen(void);
+void DrawControlScreen(void);
 void DrawCustKeybd(int hilight);
 void DrawCustKeys(int hilight);
 void PrintCustKeybd(int i);
@@ -138,12 +126,10 @@ void DrawNewGameDiff(int w);
 void FixupCustom(int w);
 
 int CP_NewGame(int);
-int CP_Sound(int);
-int CP_ChangeView(int);
 int CP_Quit(int);
 int CP_ViewScores(int);
 int CP_EndGame(int);
-int CP_CustomControls(int);
+int CP_Control(int);
 
 void CheckForEpisodes(void);
 
@@ -155,9 +141,7 @@ enum {KEYBOARDBTNS,KEYBOARDMOVE};        // FOR INPUT TYPES
 enum menuitems
 {
         newgame,
-        soundmenu,
         control,
-        changeview,
         viewscores,
         backtodemo,
         quit
@@ -174,5 +158,4 @@ typedef struct {
 extern LRstruct LevelRatios[];
 
 void Write (int x,int y,const char *string);
-void NonShareware(void);
 int GetYorN(int x,int y,int pic);

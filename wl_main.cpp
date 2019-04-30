@@ -682,22 +682,6 @@ boolean SetViewSize (unsigned width, unsigned height)
 }
 
 
-void ShowViewSize (int width)
-{
-    int oldwidth,oldheight;
-
-    oldwidth = viewwidth;
-    oldheight = viewheight;
-
-    viewwidth = width*16*scaleFactor;
-    viewheight =  width*8*scaleFactor;
-    DrawPlayBorder ();
-
-    viewwidth = oldwidth;
-    viewheight = oldheight;
-}
-
-
 void NewViewSize (int width)
 {
     viewsize = width;
