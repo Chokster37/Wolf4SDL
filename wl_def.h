@@ -734,8 +734,7 @@ extern  int      param_audiobuffer;
 
 void            NewGame (int difficulty,int episode);
 void            CalcProjection (int32_t focal);
-void            NewViewSize (int width);
-boolean         SetViewSize (unsigned width, unsigned height);
+boolean         SetViewSize (void);
 void            SetupLevelRestore(boolean import);
 void            UpdateLevelRestore(boolean valid);
 void            ShutdownId (void);
@@ -791,7 +790,7 @@ extern  objtype         *actorat[MAPSIZE][MAPSIZE];
 extern  objtype         *player;
 
 extern  unsigned        tics;
-extern  int             viewsize;
+extern  int             pcvolume;
 
 //
 // current user input

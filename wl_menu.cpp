@@ -481,12 +481,15 @@ enum
 int8_t order[4] = { RUN, OPEN, FIRE, STRAFE };
 
 void
-DrawViewsizeBar (void)
+DrawVolumeBar (void)
 {
-    VWB_Bar (32, 123, 256, 10, TEXTCOLOR);
-    DrawOutline (32, 123, 256, 10, 0, HIGHLIGHT);
-    DrawOutline (32 + 16 * (viewsize-4), 123, 16, 10, 0, READCOLOR);
-    VWB_Bar (33 + 16 * (viewsize-4), 124, 15, 9, READHCOLOR);
+    VWB_Bar (44, 123, 240, 10, TEXTCOLOR);
+    DrawOutline (44, 123, 240, 10, 0, HIGHLIGHT);
+    if (SoundMode == sdm_PC)
+    {
+        DrawOutline (44 + 30 * (pcvolume-1), 123, 30, 10, 0, READCOLOR);
+        VWB_Bar (45 + 30 * (pcvolume-1), 124, 29, 9, READHCOLOR);
+    }
 }
 
 
@@ -574,8 +577,14 @@ CP_Control (int)
     while (which >= 0);
 
     //
-    // HANDLE SCREEN SIZE SECTION
+    // HANDLE VOLUME SECTION
     //
+    if (SoundMode != sdm_PC)
+    {
+        MenuFadeOut ();
+        return 0;
+    }
+
     do
     {
         SDL_Delay(5);
@@ -585,10 +594,10 @@ CP_Control (int)
         {
             case dir_North:
             case dir_West:
-                if (viewsize > 4)
+                if (pcvolume > 1)
                 {
-                    viewsize--;
-                    DrawViewsizeBar ();
+                    pcvolume--;
+                    DrawVolumeBar ();
                     VW_UpdateScreen ();
                     SD_PlaySound (MOVEGUN1SND);
                     TicDelay(20);
@@ -597,10 +606,10 @@ CP_Control (int)
 
             case dir_South:
             case dir_East:
-                if (viewsize < 19)
+                if (pcvolume < 8)
                 {
-                    viewsize++;
-                    DrawViewsizeBar();
+                    pcvolume++;
+                    DrawVolumeBar();
                     VW_UpdateScreen ();
                     SD_PlaySound (MOVEGUN1SND);
                     TicDelay(20);
@@ -614,7 +623,7 @@ CP_Control (int)
             exit = 2;            
     }
     while (!exit);
-    NewViewSize(viewsize);
+    ShootSnd ();
 
     MenuFadeOut ();
 
@@ -954,8 +963,8 @@ DrawControlScreen (void)
     WindowX = 0;
     PrintY = 108;
     SETFONTCOLOR (READCOLOR, BKGDCOLOR);
-    US_CPrint (STR_SIZE);
-    DrawViewsizeBar ();
+    US_CPrint (STR_VOLUME);
+    DrawVolumeBar ();
 
 
     //

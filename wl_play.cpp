@@ -48,7 +48,7 @@ unsigned tics;
 //
 int dirscan[4] = { sc_UpArrow, sc_RightArrow, sc_DownArrow, sc_LeftArrow };
 int buttonscan[NUMBUTTONS] = { sc_Control, sc_Alt, sc_LShift, sc_Space, sc_1, sc_2, sc_3, sc_4 };
-int viewsize;
+int pcvolume;
 
 boolean buttonheld[NUMBUTTONS];
 

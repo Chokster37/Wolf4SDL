@@ -37,9 +37,6 @@ extern byte signon[];
 #define FOCALLENGTH     (0x5700l)               // in global coordinates
 #define VIEWGLOBAL      0x10000                 // globals visable flush to wall
 
-#define VIEWWIDTH       256                     // size of view window
-#define VIEWHEIGHT      144
-
 /*
 =============================================================================
 
@@ -74,7 +71,7 @@ boolean startgame;
 char    configdir[256] = "";
 char    configname[13] = "config.";
 char    savename[13] = "savegame.";
-word    configver = 0xfefd;
+word    configver = 0xfefe;
 boolean levelrestore;
 
 //
@@ -132,13 +129,13 @@ void ReadConfig(void)
 
         read(file,dirscan,sizeof(dirscan));
         read(file,buttonscan,sizeof(buttonscan));
-        read(file,&viewsize,sizeof(viewsize));
+        read(file,&pcvolume,sizeof(pcvolume));
 
         close(file);
 
         // make sure values are correct
-        if(viewsize<4) viewsize=4;
-        else if(viewsize>19) viewsize=19;
+        if(pcvolume<1) pcvolume=1;
+        else if(pcvolume>8) pcvolume=8;
 
         MainMenu[6].active=1;
         MainItems.curpos=0;
@@ -151,8 +148,7 @@ void ReadConfig(void)
 noconfig:
         sd = sdm_PC;
         sm = smm_AdLib;
-
-        viewsize = 19;                          // start with a good size
+        pcvolume = 6;                          // start with a good volume
     }
 
     SD_SetMusicMode (sm);
@@ -188,7 +184,7 @@ void WriteConfig(void)
 
         write(file,dirscan,sizeof(dirscan));
         write(file,buttonscan,sizeof(buttonscan));
-        write(file,&viewsize,sizeof(viewsize));
+        write(file,&pcvolume,sizeof(pcvolume));
 
         close(file);
     }
@@ -638,7 +634,7 @@ static void InitGame()
     BuildTables ();          // trig tables
     SetupWalls ();
 
-    NewViewSize (viewsize);
+    SetViewSize ();
 
 //
 // initialize variables
@@ -657,21 +653,16 @@ static void InitGame()
 ==========================
 */
 
-boolean SetViewSize (unsigned width, unsigned height)
+boolean SetViewSize (void)
 {
-    viewwidth = width&~15;                  // must be divisable by 16
-    viewheight = height&~1;                 // must be even
-    anglewidth = viewwidth*8/304;           // for CalcRotate
+    viewwidth = scaleFactor*304;                  // must be divisable by 16
+    viewheight = scaleFactor*152;                 // must be even
+    anglewidth = scaleFactor*8;                   // for CalcRotate
     centerx = viewwidth/2-1;
     shootdelta = viewwidth/10;
-    if((unsigned) viewheight == screenHeight)
-        viewscreenx = viewscreeny = screenofs = 0;
-    else
-    {
-        viewscreenx = (screenWidth-viewwidth) / 2;
-        viewscreeny = (screenHeight-scaleFactor*STATUSLINES-viewheight)/2;
-        screenofs = viewscreeny*screenWidth+viewscreenx;
-    }
+    viewscreenx = (screenWidth-viewwidth) / 2;
+    viewscreeny = (screenHeight-scaleFactor*STATUSLINES-viewheight)/2;
+    screenofs = viewscreeny*screenWidth+viewscreenx;
 
 //
 // calculate trace angles and projection constants
@@ -679,13 +670,6 @@ boolean SetViewSize (unsigned width, unsigned height)
     CalcProjection (FOCALLENGTH);
 
     return true;
-}
-
-
-void NewViewSize (int width)
-{
-    viewsize = width;
-    SetViewSize(width*16*scaleFactor, width*8*scaleFactor);
 }
 
 

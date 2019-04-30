@@ -94,7 +94,7 @@ SDL_ShutPC(void)
 }
 
 // Adapted from Chocolate Doom (chocolate-doom/pcsound/pcsound_sdl.c)
-#define SQUARE_WAVE_AMP 0x1800
+#define SQUARE_WAVE_AMP (pcvolume*0x400)
 
 static void SDL_PCMixCallback(void *udata, Uint8 *stream, int len)
 {

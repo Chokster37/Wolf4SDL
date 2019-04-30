@@ -35,7 +35,7 @@
 #define	STR_FRWD	"Frwd"
 #define	STR_BKWD	"Bkwrd"
 
-#define STR_SIZE	"Screen Size"
+#define STR_VOLUME	"Sound Volume"
 
 #define STR_YOUWIN	"you win!"
 
