@@ -7,11 +7,9 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#if !defined(_WIN32)
-#	include <stdint.h>
-#	include <string.h>
-#	include <stdarg.h>
-#endif
+#include <stdint.h>
+#include <string.h>
+#include <stdarg.h>
 #include <SDL.h>
 
 #if !defined O_BINARY
@@ -1096,23 +1094,17 @@ static inline fixed FixedMul(fixed a, fixed b)
 
 #define CHECKMALLOCRESULT(x) if(!(x)) Quit("Out of memory at %s:%i", __FILE__, __LINE__)
 
-#ifdef _WIN32
-    #define strcasecmp stricmp
-    #define strncasecmp strnicmp
-    #define snprintf _snprintf
-#else
-    static inline char* itoa(int value, char* string, int radix)
-    {
-	    sprintf(string, "%d", value);
-	    return string;
-    }
+static inline char* itoa(int value, char* string, int radix)
+{
+    sprintf(string, "%d", value);
+    return string;
+}
 
-    static inline char* ltoa(long value, char* string, int radix)
-    {
-	    sprintf(string, "%ld", value);
-	    return string;
-    }
-#endif
+static inline char* ltoa(long value, char* string, int radix)
+{
+    sprintf(string, "%ld", value);
+    return string;
+}
 
 #define lengthof(x) (sizeof(x) / sizeof(*(x)))
 #define endof(x)    ((x) + lengthof(x))

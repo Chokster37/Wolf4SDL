@@ -1,10 +1,6 @@
 // WL_MAIN.C
 
-#ifdef _WIN32
-    #include <io.h>
-#else
-    #include <unistd.h>
-#endif
+#include <unistd.h>
 
 #include "wl_def.h"
 #pragma hdrstop
@@ -573,9 +569,6 @@ void FinishSignon (void)
 static void InitGame()
 {
     // initialize SDL
-#if defined _WIN32
-    putenv("SDL_VIDEODRIVER=directx");
-#endif
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
     {
         printf("Unable to init SDL: %s\n", SDL_GetError());
@@ -585,21 +578,6 @@ static void InitGame()
 
     SignonScreen ();
 
-#if defined _WIN32
-    if(!fullscreen)
-    {
-        struct SDL_SysWMinfo wmInfo;
-        SDL_VERSION(&wmInfo.version);
-
-        if(SDL_GetWMInfo(&wmInfo) != -1)
-        {
-            HWND hwndSDL = wmInfo.window;
-            DWORD style = GetWindowLong(hwndSDL, GWL_STYLE) & ~WS_SYSMENU;
-            SetWindowLong(hwndSDL, GWL_STYLE, style);
-            SetWindowPos(hwndSDL, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
-        }
-    }
-#endif
 	VW_UpdateScreen();
 
     VH_Startup ();
@@ -946,11 +924,7 @@ void CheckParameters(int argc, char *argv[])
             " --audiobuffer <size>   Sets the size of the audio buffer (-> sound latency)\n"
             "                        (given in bytes, default: 2048 / (44100 / samplerate))\n"
             " --configdir <dir>      Directory where config file and save games are stored\n"
-#if defined(_WIN32)
-            "                        (default: current directory)\n"
-#else
             "                        (default: $HOME/.wolf4sdl)\n"
-#endif
             , defaultSampleRate
         );
         exit(1);

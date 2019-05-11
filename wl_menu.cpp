@@ -7,12 +7,7 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
-#ifdef _WIN32
-    #include <io.h>
-    #include <direct.h>
-#else
-    #include <unistd.h>
-#endif
+#include <unistd.h>
 
 #include "wl_def.h"
 #pragma hdrstop
@@ -1823,7 +1818,6 @@ CheckForEpisodes (void)
     struct stat statbuf;
 
     // On Linux like systems, the configdir defaults to $HOME/.wolf4sdl
-#if !defined(_WIN32)
     if(configdir[0] == 0)
     {
         // Set config location to home directory for multi-user support
@@ -1839,18 +1833,13 @@ CheckForEpisodes (void)
         }
         snprintf(configdir, sizeof(configdir), "%s" WOLFDIR, homedir);
     }
-#endif
 
     if(configdir[0] != 0)
     {
         // Ensure config directory exists and create if necessary
         if(stat(configdir, &statbuf) != 0)
         {
-#ifdef _WIN32
-            if(_mkdir(configdir) != 0)
-#else
             if(mkdir(configdir, 0755) != 0)
-#endif
             {
                 Quit("The configuration directory \"%s\" could not be created.", configdir);
             }
