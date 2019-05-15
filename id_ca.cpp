@@ -38,6 +38,8 @@ typedef struct
 typedef struct
 {
     word RLEWtag;
+    word numplanes;
+    word mapnames_length;
     int32_t headeroffsets[100];
 } mapfiletype;
 
@@ -233,7 +235,7 @@ static void CAL_HuffExpand(byte *source, byte *dest, int32_t length, huffnode *h
 #define NEARTAG 0xa7
 #define FARTAG  0xa8
 
-void CAL_CarmackExpand (byte *source, word *dest, int length)
+void CAL_CarmackExpand (byte *source, word *dest, int32_t length)
 {
     word ch,chhigh,count,offset;
     byte *inptr;
@@ -822,7 +824,7 @@ void CA_CacheMap (int mapnum)
     word     *dest;
     memptr    bigbufferseg;
     unsigned  size;
-    word     *source;
+    int32_t  *source;
     word     *buffer2seg;
     int32_t   expanded;
 
@@ -842,12 +844,12 @@ void CA_CacheMap (int mapnum)
 
         lseek(maphandle,pos,SEEK_SET);
         if (compressed<=BUFFERSIZE)
-            source = (word *) bufferseg;
+            source = (int32_t *) bufferseg;
         else
         {
             bigbufferseg=malloc(compressed);
             CHECKMALLOCRESULT(bigbufferseg);
-            source = (word *) bigbufferseg;
+            source = (int32_t *) bigbufferseg;
         }
 
         read(maphandle,source,compressed);
