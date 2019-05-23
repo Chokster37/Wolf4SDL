@@ -841,8 +841,6 @@ extern  int         extravbls;
 =============================================================================
 */
 
-void IntroScreen (void);
-void PG13(void);
 void DrawHighScores(void);
 void CheckHighScore (int32_t score,word other);
 void Victory (void);

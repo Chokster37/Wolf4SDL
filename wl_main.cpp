@@ -19,7 +19,6 @@
 =============================================================================
 */
 
-extern byte signon[];
 
 /*
 =============================================================================
@@ -501,60 +500,6 @@ void SetupWalls (void)
 
 //===========================================================================
 
-/*
-==========================
-=
-= SignonScreen
-=
-==========================
-*/
-
-void SignonScreen (void)                        // VGA version
-{
-    VL_SetVGAPlaneMode ();
-
-    VL_MungePic (signon,320,200);
-    VL_MemToScreen (signon,320,200,0,0);
-}
-
-
-/*
-==========================
-=
-= FinishSignon
-=
-==========================
-*/
-
-void FinishSignon (void)
-{
-    VW_Bar (0,189,300,11,VL_GetPixel(0,0));
-    WindowX = 0;
-    WindowW = 320;
-    PrintY = 190;
-
-    SETFONTCOLOR(14,4);
-
-    US_CPrint ("Press a key");
-
-    VH_UpdateScreen();
-
-    IN_Ack ();
-
-    VW_Bar (0,189,300,11,VL_GetPixel(0,0));
-
-    PrintY = 190;
-    SETFONTCOLOR(10,4);
-
-    US_CPrint ("Working...");
-
-    VH_UpdateScreen();
-
-    SETFONTCOLOR(0,15);
-}
-
-//===========================================================================
-
 
 /*
 ==========================
@@ -576,9 +521,9 @@ static void InitGame()
     }
     atexit(SDL_Quit);
 
-    SignonScreen ();
+    VL_SetVGAPlaneMode ();
 
-	VW_UpdateScreen();
+    VW_UpdateScreen();
 
     VH_Startup ();
     IN_Startup ();
@@ -597,11 +542,6 @@ static void InitGame()
     CA_LoadAllSounds ();
 
 //
-// draw intro screen stuff
-//
-    IntroScreen ();
-
-//
 // load in and lock down some basic chunks
 //
 
@@ -618,7 +558,6 @@ static void InitGame()
 // initialize variables
 //
     InitRedShifts ();
-    FinishSignon();
 }
 
 //===========================================================================
@@ -719,8 +658,6 @@ static void DemoLoop()
 //
 
     StartCPMusic(INTROSONG);
-
-    PG13 ();
 
     while (1)
     {

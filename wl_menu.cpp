@@ -1078,33 +1078,6 @@ CP_Quit (int)
 
 
 ////////////////////////////////////////////////////////////////////
-//
-// HANDLE INTRO SCREEN (SYSTEM CONFIG)
-//
-////////////////////////////////////////////////////////////////////
-void
-IntroScreen (void)
-{
-
-#define MAINCOLOR       0x6c
-#define EMSCOLOR        0x4f
-#define XMSCOLOR        0x7f
-
-    int i;
-
-    //
-    // DRAW MAIN MEMORY
-    //
-    for (i = 0; i < 10; i++)
-        VWB_Bar (49, 163 - 8 * i, 6, 5, MAINCOLOR - i);
-    for (i = 0; i < 10; i++)
-        VWB_Bar (89, 163 - 8 * i, 6, 5, EMSCOLOR - i);
-    for (i = 0; i < 10; i++)
-        VWB_Bar (129, 163 - 8 * i, 6, 5, XMSCOLOR - i);
-}
-
-
-////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 //
 // SUPPORT ROUTINES

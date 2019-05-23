@@ -149,35 +149,6 @@ Victory (void)
 
 //==========================================================================
 
-/*
-==================
-=
-= PG13
-=
-==================
-*/
-
-void
-PG13 (void)
-{
-    VW_FadeOut ();
-    VWB_Bar (0, 0, 320, 200, 0x82);     // background
-
-    CA_CacheGrChunk (PG13PIC);
-    VWB_DrawPic (216, 110, PG13PIC);
-    VW_UpdateScreen ();
-
-    UNCACHEGRCHUNK (PG13PIC);
-
-    VW_FadeIn ();
-    IN_UserInput (TickBase * 7);
-
-    VW_FadeOut ();
-}
-
-
-//==========================================================================
-
 void
 Write (int x, int y, const char *string)
 {

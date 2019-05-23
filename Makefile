@@ -50,7 +50,6 @@ SRCS += id_sd.cpp
 SRCS += id_us_1.cpp
 SRCS += id_vh.cpp
 SRCS += id_vl.cpp
-SRCS += signon.cpp
 SRCS += wl_act1.cpp
 SRCS += wl_act2.cpp
 SRCS += wl_agent.cpp

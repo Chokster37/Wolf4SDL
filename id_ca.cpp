@@ -38,8 +38,6 @@ typedef struct
 typedef struct
 {
     word RLEWtag;
-    word numplanes;
-    word mapnames_length;
     int32_t headeroffsets[100];
 } mapfiletype;
 
@@ -824,7 +822,7 @@ void CA_CacheMap (int mapnum)
     word     *dest;
     memptr    bigbufferseg;
     unsigned  size;
-    int32_t  *source;
+    word     *source;
     word     *buffer2seg;
     int32_t   expanded;
 
@@ -844,12 +842,12 @@ void CA_CacheMap (int mapnum)
 
         lseek(maphandle,pos,SEEK_SET);
         if (compressed<=BUFFERSIZE)
-            source = (int32_t *) bufferseg;
+            source = (word *) bufferseg;
         else
         {
             bigbufferseg=malloc(compressed);
             CHECKMALLOCRESULT(bigbufferseg);
-            source = (int32_t *) bigbufferseg;
+            source = (word *) bigbufferseg;
         }
 
         read(maphandle,source,compressed);
